@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HARSHINI_MITRA.SAV — Character File</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0A18;
+    --panel:#161331;
+    --panel-2:#1D1A42;
+    --border-dark:#3A2E7A;
+    --border-light:#8C7CFF;
+    --text:#F2EFE3;
+    --muted:#9691C4;
+    --muted-2:#615C97;
+    --pink:#FF4D8D;
+    --cyan:#38E1C6;
+    --gold:#FFD23F;
+    --purple:#B980F0;
+    --blue:#4FC3F7;
+    --green:#63D471;
+    --common:#8A93B8;
+    --display:'Press Start 2P', monospace;
+    --mono:'Space Mono', monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--mono);
+    min-height:100vh;
+    font-size:14px;
+    position:relative;
+    overflow-x:hidden;
+  }
+  a{color:var(--cyan);}
+
+  /* scanline overlay */
+  body::before{
+    content:"";
+    position:fixed; inset:0; z-index:50; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,0.18) 0px, rgba(0,0,0,0.18) 1px, transparent 1px, transparent 3px);
+    opacity:.35; mix-blend-mode:overlay;
+  }
+  body::after{
+    content:"";
+    position:fixed; inset:0; z-index:49; pointer-events:none;
+    background:radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+  }
+
+  .wrap{max-width:960px; margin:0 auto; padding:26px 16px 60px; position:relative; z-index:1;}
+
+  /* ---------- pixel panel (notched corners + double border) ---------- */
+  .pixel{
+    position:relative;
+    background:var(--panel);
+    box-shadow:
+      0 0 0 3px var(--border-dark),
+      0 0 0 6px var(--bg),
+      0 10px 0 0 rgba(0,0,0,0.35);
+    clip-path:polygon(
+      0 10px, 10px 10px, 10px 0,
+      calc(100% - 10px) 0, calc(100% - 10px) 10px, 100% 10px,
+      100% calc(100% - 10px), calc(100% - 10px) calc(100% - 10px), calc(100% - 10px) 100%,
+      10px 100%, 10px calc(100% - 10px), 0 calc(100% - 10px)
+    );
+    padding:18px;
+  }
+  .pixel-sm{
+    clip-path:polygon(
+      0 6px, 6px 6px, 6px 0,
+      calc(100% - 6px) 0, calc(100% - 6px) 6px, 100% 6px,
+      100% calc(100% - 6px), calc(100% - 6px) calc(100% - 6px), calc(100% - 6px) 100%,
+      6px 100%, 6px calc(100% - 6px), 0 calc(100% - 6px)
+    );
+  }
+
+  /* ---------- title bar ---------- */
+  .titlebar{
+    display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+    margin-bottom:16px; padding:10px 14px;
+    font-family:var(--display); font-size:9.5px; color:var(--muted);
+    letter-spacing:.02em;
+  }
+  .titlebar .blink{color:var(--pink); animation:blink 1.1s steps(1) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  @media (prefers-reduced-motion:reduce){ .titlebar .blink{animation:none;} }
+
+  /* ---------- HUD ---------- */
+  .hud{margin-bottom:16px;}
+  .hud-inner{display:flex; gap:18px; align-items:center; flex-wrap:wrap;}
+  .portrait{
+    flex:0 0 auto; width:72px; height:72px; background:var(--panel-2);
+    box-shadow:0 0 0 3px var(--border-dark), 0 0 0 6px var(--panel);
+    clip-path:polygon(0 8px,8px 8px,8px 0,calc(100% - 8px) 0,calc(100% - 8px) 8px,100% 8px,100% calc(100% - 8px),calc(100% - 8px) calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,8px calc(100% - 8px),0 calc(100% - 8px));
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display); font-size:20px; color:var(--gold);
+  }
+  .hud-mid{flex:1 1 260px; min-width:0;}
+  .hud-name{font-family:var(--display); font-size:15px; margin:0 0 8px; color:var(--text); letter-spacing:.02em;}
+  .hud-class{font-size:11.5px; color:var(--cyan); margin-bottom:10px;}
+  .hud-class .sep{color:var(--muted-2); margin:0 6px;}
+  .xp-row{display:flex; align-items:center; gap:10px; font-family:var(--display); font-size:8.5px; color:var(--muted);}
+  .xp-track{
+    flex:1 1 auto; height:14px; background:var(--bg);
+    box-shadow:0 0 0 2px var(--border-dark);
+    position:relative; overflow:hidden;
+  }
+  .xp-fill{
+    height:100%; width:0%;
+    background:repeating-linear-gradient(90deg, var(--pink) 0 8px, #ff77ac 8px 9px);
+    transition:width 1.2s cubic-bezier(.2,.8,.2,1);
+  }
+  .hud-side{flex:0 0 auto; text-align:right;}
+  .status-pill{
+    font-family:var(--display); font-size:8.5px; color:var(--bg);
+    background:var(--green); padding:7px 10px; display:inline-block;
+    box-shadow:0 0 0 2px var(--border-dark);
+  }
+  .status-pill.small{margin-top:8px; display:block;}
+
+  /* ---------- stat quad ---------- */
+  .stat-quad{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:16px;}
+  @media (max-width:640px){ .stat-quad{grid-template-columns:repeat(2,1fr);} }
+  .stat-box{padding:12px 10px; text-align:center;}
+  .stat-box .k{font-family:var(--display); font-size:8px; color:var(--muted); margin-bottom:8px; line-height:1.5;}
+  .stat-box .v{font-family:var(--display); font-size:17px; color:var(--gold);}
+
+  /* ---------- tabs ---------- */
+  .tabs{display:flex; flex-wrap:wrap; gap:8px; margin:18px 0 16px;}
+  .tab{
+    font-family:var(--display); font-size:9px; color:var(--muted);
+    background:var(--panel-2); padding:10px 13px; cursor:pointer;
+    box-shadow:0 0 0 2px var(--border-dark);
+    clip-path:polygon(0 5px,5px 5px,5px 0,calc(100% - 5px) 0,calc(100% - 5px) 5px,100% 5px,100% calc(100% - 5px),calc(100% - 5px) calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,5px calc(100% - 5px),0 calc(100% - 5px));
+    transition:color .15s, background .15s;
+    user-select:none;
+  }
+  .tab:hover{color:var(--text);}
+  .tab.active{color:var(--bg); background:var(--cyan); box-shadow:0 0 0 2px var(--border-light), 0 0 14px -3px var(--cyan);}
+
+  .screen{display:none;}
+  .screen.active{display:block; animation:pop .25s ease;}
+  @keyframes pop{from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);}}
+  @media (prefers-reduced-motion:reduce){ .screen.active{animation:none;} }
+
+  .screen-title{
+    font-family:var(--display); font-size:11px; color:var(--gold); margin:0 0 6px;
+  }
+  .screen-sub{color:var(--muted); font-size:12.5px; margin:0 0 18px;}
+
+  /* ---------- status screen ---------- */
+  .lede{font-size:13.5px; line-height:1.75; color:var(--text); margin:0 0 16px; max-width:66ch;}
+  .traits{display:flex; flex-wrap:wrap; gap:8px;}
+  .trait{
+    font-family:var(--mono); font-weight:700; font-size:11.5px; color:var(--purple);
+    background:rgba(185,128,240,0.1); padding:6px 10px;
+    box-shadow:0 0 0 1px rgba(185,128,240,0.4);
+  }
+
+  /* ---------- skills ---------- */
+  .skill-grid{display:grid; grid-template-columns:1fr 1fr; gap:22px 28px;}
+  @media (max-width:640px){ .skill-grid{grid-template-columns:1fr;} }
+  .skill-row .lbl{display:flex; justify-content:space-between; font-size:12px; margin-bottom:6px;}
+  .skill-row .lbl b{color:var(--text); font-weight:700;}
+  .skill-row .lbl .sc{font-family:var(--display); font-size:9px; color:var(--gold);}
+  .segbar{display:flex; gap:3px;}
+  .seg{
+    flex:1 1 0; height:14px; background:var(--bg); box-shadow:0 0 0 1px var(--border-dark);
+  }
+  .seg.on{background:linear-gradient(180deg, var(--pink), #b8306a);}
+
+  /* ---------- quests ---------- */
+  .quest{margin-bottom:18px;}
+  .quest-head{display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; align-items:baseline; margin-bottom:4px;}
+  .quest-name{font-family:var(--display); font-size:11px; color:var(--text);}
+  .quest-tag{font-family:var(--display); font-size:8px; padding:5px 9px; color:var(--bg);}
+  .quest-tag.done{background:var(--green);}
+  .quest-tag.active{background:var(--gold);}
+  .quest-meta{font-size:11.5px; color:var(--muted); margin-bottom:10px;}
+  .quest ul{margin:0; padding-left:20px; display:flex; flex-direction:column; gap:8px;}
+  .quest li{font-size:13px; line-height:1.55; color:var(--text);}
+  .xpchip{
+    font-family:var(--display); font-size:8px; color:var(--bg); background:var(--gold);
+    padding:2px 6px; margin-left:6px; display:inline-block;
+  }
+  .quest-divider{border:none; border-top:2px dashed var(--border-dark); margin:20px 0;}
+
+  /* ---------- achievements ---------- */
+  .ach-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px;}
+  .ach-card{padding:16px; position:relative;}
+  .ach-card .ribbon{
+    font-family:var(--display); font-size:7.5px; color:var(--bg); background:var(--gold);
+    display:inline-block; padding:4px 8px; margin-bottom:10px;
+  }
+  .ach-card h4{margin:0 0 6px; font-size:13.5px; line-height:1.4; color:var(--text);}
+  .ach-card .meta{font-size:11px; color:var(--muted); font-family:var(--mono);}
+  .ach-icon{font-size:22px; margin-bottom:8px;}
+
+  /* ---------- inventory ---------- */
+  .inv-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:12px;}
+  .item{
+    padding:12px 10px; text-align:center; position:relative;
+  }
+  .item .rar{font-family:var(--display); font-size:6.5px; letter-spacing:.04em; margin-bottom:8px;}
+  .item .nm{font-size:12px; font-weight:700; color:var(--text); margin-bottom:6px; line-height:1.3;}
+  .item .pw{font-family:var(--display); font-size:9px;}
+  .rar-legendary{box-shadow:0 0 0 2px var(--gold), 0 0 16px -4px var(--gold);}
+  .rar-legendary .rar{color:var(--gold);}
+  .rar-epic{box-shadow:0 0 0 2px var(--purple), 0 0 14px -4px var(--purple);}
+  .rar-epic .rar{color:var(--purple);}
+  .rar-rare{box-shadow:0 0 0 2px var(--blue);}
+  .rar-rare .rar{color:var(--blue);}
+  .rar-common{box-shadow:0 0 0 2px var(--common);}
+  .rar-common .rar{color:var(--common);}
+  .legend{display:flex; flex-wrap:wrap; gap:14px; margin-top:18px; font-size:10.5px; color:var(--muted);}
+  .legend span{display:inline-flex; align-items:center; gap:6px;}
+  .legend i{width:9px; height:9px; display:inline-block;}
+
+  /* ---------- party / contact ---------- */
+  .party-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px;}
+  .slot{padding:14px; display:flex; flex-direction:column; gap:6px;}
+  .slot .role{font-family:var(--display); font-size:8px; color:var(--cyan);}
+  .slot .val{font-size:13.5px; color:var(--text); word-break:break-word;}
+  .slot .val a{text-decoration:none; border-bottom:1px dotted var(--cyan);}
+  .slot .val a:hover{color:var(--gold); border-color:var(--gold);}
+
+  footer{
+    text-align:center; margin-top:28px; font-family:var(--display); font-size:8px;
+    color:var(--muted-2); letter-spacing:.03em; line-height:2;
+  }
+
+  @media (max-width:520px){
+    .wrap{padding:16px 10px 50px;}
+    .pixel{padding:14px;}
+    .hud-name{font-size:12.5px;}
+    .titlebar{font-size:8px;}
+    .screen-title{font-size:10px;}
+    .tab{font-size:8px; padding:8px 10px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="titlebar">
+    <span>SAVE FILE // HARSHINI_MITRA.SAV<span class="blink">▮</span></span>
+    <span>CH.02 — CAREER MODE</span>
+  </div>
+
+  <!-- HUD -->
+  <div class="hud pixel">
+    <div class="hud-inner">
+      <div class="portrait">HM</div>
+      <div class="hud-mid">
+        <h1 class="hud-name">HARSHINI MITRA</h1>
+        <div class="hud-class">DATA &amp; ANALYTICS SPECIALIST<span class="sep">·</span>CLASS: BI ANALYST<span class="sep">·</span>SYDNEY, AU</div>
+        <div class="xp-row">
+          <span>LV.3</span>
+          <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+          <span>76% TO LV.4</span>
+        </div>
+      </div>
+      <div class="hud-side">
+        <span class="status-pill">LFG — PART-TIME</span>
+        <span class="status-pill small" style="background:var(--purple);">4 LANGUAGES</span>
+      </div>
+    </div>
+
+    <div class="stat-quad">
+      <div class="stat-box pixel-sm"><div class="k">TENURE<br>(CURRENT GUILD)</div><div class="v">2.3 YRS</div></div>
+      <div class="stat-box pixel-sm"><div class="k">AUTOMATION<br>DAMAGE DEALT</div><div class="v">60%</div></div>
+      <div class="stat-box pixel-sm"><div class="k">PLATFORMS<br>MASTERED</div><div class="v">3</div></div>
+      <div class="stat-box pixel-sm"><div class="k">ACHIEVEMENTS<br>UNLOCKED</div><div class="v">2</div></div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs" id="tabs">
+    <div class="tab active" data-screen="status">STATUS</div>
+    <div class="tab" data-screen="skills">SKILLS</div>
+    <div class="tab" data-screen="quests">QUEST LOG</div>
+    <div class="tab" data-screen="achievements">ACHIEVEMENTS</div>
+    <div class="tab" data-screen="inventory">INVENTORY</div>
+    <div class="tab" data-screen="party">PARTY</div>
+  </div>
+
+  <!-- STATUS -->
+  <section class="screen active pixel" id="screen-status">
+    <h2 class="screen-title">CHARACTER STATUS</h2>
+    <p class="screen-sub">Backstory &amp; passive traits</p>
+    <p class="lede">Detail-oriented data and analytics professional with experience working with software tools, troubleshooting data issues, and supporting clients and internal teams. Strong communication, problem-solving, and technical aptitude, with a willingness to learn new systems and provide customer-focused support. Currently studying in Sydney and seeking a part-time technical support role.</p>
+    <div class="traits">
+      <span class="trait">Data Analysis &amp; Insight Generation</span>
+      <span class="trait">Dashboard Design &amp; Reporting</span>
+      <span class="trait">Business Requirements Translation</span>
+      <span class="trait">Data Quality &amp; Integrity</span>
+      <span class="trait">Stakeholder Communication</span>
+      <span class="trait">Time Management &amp; Multi-tasking</span>
+      <span class="trait">Confidentiality Awareness</span>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section class="screen pixel" id="screen-skills">
+    <h2 class="screen-title">SKILL TREE</h2>
+    <p class="screen-sub">Proficiency out of 10 — segments filled from real project usage</p>
+    <div class="skill-grid" id="skillGrid"></div>
+  </section>
+
+  <!-- QUESTS -->
+  <section class="screen pixel" id="screen-quests">
+    <h2 class="screen-title">QUEST LOG</h2>
+    <p class="screen-sub">1 main quest completed · 2 side quests on record</p>
+    <div id="questList"></div>
+  </section>
+
+  <!-- ACHIEVEMENTS -->
+  <section class="screen pixel" id="screen-achievements">
+    <h2 class="screen-title">ACHIEVEMENTS</h2>
+    <p class="screen-sub">2 of 2 unlocked</p>
+    <div class="ach-grid" id="achGrid"></div>
+  </section>
+
+  <!-- INVENTORY -->
+  <section class="screen pixel" id="screen-inventory">
+    <h2 class="screen-title">INVENTORY</h2>
+    <p class="screen-sub">Tools &amp; languages equipped, sorted by rarity</p>
+    <div class="inv-grid" id="invGrid"></div>
+    <div class="legend">
+      <span><i style="background:var(--gold);"></i>Legendary (9–10)</span>
+      <span><i style="background:var(--purple);"></i>Epic (7–8.9)</span>
+      <span><i style="background:var(--blue);"></i>Rare (5–6.9)</span>
+      <span><i style="background:var(--common);"></i>Common (below 5)</span>
+    </div>
+  </section>
+
+  <!-- PARTY -->
+  <section class="screen pixel" id="screen-party">
+    <h2 class="screen-title">INVITE TO PARTY</h2>
+    <p class="screen-sub">Open a channel to connect</p>
+    <div class="party-grid" id="partyGrid"></div>
+  </section>
+
+  <footer>◂ TAB TO SELECT · CLICK TO CONFIRM ▸<br>END OF DEMO — THANKS FOR PLAYING</footer>
+</div>
+
+<script>
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- tabs (set up first, independent of everything else) ---------------- */
+const tabs = document.querySelectorAll('.tab');
+const screens = document.querySelectorAll('.screen');
+tabs.forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    const key = tab.dataset.screen;
+    tabs.forEach(t=>t.classList.toggle('active', t===tab));
+    screens.forEach(s=>s.classList.toggle('active', s.id === 'screen-'+key));
+    window.scrollTo({top:0, behavior: reduceMotion ? 'auto' : 'smooth'});
+  });
+});
+
+/* ---------------- data ---------------- */
+const skills = [
+  {label:"BI & Dashboards", score:9},
+  {label:"SQL & Databases", score:8},
+  {label:"Automation & Scripting", score:8},
+  {label:"Programming", score:7},
+  {label:"Stakeholder Comms", score:8},
+];
+const tools = [
+  {label:"Power BI", score:9},
+  {label:"Amazon QuickSight", score:9},
+  {label:"SQL / Redshift", score:8},
+  {label:"Python (pandas)", score:8},
+  {label:"Tableau", score:8},
+  {label:"JavaScript", score:7},
+  {label:"C / C++", score:6.5},
+  {label:"Java", score:5},
+];
+const mainQuest = {
+  name:"MAIN QUEST — THE CARVEWING CONTRACT",
+  giver:"Carvewing Solutions",
+  role:"Software Developer / Data Analyst",
+  dates:"Sep 2023 — Dec 2025",
+  status:"done",
+  objectives:[
+    'Designed and developed interactive Power BI dashboards to track KPIs and operational performance for stakeholder decision-making. <span class="xpchip">+150 XP</span>',
+    "Built reporting solutions using Amazon QuickSight and SQL (Redshift) to analyse datasets and present insights across business functions.",
+    "Helped train an interactive chatbot focused on the dataset and dashboards in QuickSight.",
+    'Automated data extraction from PDFs using Python (pandas, pdfplumber), reducing manual processing time by 60%. <span class="xpchip">+300 XP</span>',
+    "Collaborated with clients to translate business needs into technical dashboards and analytics solutions.",
+    "Conducted data validation and quality checks to ensure completeness and integrity of reporting outputs.",
+    "Presented insights and reports to stakeholders, highlighting trends, risks, and opportunities.",
+  ]
+};
+const sideQuests = [
+  {name:"SIDE QUEST — MASTER OF DATA SCIENCE & INNOVATION", giver:"University of Technology Sydney", status:"active", meta:"Currently studying"},
+  {name:"SIDE QUEST — B.ENG, COMPUTER SCIENCE", giver:"Sapthagiri College of Engineering, Bangalore", status:"done", meta:"Completed 2023"},
+];
+const achievements = [
+  {icon:"🏆", title:"Machine Learning Using Python", meta:"ATS Learning Solutions · unlocked 2020"},
+  {icon:"🎖", title:"Data Analysis using Excel, Tableau &amp; Python", meta:"Alnitek Solutions · unlocked 2022"},
+];
+const party = [
+  {role:"VOICE COMM", v:"+61 431 363 849", href:"tel:+61431363849"},
+  {role:"MESSAGE SCROLL", v:"harshini.g.official@gmail.com", href:"mailto:harshini.g.official@gmail.com"},
+  {role:"GUILD PROFILE", v:"linkedin.com/in/harshini-girish-mitra-41402b280", href:"https://linkedin.com/in/harshini-girish-mitra-41402b280"},
+  {role:"LANGUAGES SPOKEN", v:"English, Hindi, Kannada, Basic Arabic", href:null},
+];
+
+/* ---------------- rarity helper ---------------- */
+function rarity(score){
+  if(score >= 9) return {cls:'rar-legendary', label:'LEGENDARY'};
+  if(score >= 7) return {cls:'rar-epic', label:'EPIC'};
+  if(score >= 5) return {cls:'rar-rare', label:'RARE'};
+  return {cls:'rar-common', label:'COMMON'};
+}
+
+/* ---------------- render: skills ---------------- */
+document.getElementById('skillGrid').innerHTML = skills.map(s => `
+  <div class="skill-row">
+    <div class="lbl"><b>${s.label}</b><span class="sc">${s.score}/10</span></div>
+    <div class="segbar">${Array.from({length:10}, (_,i)=>`<div class="seg${i < s.score ? ' on' : ''}"></div>`).join('')}</div>
+  </div>`).join('');
+
+/* ---------------- render: quests ---------------- */
+document.getElementById('questList').innerHTML = `
+  <div class="quest">
+    <div class="quest-head">
+      <span class="quest-name">${mainQuest.name}</span>
+      <span class="quest-tag done">COMPLETE</span>
+    </div>
+    <div class="quest-meta">${mainQuest.role} · ${mainQuest.giver} · ${mainQuest.dates}</div>
+    <ul>${mainQuest.objectives.map(o=>`<li>${o}</li>`).join('')}</ul>
+  </div>
+  <hr class="quest-divider">
+  ${sideQuests.map(q => `
+  <div class="quest">
+    <div class="quest-head">
+      <span class="quest-name">${q.name}</span>
+      <span class="quest-tag ${q.status === 'done' ? 'done' : 'active'}">${q.status === 'done' ? 'COMPLETE' : 'ACTIVE'}</span>
+    </div>
+    <div class="quest-meta">${q.giver} · ${q.meta}</div>
+  </div>`).join('')}
+`;
+
+/* ---------------- render: achievements ---------------- */
+document.getElementById('achGrid').innerHTML = achievements.map(a => `
+  <div class="ach-card pixel-sm">
+    <span class="ribbon">UNLOCKED</span>
+    <div class="ach-icon">${a.icon}</div>
+    <h4>${a.title}</h4>
+    <div class="meta">${a.meta}</div>
+  </div>`).join('');
+
+/* ---------------- render: inventory ---------------- */
+document.getElementById('invGrid').innerHTML = tools.map(t => {
+  const r = rarity(t.score);
+  return `
+  <div class="item pixel-sm ${r.cls}">
+    <div class="rar">${r.label}</div>
+    <div class="nm">${t.label}</div>
+    <div class="pw">PWR ${t.score}</div>
+  </div>`;
+}).join('');
+
+/* ---------------- render: party ---------------- */
+document.getElementById('partyGrid').innerHTML = party.map(p => `
+  <div class="slot pixel-sm">
+    <span class="role">${p.role}</span>
+    <span class="val">${p.href ? `<a href="${p.href}" target="_blank" rel="noopener">${p.v}</a>` : p.v}</span>
+  </div>`).join('');
+
+/* ---------------- xp bar fill on load ---------------- */
+window.addEventListener('load', ()=>{
+  requestAnimationFrame(()=>{
+    document.getElementById('xpFill').style.width = '76%';
+  });
+});
+</script>
+</body>
+</html>
