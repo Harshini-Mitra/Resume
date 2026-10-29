@@ -41,6 +41,9 @@
   .bubble::after{content:""; position:absolute; left:14px; bottom:-7px; border:8px solid transparent; border-top-color:#fff; border-bottom:0;}
   .bubble.show{opacity:1; transform:translateY(0) scale(1);}
   .hint{margin-top:18px; font-size:13px; color:var(--muted); text-align:center;}
+  .links{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+  .links a{color:var(--text); text-decoration:none; font-size:13px; border:1px solid #30363D; padding:6px 12px; border-radius:999px;}
+  .links a:hover{border-color:#58A6FF; color:#58A6FF;}
   @media (prefers-reduced-motion: reduce){
     .bob,.earring,.win{animation:none;}
     .tilt{transition:none;}
@@ -194,6 +197,7 @@
   </svg>
 </div>
 <div class="hint">Move your mouse (or tap) — she's watching 👀 · click to say hi</div>
+<div class="links"><a href="index.html">📊 Dashboard resume</a><a href="harshini_mitra_rpg.html">🎮 Game resume</a></div>
 
 <script>
 (() => {
