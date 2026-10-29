@@ -106,12 +106,12 @@
   /* pixel-art avatar in the portrait slot */
   .portrait-wrap{position:relative; flex:0 0 auto;}
   .portrait.sprite-box{width:104px; height:104px; cursor:pointer; overflow:hidden; align-items:flex-end; position:relative;}
-  .sprite{position:relative; width:100px; height:100px; animation:idle 1s steps(1) infinite;}
-  .sprite img{position:absolute; inset:0; width:100%; height:100%; opacity:0; user-select:none; -webkit-user-drag:none;}
+  .sprite{position:relative; width:100px; height:100px; will-change:transform;}
+  .sprite-turn{position:absolute; inset:0;}
+  .sprite-turn.turning{animation:turning .24s ease-out 1;}
+  @keyframes turning{0%{transform:scaleX(1);} 40%{transform:scaleX(.92) translateY(-2px);} 100%{transform:scaleX(1);}}
+  .sprite img{position:absolute; inset:0; width:100%; height:100%; opacity:0; transition:opacity .18s ease; user-select:none; -webkit-user-drag:none;}
   .sprite img.on{opacity:1;}
-  .portrait.sprite-box.hop .sprite{animation:hop .45s steps(4) 1;}
-  @keyframes idle{50%{transform:translateY(4px);}}
-  @keyframes hop{0%{transform:translateY(0);} 40%{transform:translateY(-12px);} 100%{transform:translateY(0);}}
   .xp-pop{
     position:absolute; left:50%; top:18px; transform:translateX(-50%); white-space:nowrap; pointer-events:none; z-index:2;
     font-family:var(--display); font-size:8px; color:var(--gold); text-shadow:2px 2px 0 var(--bg); opacity:0;
@@ -119,7 +119,7 @@
   .xp-pop.show{animation:xpPop 1.1s ease-out 1;}
   @keyframes xpPop{0%{opacity:0; transform:translate(-50%,6px);} 20%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-22px);}}
   @media (max-width:640px){ .portrait.sprite-box{width:80px; height:80px;} .sprite{width:76px; height:76px;} }
-  @media (prefers-reduced-motion:reduce){ .sprite, .portrait.sprite-box.hop .sprite{animation:none;} }
+  @media (prefers-reduced-motion:reduce){ .sprite img{transition:none;} .sprite-turn.turning{animation:none;} }
   .hud-mid{flex:1 1 260px; min-width:0;}
   .hud-name{font-family:var(--display); font-size:15px; margin:0 0 8px; color:var(--text); letter-spacing:.02em;}
   .hud-class{font-size:11.5px; color:var(--cyan); margin-bottom:10px;}
@@ -277,7 +277,7 @@
     <div class="hud-inner">
       <div class="portrait-wrap">
         <div class="portrait sprite-box" id="spriteBox" title="Click me!" role="img" aria-label="Blocky Harshini who turns to face your cursor">
-          <div class="sprite" id="sprite">
+          <div class="sprite" id="sprite"><div class="sprite-turn" id="spriteTurn">
             <img src="assets/voxel/front.webp" data-k="front" class="on" alt="">
             <img src="assets/voxel/left.webp" data-k="left" alt="">
             <img src="assets/voxel/right.webp" data-k="right" alt="">
@@ -286,7 +286,7 @@
             <img src="assets/voxel/down.webp" data-k="down" alt="">
             <img src="assets/voxel/down-right.webp" data-k="down-right" alt="">
             <img src="assets/voxel/back.webp" data-k="back" alt="">
-          </div>
+          </div></div>
         </div>
         <span class="xp-pop" id="xpPop">+1 PARTY MEMBER!</span>
       </div>
@@ -513,50 +513,93 @@ document.getElementById('partyGrid').innerHTML = party.map(p => `
 /* ---------------- blocky avatar: turns to face the cursor ---------------- */
 (() => {
   const sprite = document.getElementById('sprite');
+  const turn = document.getElementById('spriteTurn');
   const frames = {};
   sprite.querySelectorAll('img').forEach(i => frames[i.dataset.k] = i);
-  let current = 'front', spinning = false, lastMove = performance.now();
-  function show(k){
+  let current = 'front', spinStart = null, lastMove = performance.now();
+  function show(k, squash = true){
     if (k === current) return;
     frames[current].classList.remove('on');
     frames[k].classList.add('on');
     current = k;
+    if (squash) { turn.classList.remove('turning'); void turn.offsetWidth; turn.classList.add('turning'); }
   }
 
-  function lookAt(x, y){
-    lastMove = performance.now();
-    if (spinning) return;
-    const r = sprite.getBoundingClientRect();
-    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);
-    const t = 60;
-    if (dy > t && dx > t) show('down-right');
-    else if (dy > t && Math.abs(dx) < dy) show('down');
-    else if (dy < -t && Math.abs(dx) < -dy) show('up');
-    else if (dx > window.innerWidth * 0.45) show('profile-right');
-    else if (dx > t) show('right');
-    else if (dx < -t) show('left');
-    else show('front');
+  function pick(x, y){
+    if (y > 0.35 && x > 0.35) return 'down-right';
+    if (y > 0.35 && Math.abs(x) < y) return 'down';
+    if (y < -0.35 && Math.abs(x) < -y) return 'up';
+    if (x > 0.85) return 'profile-right';
+    if (x > 0.25) return 'right';
+    if (x < -0.25) return 'left';
+    return 'front';
   }
-  window.addEventListener('pointermove', e => lookAt(e.clientX, e.clientY));
-  window.addEventListener('pointerdown', e => lookAt(e.clientX, e.clientY));
+
+  // the head follows a spring toward the cursor so it leans, overshoots a little and settles
+  const target = {x: 0, y: 0}, pos = {x: 0, y: 0}, vel = {x: 0, y: 0};
+  function aim(cx, cy){
+    lastMove = performance.now();
+    const r = sprite.getBoundingClientRect();
+    const reach = Math.max(window.innerWidth * 0.5, 240);
+    target.x = Math.max(-1, Math.min(1, (cx - (r.left + r.width / 2)) / reach));
+    target.y = Math.max(-1, Math.min(1, (cy - (r.top + r.height / 2)) / (reach * 0.35)));
+  }
+  window.addEventListener('pointermove', e => aim(e.clientX, e.clientY));
+  window.addEventListener('pointerdown', e => aim(e.clientX, e.clientY));
 
   // look around on her own when nobody is moving the pointer (also covers phones)
-  const idle = ['front', 'left', 'right', 'up', 'down', 'front'];
   setInterval(() => {
-    if (!spinning && performance.now() - lastMove > 3000) show(idle[Math.floor(Math.random() * idle.length)]);
-  }, 1600);
+    if (performance.now() - lastMove > 3000) {
+      target.x = Math.random() * 1.2 - 0.6;
+      target.y = Math.random() * 1.2 - 0.6;
+    }
+  }, 1800);
 
-  // click: hop + full turntable spin + xp pop-up
+  // turntable: angle in degrees -> which view, plus a little rotation inside each view
+  const turntable = [[0, 'front'], [50, 'right'], [100, 'profile-right'], [180, 'back'], [300, 'left'], [360, 'front']];
+  const SPIN_MS = 1000;
+
+  function frame(t){
+    if (reduceMotion) {
+      pos.x = target.x; pos.y = target.y;
+      if (spinStart === null) show(pick(pos.x, pos.y), false);
+    } else {
+      for (const k of ['x', 'y']) {
+        vel[k] += (target[k] - pos[k]) * 0.08;
+        vel[k] *= 0.78;
+        pos[k] += vel[k];
+      }
+      const bob = Math.sin(t / 700) * 2;
+      const breath = 1 + Math.sin(t / 700) * 0.015;
+      let rotY = pos.x * 20, rotX = -pos.y * 12, hop = 0;
+      if (spinStart !== null) {
+        const p = Math.min((t - spinStart) / SPIN_MS, 1);
+        const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+        const angle = ease * 360;
+        const [center, view] = turntable.reduce((a, b) => Math.abs(b[0] - angle) < Math.abs(a[0] - angle) ? b : a);
+        show(view, false);
+        rotY = Math.max(-25, Math.min(25, (angle - center) * 0.6));
+        rotX = 0;
+        hop = Math.sin(p * Math.PI) * 14;
+        if (p >= 1) spinStart = null;
+      } else {
+        show(pick(pos.x, pos.y));
+      }
+      sprite.style.transform =
+        `perspective(260px) rotateY(${rotY}deg) rotateX(${rotX}deg) ` +
+        `translate(${pos.x * 3}px, ${pos.y * 2 + bob - hop}px) scale(${breath})`;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // click: full turntable spin with a hop + xp pop-up
   const box = document.getElementById('spriteBox'), pop = document.getElementById('xpPop');
-  const spin = ['right', 'profile-right', 'back', 'left', 'front'];
   box.addEventListener('click', () => {
-    if (spinning) return;
-    spinning = true;
-    box.classList.remove('hop'); pop.classList.remove('show');
-    void box.offsetWidth;
-    box.classList.add('hop'); pop.classList.add('show');
-    spin.forEach((k, i) => setTimeout(() => show(k), reduceMotion ? 0 : 90 * (i + 1)));
-    setTimeout(() => { spinning = false; box.classList.remove('hop'); pop.classList.remove('show'); }, 1100);
+    if (spinStart !== null) return;
+    if (!reduceMotion) spinStart = performance.now();
+    pop.classList.remove('show'); void pop.offsetWidth; pop.classList.add('show');
+    setTimeout(() => pop.classList.remove('show'), 1100);
   });
 })();
 
