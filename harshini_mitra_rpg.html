@@ -103,6 +103,21 @@
     display:flex; align-items:center; justify-content:center;
     font-family:var(--display); font-size:20px; color:var(--gold);
   }
+  /* pixel-art avatar in the portrait slot */
+  .portrait-wrap{position:relative; flex:0 0 auto;}
+  .portrait.sprite-box{width:104px; height:104px; cursor:pointer; overflow:hidden; align-items:flex-end;}
+  .portrait.sprite-box svg{width:96px; height:96px; display:block; shape-rendering:crispEdges; animation:idle 1s steps(1) infinite;}
+  .portrait.sprite-box.hop svg{animation:hop .45s steps(4) 1;}
+  @keyframes idle{50%{transform:translateY(4px);}}
+  @keyframes hop{0%{transform:translateY(0);} 40%{transform:translateY(-12px);} 100%{transform:translateY(0);}}
+  .xp-pop{
+    position:absolute; left:50%; top:18px; transform:translateX(-50%); white-space:nowrap; pointer-events:none; z-index:2;
+    font-family:var(--display); font-size:8px; color:var(--gold); text-shadow:2px 2px 0 var(--bg); opacity:0;
+  }
+  .xp-pop.show{animation:xpPop 1.1s ease-out 1;}
+  @keyframes xpPop{0%{opacity:0; transform:translate(-50%,6px);} 20%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-22px);}}
+  @media (max-width:640px){ .portrait.sprite-box{width:80px; height:80px;} .portrait.sprite-box svg{width:72px; height:72px;} }
+  @media (prefers-reduced-motion:reduce){ .portrait.sprite-box svg, .portrait.sprite-box.hop svg{animation:none;} }
   .hud-mid{flex:1 1 260px; min-width:0;}
   .hud-name{font-family:var(--display); font-size:15px; margin:0 0 8px; color:var(--text); letter-spacing:.02em;}
   .hud-class{font-size:11.5px; color:var(--cyan); margin-bottom:10px;}
@@ -258,7 +273,12 @@
   <!-- HUD -->
   <div class="hud pixel">
     <div class="hud-inner">
-      <div class="portrait">HM</div>
+      <div class="portrait-wrap">
+        <div class="portrait sprite-box" id="spriteBox" title="Click me!" role="img" aria-label="Pixel-art Harshini, eyes follow your cursor">
+          <svg id="sprite" viewBox="0 0 24 24"></svg>
+        </div>
+        <span class="xp-pop" id="xpPop">+1 PARTY MEMBER!</span>
+      </div>
       <div class="hud-mid">
         <h1 class="hud-name">HARSHINI MITRA</h1>
         <div class="hud-class">DATA &amp; ANALYTICS SPECIALIST<span class="sep">·</span>CLASS: BI ANALYST<span class="sep">·</span>SYDNEY, AU</div>
@@ -478,6 +498,105 @@ document.getElementById('partyGrid').innerHTML = party.map(p => `
     <span class="role">${p.role}</span>
     <span class="val">${p.href ? `<a href="${p.href}" target="_blank" rel="noopener">${p.v}</a>` : p.v}</span>
   </div>`).join('');
+
+/* ---------------- pixel avatar: eyes follow the cursor ---------------- */
+(() => {
+  // left half of the 24x24 sprite; the right half is mirrored
+  const half = [
+    "............",
+    "........HHHH",
+    "......HHHHHH",
+    ".....HHhHHHH",
+    "....HHhHHHHH",
+    "....HHHHHHSS",
+    "...HHHHHSSSS",
+    "...HHHSSSSSS",
+    "...HHSSbbbSS",
+    "...HHGGGGGGS",
+    "..HHHGWWWWGG",
+    "..HHHGWWWWGS",
+    "..HHHGWWWWGS",
+    "..HHHGGGGGGS",
+    "..HHHSBBSMSS",
+    "..HHHSSSSSMM",
+    "...HHHSSSSSS",
+    "..HHHHHSSSSS",
+    "..HHHHEHHHss",
+    "...HHHJJJJSS",
+    "..HHHJJJJJSS",
+    "..HHJJJJJJTT",
+    ".HHHJJJJJTTT",
+    "..HHJJJJJTTT",
+  ];
+  const colors = {H:"#1C1212", h:"#4A302C", S:"#E9B999", s:"#D69C7E", b:"#2A1A14", G:"#0E0E0E",
+                  W:"#FFFFFF", B:"#F08A8A", M:"#C86A6E", J:"#24242D", T:"#F2EDE6", E:"#F7F2EA"};
+  const rows = half.map(r => r + [...r].reverse().join(''));
+  const svg = document.getElementById('sprite');
+  const NS = 'http://www.w3.org/2000/svg';
+  const px = (x, y, c, parent) => {
+    const r = document.createElementNS(NS, 'rect');
+    r.setAttribute('x', x); r.setAttribute('y', y); r.setAttribute('width', 1); r.setAttribute('height', 1);
+    r.setAttribute('fill', c); (parent || svg).appendChild(r); return r;
+  };
+  rows.forEach((row, y) => [...row].forEach((ch, x) => { if (colors[ch]) px(x, y, colors[ch]); }));
+
+  // eye whites span cols 6-9 / 14-17, rows 10-12; pupils are 2x2 and shift by whole pixels
+  const eyes = [6, 14].map(x0 => {
+    const g = document.createElementNS(NS, 'g'); svg.appendChild(g);
+    const pupil = [px(0,0,'#2A170D',g), px(1,0,'#2A170D',g), px(0,1,'#2A170D',g), px(1,1,'#2A170D',g), px(0,0,'#FFFFFF',g)];
+    return {x0, g, pupil};
+  });
+  const lids = document.createElementNS(NS, 'g'); svg.appendChild(lids); lids.style.display = 'none';
+  [6, 14].forEach(x0 => {
+    for (let i = 0; i < 4; i++) for (let y = 10; y <= 11; y++) px(x0 + i, y, colors.W, lids);
+    for (let i = 0; i < 4; i++) px(x0 + i, 12, '#160C07', lids);
+  });
+  const happy = document.createElementNS(NS, 'g'); svg.appendChild(happy); happy.style.display = 'none';
+  [6, 14].forEach(x0 => {
+    for (let i = 0; i < 4; i++) for (let y = 10; y <= 12; y++) px(x0 + i, y, colors.W, happy);
+    [[0,12],[1,11],[2,11],[3,12]].forEach(([dx, y]) => px(x0 + dx, y, '#160C07', happy));
+  });
+
+  let look = {x: 1, y: 1}, lastMove = performance.now();
+  function draw(){
+    eyes.forEach(e => e.pupil.forEach((r, i) => {
+      const dx = i === 4 ? 0 : i % 2, dy = i === 4 ? 0 : (i > 1 ? 1 : 0);
+      r.setAttribute('x', e.x0 + look.x + dx); r.setAttribute('y', 10 + look.y + dy);
+    }));
+  }
+  function lookAt(cx, cy){
+    const r = svg.getBoundingClientRect();
+    const dx = cx - (r.left + r.width / 2), dy = cy - (r.top + r.height * 0.45);
+    const t = 30;
+    look = {x: dx < -t ? 0 : dx > t ? 2 : 1, y: dy < -t ? 0 : 1};
+    lastMove = performance.now(); draw();
+  }
+  window.addEventListener('pointermove', e => lookAt(e.clientX, e.clientY));
+  window.addEventListener('pointerdown', e => lookAt(e.clientX, e.clientY));
+  setInterval(() => {
+    if (performance.now() - lastMove > 3000) { look = {x: Math.floor(Math.random() * 3), y: Math.floor(Math.random() * 2)}; draw(); }
+  }, 1500);
+  draw();
+
+  function blink(){
+    if (happy.style.display === 'none') {
+      lids.style.display = '';
+      setTimeout(() => { lids.style.display = 'none'; }, 130);
+    }
+    setTimeout(blink, 2500 + Math.random() * 3500);
+  }
+  if (!reduceMotion) setTimeout(blink, 1800);
+
+  const box = document.getElementById('spriteBox'), pop = document.getElementById('xpPop');
+  let t;
+  box.addEventListener('click', () => {
+    happy.style.display = ''; lids.style.display = 'none';
+    box.classList.remove('hop'); pop.classList.remove('show');
+    void box.offsetWidth;
+    box.classList.add('hop'); pop.classList.add('show');
+    clearTimeout(t); t = setTimeout(() => { happy.style.display = 'none'; box.classList.remove('hop'); pop.classList.remove('show'); }, 1100);
+  });
+})();
 
 /* ---------------- xp bar fill on load ---------------- */
 window.addEventListener('load', ()=>{
