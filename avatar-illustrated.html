@@ -74,6 +74,7 @@
       <img src="assets/portrait/hover.webp" class="ov" id="hover" alt="">
       <img src="assets/portrait/blink.webp" class="ov" id="blink" alt="">
       <img src="assets/portrait/happy.webp" class="ov" id="happy" alt="">
+      <img src="assets/portrait/cross.webp" class="ov" id="cross" alt="">
       <div class="blush" id="blush"></div>
     </div>
   </div>
@@ -90,7 +91,7 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const $ = id => document.getElementById(id);
   const stage = $('stage'), face = $('face'), rig = $('rig'), iris = $('iris'), bubble = $('bubble'), blush = $('blush');
-  const ov = {hover: $('hover'), blink: $('blink'), happy: $('happy')};
+  const ov = {hover: $('hover'), blink: $('blink'), happy: $('happy'), cross: $('cross')};
   const set = (k, on) => ov[k].classList.toggle('on', on);
 
   // eye centre and how far the irises can travel, as fractions of the picture
@@ -228,7 +229,7 @@
 
   function getCross(){
     mood = 'cross'; clicks = [];
-    set('happy', false); set('hover', false);
+    set('happy', false); set('hover', false); set('cross', true);
     blush.classList.remove('on'); blush.classList.add('mad');
     stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
     target.x = -0.8; target.y = 0;
@@ -236,6 +237,7 @@
     if (!reduceMotion) for (let i = 0; i < 4; i++) setTimeout(() => fx('💢', '', 18 + Math.random() * 60, 10 + Math.random() * 25, 1100), i * 300);
     setTimeout(() => {
       blush.classList.remove('mad');
+      set('cross', false);
       mood = 'normal';
       say('…fine. Hi. 🙂');
     }, 3200);
