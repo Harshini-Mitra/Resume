@@ -14,59 +14,76 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     min-height:100vh; padding:24px 16px; overflow-x:hidden;
   }
-  .stage{position:relative; width:min(340px, 82vw); aspect-ratio:1;}
+  .stage{position:relative; width:min(380px, 84vw); aspect-ratio:1;}
   .stage.boing{animation:boing .5s cubic-bezier(.3,1.6,.5,1) 1;}
-  @keyframes boing{0%{transform:scale(1);} 30%{transform:scale(1.07,.93);} 60%{transform:scale(.96,1.04);} 100%{transform:scale(1);}}
+  @keyframes boing{0%{transform:scale(1);} 30%{transform:scale(1.04,.96);} 60%{transform:scale(.98,1.02);} 100%{transform:scale(1);}}
+  .stage.shake{animation:shake .32s ease-in-out 2;}
+  @keyframes shake{25%{transform:translateX(-5px) rotate(-1deg);} 75%{transform:translateX(5px) rotate(1deg);}}
   .face{
     position:absolute; inset:0; border-radius:50%; overflow:hidden; cursor:pointer;
+    background:radial-gradient(circle at 50% 38%, #FFF7F5, #F5D6D7);
     box-shadow:0 0 0 8px var(--ring), 0 18px 40px rgba(160,80,90,.25);
-    background:#fff; -webkit-tap-highlight-color:transparent; will-change:transform;
+    -webkit-tap-highlight-color:transparent;
   }
-  .rig{position:absolute; inset:0; will-change:transform;}
-  .turn{position:absolute; inset:0;}
-  .turn.turning{animation:turning .28s ease-out 1;}
-  @keyframes turning{0%{transform:scaleX(1);} 40%{transform:scaleX(.95) translateY(-2px);} 100%{transform:scaleX(1);}}
-  .turn img{
-    position:absolute; inset:-9%; width:118%; height:118%; object-fit:cover;
-    opacity:0; transition:opacity .26s ease; user-select:none; -webkit-user-drag:none;
+  .rig{position:absolute; inset:0; will-change:transform; transform-origin:50% 90%;}
+  .rig img, .eyes{position:absolute; inset:0; width:100%; height:100%; user-select:none; -webkit-user-drag:none; pointer-events:none;}
+  .eyes{
+    --eyemask:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAA0gAAANICAYAAAD958/bAAAWMUlEQVR4nO3d25OkZ13A8e/sid2cTEhCJCFBwhkKQU7KQcSonLRKscoSFSwtreLCv8Aq/wKvvVAvvFTLAtEqLrwAjCWgJaiQcNCAwQBlCBACOZLsZseLZ95Mb2/P7OxhtqdnPp+qrd1Mv939dPqpd36/9/c8v7cAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIC9am3ZAwCA/Wh9fX1XX39tza9wgN1waNkDAAAA2CskSAAAABskSAAAABuOLHsAAMAZFm0u2t0NTQA8Q4IEAMs1mxCtJxkCWCoJEgDsrikB2irxmf35oeqq6vjMz05Wj1antnkNAC4RCRIA7K4pqTncmXt/D1XXVze1+fv4iurV1e0zx95XfaS6d9dHCoAECdi/LuA+NPNLnS7GRb+W+9ws1wXOn/knXbHx58rqJdXNbc6NI9WLGwnRVDE6Wj2vumHmNb9aPVw9UX2nUUm66PssmV8Aizk7AvvWRQaQR7rwc+Tp6umLefMSwC7bBc6fQ425c0MjGXpF9crq2dXLG8nPbBXpyuqaRnWpRoI1/8U/Ud1dfbz6ZPXt6qHqW9VTjfl2+nwHan4BLObsCOxb5xngHm4Eq8cbwe3Lqqsv8K0fqr5c/aCRKD1W/XDumEXVhjMPEMAu1XnMn7XqRGO+/FijUvSq6jXVbdVzq2ON6tDhBc+fGjNs9YWvNxKgh6qvV9+v/qf6fPW9jX/fUz3SeSRK5hfAYs6OwL61gwB3rRGwXtMIat/UCGhvalz1v/ZC3rZ6sHHF//vV441A9t5GAHt/Y7nUuQcngF2qHSZI0z6in63e2KgSvbRRMbq6sxOi7RKh7RKk+f9+rDGPHmsk43dWn63+rzHHfrjgeWe+mfkFsJCzI7BvbRPgTlf8n99YAvXS6i3VjzcC28ONK/4Xs8TuqZm/v1l9t3qgsUTq09U3GgnTfGVpc5AC2KXaQYJ0opFI/1z1K425dLxRKVpUIbyYL3TRYKb3ONlYbndf9V+NZOlTjTl2eouxmF8AW3B2BPatBQHubGL0xsZV/9dVN1bXNQLbZ54+85zzetstnrPeSJbur+5qBLL/Uf17I4F68qzBCmCX6hwJ0onqp6rfq36mMYeOTU/d+Htt7u9LNrQt3me9UbG8t/q76qPVfzcqTWcxvwAWc3YE9q2ZAHdKjG6rfrK6o5Eg3droMDZ/hf1SnRvX5/49ve7Jxsb7+6p/qv6ykSw9NftkAexybZMgTcnRB6t3NpZi7sb82an5gZ5uJOKfrT5UfaJRwTw5e5D5BbCYNt/AQXB99fPVuxqJ0W2NIHdKjKbk5VJHjFtVko5u/HlVYwP/1Y0k6a5GIHvRHfDYNScaSfYHq3c09q9Ny9iWlXHM34h2rbqlMe9vaSz9+2j1uXawNwngoHP5CFhZO9xEv1b9dPVHjX1Gxzv73LfMK/7rjWYOdzeC2A83Kkvn7EamArC7Fsyv2crROzqzicde+jJml+CdbnS6u7P6+zb3v50zCTe/gINKBQnY79YagezzGsvpnm739oacz5hqs3J1XfXm6kcb+1j+qh0mSVw2hxqdDn+nsazumpnH9lomMVVGpy6NN1TvbnTY+1CjWvm1VCoBFjp07kMAVtr80qdDC362LLNjOFK9sPrt6jcaywCdo/eOq6q3NqqRP9Lyk+xzmZ/jVzWW2n2gen/1gkbytFfHD7A0fvkC+92xRoXmWcseyBZmA9nD1e1tJkm3JoBdtun///XV6xtVvvnH9rK1Nn/XH2rcyPa32kySVuEzAFxWEiRgv7ulsXztxvb25vQpUD1SvaiRIL2tse+F5TvaaKZx9FwH7lGzSfgLGknSBxrLBo8va1AAe5E9SMB+dmPjJp5vbuw/2uvWGvuODjWC2F+s7mm0AD+5zfPYfVO3w8kqVl6mvUlTJen91c3Vx6t/azRvMM+AA08FCdiPjjYqR79c/W6jIjOd7/Z6YDuN84rq7dV7q+ds/Gyvj30/O9bqVo9mzVaSnl/9evWH1W82LijMHgNwIKkgAfvJdEPY11XvabRifmUjuJ0eXyU3NJbZ3Vk9UJ1a6mgOpvXG/rWXNxKKw8sdziUxW0m6qlGtvLn98dkALpoECdizdnifo1mHG8nRHzSW1l3bagZ9UwA77Rd5RfXJ6tFlDmq/OY/5dUt1R6OBxn4w+8Efr/6l+ofqwQWPAxw4ltgB+8GR6qbqJxrL6u5odB2bkqO90tb7fExJ0tXVqxv3ceLyW2skqa9tVFum+wutqvnk6FPVnzWqlI8vY0AAe40KErDq1hr3DHpf9ZZGV67r5h5fRVOCdKJ648afb1SPLXNQB9DhRiXymsZFxf1y897Hqk83kqOPVQ8vdzgAe4cKErDqTjS61L2vsefo9s6sHK26tUb16A2NG5ROP2N3Tf+Pr23sY7u+zerLKi5Bm+3Cd7r6cvUXjeTokWUNCmAvUkECVtnRxs0739toWzy732g/JRHPagToq9CqfL850mjy8WSjBfaRNhONVZljs8nRqUbDj4819rU93Op8DoDLQoIErKJp+dmxxtX911RXbjy2PvP4qgd+s93Gbmu0K//fdLO7HKaE4nvV3zb257ynMdeumDum9uZcmx/fqepL1Yerj1bfWXAcwIEnQQJW0RTQPVl9rrGX4opGleVoZy6F2ouB607NViqubHzGVf48q+ip6vON/V/3NKqVr280BTnR5r2R9tJcm094TjcqRfdUH6n+uvpm+2c/FcAltVdO5gBn2WEb5uONq/rvrN7aWGr3nEb3t1mrdr6b/fCPVn9T/XH1lenxtbVV+0h7ywW0kb+yscftddXLGnvfXttIlGpzjl3uL2Z97t9T18anG4nRVxrL6e6s/rOxxO7kuV7U/AIOKmc/YGXNBLhHqmc3lqC9sHpXm62+pz0jq9Tqe9ozstboNvap6k+qj1dPTAcJYHfXFgnUWiMpv6aRkP9q9abq1s59z61L8YVtl9VNSzJ/2Jg39zbmzj82Kq0PNCpi42DzB2AhZ0dgZS0IYKfg9dWNitK7N/79rAXH7SXz3dGm8T3euPL/p9UnGt3GnvnQAtzdtYMK01RR+qXG0rsXN+6VNFtJmv+S5pfiLfoSt3rjRc9dbyyVO9XYL/Xt6osbf+5qLA88IzF65snmD8BCzo7AytomgD3SqB69o/r9Nps4zN/aYNnnwPkPMFsBeLT6bPXnjcrRWa2YBbi7a4dL8Naq5zbuU/W2xhLPKTG6tlHVnObe8UZjkdpZY4RFX/BTjfkxJUYPNBp3PNRIiL5Qfa2xx+jxtllKZ/4ALObsCKysHQSwz24Erb/Q2C/ygsbepPkud5frXLjVgE9XP2hUAB5tdBr7UvWZ6l/b4iaeAtzddZ57lI5VNzYqSDXm1E2N5PzaRpL0qkY3wis3jj3W1nPvVPVgZ1YNTzeSny80llquN5KjuzeOe6j6/sZx5xy8+QOwmLMjsLJ2EMCuNZbX3dzYTH9H9ZbqJY2r+ed6gYs9R273+icbQe79jb0iX2wsh/pe9fU2KwCntnodAe7uuoAmDvMONxo4HG7Mw9sbDURubtz49/q2nmOPNfYNfbXRbKHGPPhWI0l6cuNnU0Vp3nQRYEvmD8Bizo7AyjrPAPZ4YynU26tfayRJN7R5xb/OXoJ3PlWmRZ3EJvN7Rb7bWA51V6NSdHdjqdSDjcRpPRWApbuABGnRfqP5x9ca7dpv7Oy9cbOebsyThzt7bi163UXvt/1gzR+AhZwdgZV1gVf4r6te3tgb8obGkqcaV/pvbyRNU+Xp2KIXOIfpvHqyM/eKfKu6r7EM6nPVPzfaLz/SqAZstR9p6zcS4O6qS1BBqjN/z16qG7Jektc0fwAWc3YEVtZFBLBTAjS7Z+TqRse75zVu/vmixrK8m9t5ovREowr0eGPZ3JcaSdLpNpfRPdKoDPygzaVTF/YhBLi76hIlSFvZyZe3uwMwfwAWcnYEDqy5AHitUUU61lhqd2vj/jZvajR7OOfLNZbJfabRavn+Fu8VmX3TbatEAlgAuPz89gUOrPX19e2WKq01qkvPafu9IrOeaCRHU9VoUfJzzqVzzxwoQQKAy85vX+DA2mIJ1QVteN/CRe0VkSABwOV3ZNkDANhjtuoQdiHP39U9JADApSdBAtieJAcADpD5e34AAAAcWBIkAACADRIkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOlP8HOAt39BxplH8AAAAASUVORK5CYII=);
+    -webkit-mask-image:var(--eyemask); mask-image:var(--eyemask);
+    -webkit-mask-size:100% 100%; mask-size:100% 100%;
   }
-  .turn img.on{opacity:1;}
+  #iris{will-change:transform;}
+  .ov{opacity:0; transition:opacity .18s ease;}
+  .ov.on{opacity:1;}
+  #blink{transition-duration:.06s;}
+  .blush{position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .25s ease; mix-blend-mode:multiply;
+    background:radial-gradient(ellipse 13% 8% at 36% 47%, rgba(255,70,80,.75), transparent 70%),
+               radial-gradient(ellipse 13% 8% at 63% 47%, rgba(255,70,80,.75), transparent 70%);}
+  .blush.on{opacity:1;}
+  .blush.mad{opacity:1;
+    background:radial-gradient(ellipse 12% 7% at 36% 47%, rgba(255,40,60,.65), transparent 72%),
+               radial-gradient(ellipse 12% 7% at 63% 47%, rgba(255,40,60,.65), transparent 72%);}
   .bubble{
-    position:absolute; top:-6%; right:-8%; background:#fff; color:var(--text);
-    font-weight:700; font-size:14px; padding:9px 13px; border-radius:14px; z-index:2;
+    position:absolute; top:-3%; right:-8%; background:#fff; color:var(--text); z-index:2;
+    font-weight:700; font-size:14px; padding:9px 13px; border-radius:14px; line-height:1.3; max-width:230px;
     opacity:0; transform:translateY(6px) scale(.9); transition:all .2s ease; pointer-events:none;
     box-shadow:0 6px 18px rgba(160,80,90,.25);
   }
-  .bubble::after{content:""; position:absolute; left:14px; bottom:-7px; border:8px solid transparent; border-top-color:#fff; border-bottom:0;}
+  .bubble small{display:block; font-weight:500; font-size:11.5px; color:var(--muted);}
+  .bubble::after{content:""; position:absolute; left:16px; bottom:-7px; border:8px solid transparent; border-top-color:#fff; border-bottom:0;}
   .bubble.show{opacity:1; transform:translateY(0) scale(1);}
-  .heart{position:absolute; font-size:22px; pointer-events:none; animation:float 1.3s ease-out forwards; z-index:2;}
-  @keyframes float{0%{opacity:0; transform:translateY(0) scale(.6);} 15%{opacity:1;} 100%{opacity:0; transform:translateY(-110px) scale(1.15);}}
+  .fx{position:absolute; pointer-events:none; z-index:2; animation:float 1.3s ease-out forwards;}
+  .fx.z{font-weight:700; color:#8C7FB8; font-size:20px; animation:zfloat 2.2s ease-out forwards;}
+  @keyframes float{0%{opacity:0; transform:translateY(0) scale(.6);} 20%{opacity:1;} 100%{opacity:0; transform:translateY(-70px) scale(1.1);}}
+  @keyframes zfloat{0%{opacity:0; transform:translate(0,0) scale(.6);} 20%{opacity:1;} 100%{opacity:0; transform:translate(30px,-60px) scale(1.25);}}
   .hint{margin-top:30px; font-size:13px; color:var(--muted); text-align:center;}
   .links{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
   .links a{color:var(--text); text-decoration:none; font-size:13px; border:1px solid var(--ring); background:#fff; padding:6px 12px; border-radius:999px;}
   .links a:hover{border-color:var(--pink); color:#C2566A;}
-  @media (prefers-reduced-motion: reduce){ .turn img{transition:none;} .heart{display:none;} .stage.boing, .turn.turning{animation:none;} }
+  @media (prefers-reduced-motion: reduce){ .fx{display:none;} .stage.boing, .stage.shake{animation:none;} .ov{transition:none;} }
 </style>
 </head>
 <body>
 
 <div class="stage" id="stage">
-  <div class="bubble" id="bubble">Hi, I'm Harshini! 💕</div>
-  <div class="face" id="face" role="img" aria-label="Illustrated Harshini who turns toward your cursor">
+  <div class="bubble" id="bubble"></div>
+  <div class="face" id="face" role="img" aria-label="Illustrated Harshini whose eyes follow your cursor">
     <div class="rig" id="rig">
-      <div class="turn" id="turn">
-        <img src="assets/illustrated/center.webp" data-k="center" class="on" alt="">
-        <img src="assets/illustrated/left.webp" data-k="left" alt="">
-        <img src="assets/illustrated/right.webp" data-k="right" alt="">
-        <img src="assets/illustrated/up-right.webp" data-k="up-right" alt="">
-        <img src="assets/illustrated/down-left.webp" data-k="down-left" alt="">
-        <img src="assets/illustrated/down-right.webp" data-k="down-right" alt="">
-        <img src="assets/illustrated/wink.webp" data-k="wink" alt="">
-      </div>
+      <img src="assets/portrait/base.webp" alt="">
+      <div class="eyes"><img src="assets/portrait/iris.webp" id="iris" alt=""></div>
+      <img src="assets/portrait/hover.webp" class="ov" id="hover" alt="">
+      <img src="assets/portrait/blink.webp" class="ov" id="blink" alt="">
+      <img src="assets/portrait/happy.webp" class="ov" id="happy" alt="">
+      <img src="assets/portrait/thinking.webp" class="ov" id="thinking" alt="">
+      <img src="assets/portrait/surprised.webp" class="ov" id="surprised" alt="">
+      <img src="assets/portrait/blush.webp" class="ov" id="blushFace" alt="">
+      <img src="assets/portrait/cross.webp" class="ov" id="cross" alt="">
+      <img src="assets/portrait/shades.webp" class="ov" id="shades" alt="">
+      <div class="blush" id="blush"></div>
     </div>
   </div>
 </div>
-<div class="hint">Move your mouse (or tap) around her 👀 · click to say hi</div>
+<div class="hint">Move your mouse (or tap) around her 👀 · hover · click to say hi · double-click for something cool</div>
 <div class="links">
   <a href="index.html">📊 Dashboard resume</a>
   <a href="harshini_mitra_rpg.html">🎮 Game resume</a>
@@ -76,94 +93,208 @@
 <script>
 (() => {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const stage = document.getElementById('stage');
-  const face = document.getElementById('face');
-  const rig = document.getElementById('rig');
-  const turn = document.getElementById('turn');
-  const imgs = {};
-  turn.querySelectorAll('img').forEach(i => imgs[i.dataset.k] = i);
+  const $ = id => document.getElementById(id);
+  const stage = $('stage'), face = $('face'), rig = $('rig'), iris = $('iris'), bubble = $('bubble'), blush = $('blush');
+  const ov = {hover: $('hover'), blink: $('blink'), happy: $('happy'), thinking: $('thinking'),
+              surprised: $('surprised'), blush: $('blushFace'), cross: $('cross'), shades: $('shades')};
+  const set = (k, on) => ov[k].classList.toggle('on', on);
 
-  let current = 'center', locked = false, lastMove = performance.now();
-  function show(k){
-    if (k === current) return;
-    imgs[current].classList.remove('on');
-    imgs[k].classList.add('on');
-    current = k;
-    turn.classList.remove('turning'); void turn.offsetWidth; turn.classList.add('turning');
-  }
+  // eye centre and how far the irises can travel, as fractions of the picture
+  const EYE = {x: 0.49, y: 0.362}, TRAVEL = {x: 0.0088, y: 0.0032};
 
-  // which drawing fits a head direction (the art has no up-left glance, so that falls back to left)
-  function pick(x, y){
-    if (y < -0.35) return x < -0.3 ? 'left' : 'up-right';
-    if (y > 0.35) return x < -0.15 ? 'down-left' : x > 0.15 ? 'down-right' : 'center';
-    return x < -0.3 ? 'left' : x > 0.3 ? 'right' : 'center';
-  }
-
-  // the head follows a spring toward the cursor so it leans, overshoots a little and settles
+  let mood = 'normal', lastActive = performance.now(), hovering = false, thinking = false;
   const target = {x: 0, y: 0}, pos = {x: 0, y: 0}, vel = {x: 0, y: 0};
+
+  function say(html, ms = 1800){
+    bubble.innerHTML = html;
+    bubble.classList.add('show');
+    clearTimeout(say.t);
+    say.t = setTimeout(() => bubble.classList.remove('show'), ms);
+  }
+  function fx(text, cls, x, y, life){
+    const s = document.createElement('span');
+    s.className = 'fx ' + (cls || '');
+    s.textContent = text;
+    s.style.left = x + '%'; s.style.top = y + '%';
+    stage.appendChild(s);
+    setTimeout(() => s.remove(), life);
+  }
+
+  /* ---- looking at the pointer ---- */
   function aim(clientX, clientY){
-    lastMove = performance.now();
     const r = face.getBoundingClientRect();
-    const dx = clientX - (r.left + r.width / 2), dy = clientY - (r.top + r.height * 0.42);
-    const reach = Math.max(r.width * 0.9, 260);
+    const dx = clientX - (r.left + r.width * EYE.x), dy = clientY - (r.top + r.height * EYE.y);
+    const reach = Math.max(r.width * 0.8, 240);
     target.x = Math.max(-1, Math.min(1, dx / reach));
     target.y = Math.max(-1, Math.min(1, dy / reach));
+    hovering = Math.hypot(clientX - (r.left + r.width / 2), clientY - (r.top + r.height / 2)) < r.width / 2;
   }
-  window.addEventListener('pointermove', e => aim(e.clientX, e.clientY));
-  window.addEventListener('pointerdown', e => { if (!face.contains(e.target)) aim(e.clientX, e.clientY); });
+  function activity(){
+    lastActive = performance.now();
+    if (thinking) { thinking = false; set('thinking', false); }
+    if (mood === 'sleeping') wake();
+  }
+  window.addEventListener('pointermove', e => { activity(); aim(e.clientX, e.clientY); });
+  window.addEventListener('pointerdown', e => { activity(); aim(e.clientX, e.clientY); });
+  window.addEventListener('keydown', activity);
+  window.addEventListener('scroll', activity, {passive: true});
+  document.addEventListener('pointerleave', () => { hovering = false; });
 
-  // drift around on her own when nobody is moving the pointer (also covers phones)
+  /* ---- idle: glance around, then doze off (sooner late at night) ---- */
+  let zTimer;
   setInterval(() => {
-    if (performance.now() - lastMove > 3000) {
-      target.x = Math.random() * 1.6 - 0.8;
-      target.y = Math.random() * 1.2 - 0.6;
+    if (mood !== 'normal') return;
+    const still = performance.now() - lastActive;
+    const hour = new Date().getHours();
+    const night = hour >= 23 || hour < 5;
+    if (still > (night ? 6000 : 16000)) return sleep();
+    if (!night && still > 6000 && !thinking) {
+      thinking = true;
+      set('thinking', true);
+      target.x = 0.5; target.y = -0.6;
+      say('Hmm… 🤔 <small>pondering a SQL query</small>', 2600);
+      return;
     }
-  }, 1900);
+    if (thinking) return;
+    if (still > 3000) {
+      hovering = false;
+      target.x = Math.random() * 1.4 - 0.7;
+      target.y = Math.random() * 0.8 - 0.4;
+    }
+  }, 1800);
 
+  function sleep(){
+    mood = 'sleeping';
+    thinking = false; set('thinking', false);
+    target.x = 0; target.y = 0.4;
+    set('blink', true);
+    say('zzz… <small>dreaming of dashboards</small>', 2600);
+    let big = false;
+    const puff = () => { fx(big ? 'Z' : 'z', 'z', 62, 18, 2200); big = !big; };
+    puff(); zTimer = setInterval(puff, 1000);
+  }
+  function wake(){
+    mood = 'normal';
+    clearInterval(zTimer);
+    set('blink', false);
+    set('surprised', true);
+    say('Oh! 😳 <small>I was totally awake</small>');
+    setTimeout(() => set('surprised', false), 1100);
+  }
+
+  const special = () => ['happy', 'thinking', 'surprised', 'blush', 'cross', 'shades'].some(k => ov[k].classList.contains('on'));
+
+  /* ---- blinking ---- */
+  function blink(){
+    if (mood === 'normal' && !special()) {
+      set('blink', true);
+      setTimeout(() => { if (mood === 'normal') set('blink', false); }, 120);
+    }
+    setTimeout(blink, 2600 + Math.random() * 3800);
+  }
+  if (!reduceMotion) setTimeout(blink, 1800);
+
+  /* ---- animation loop: spring-follow eyes and head, breathing ---- */
   function frame(t){
-    if (reduceMotion) {
-      pos.x = target.x; pos.y = target.y;
-    } else {
+    if (reduceMotion) { pos.x = target.x; pos.y = target.y; }
+    else {
       for (const k of ['x', 'y']) {
-        vel[k] += (target[k] - pos[k]) * 0.07;
-        vel[k] *= 0.8;
+        vel[k] += (target[k] - pos[k]) * 0.09;
+        vel[k] *= 0.76;
         pos[k] += vel[k];
       }
-      const breath = 1 + Math.sin(t / 1500) * 0.012;
-      const bob = Math.sin(t / 1500) * 3;
-      const sway = Math.sin(t / 2300) * 0.8;
-      rig.style.transform =
-        `perspective(700px) rotateY(${pos.x * 14}deg) rotateX(${-pos.y * 9}deg) ` +
-        `translate(${pos.x * 8}px, ${pos.y * 6 + bob}px) scale(${breath})`;
-      face.style.transform = `rotate(${pos.x * 3 + sway}deg)`;
     }
-    if (!locked) show(pick(pos.x, pos.y));
+    iris.style.transform = `translate(${pos.x * TRAVEL.x * 100}%, ${pos.y * TRAVEL.y * 100}%)`;
+    if (!reduceMotion) {
+      const breath = Math.sin(t / 1700);
+      rig.style.transform =
+        `perspective(900px) rotateY(${pos.x * 5}deg) rotateX(${-pos.y * 3}deg) ` +
+        `translate(${pos.x * 1.2}%, ${pos.y * 0.8 + breath * 0.5}%) rotate(${pos.x * 1.5 + Math.sin(t / 2600) * 0.5}deg) ` +
+        `scale(${1.02 + breath * 0.006})`;
+    }
+    if (mood === 'normal') set('hover', hovering && !special());
     requestAnimationFrame(frame);
   }
   requestAnimationFrame(frame);
 
-  // click: wink, bounce, speech bubble and floating hearts
-  const bubble = document.getElementById('bubble');
-  let timer;
+  /* ---- clicks: happy smile + a line; poke too much and she gets cross ---- */
+  const lines = [
+    "Hi, I'm Harshini! ✨<small>Data &amp; Analytics · Sydney</small>",
+    "Let's build a dashboard 📊<small>Power BI · QuickSight · Tableau</small>",
+    "Open to part-time roles 💼<small>say hi on the Contact page</small>",
+    "SQL, Python, pandas ✔<small>60% less manual work, automated</small>",
+  ];
+  let lineIdx = 0, clicks = [];
   face.addEventListener('click', () => {
-    locked = true;
-    show('wink');
-    bubble.classList.add('show');
+    if (mood === 'sleeping') return wake();
+    if (mood === 'cross') return;
+    const now = performance.now();
+    clicks = clicks.filter(t => now - t < 5000);
+    clicks.push(now);
+    if (clicks.length > 10) return getCross();
+    const shy = clicks.length >= 7;
+    if (shy) say(clicks.length >= 9 ? 'Okay, okay, that\'s enough 😅' : 'Hehe, that tickles! 🙈');
+    else say(lines[lineIdx++ % lines.length]);
+    set('shades', false);
+    set('blush', shy);
+    set('happy', !shy);
     stage.classList.remove('boing'); void stage.offsetWidth; stage.classList.add('boing');
-    if (!reduceMotion) {
-      for (let i = 0; i < 5; i++) {
-        const h = document.createElement('span');
-        h.className = 'heart';
-        h.textContent = ['💕', '💖', '✨'][i % 3];
-        h.style.left = (15 + Math.random() * 70) + '%';
-        h.style.top = (35 + Math.random() * 30) + '%';
-        h.style.animationDelay = (i * 0.08) + 's';
-        stage.appendChild(h);
-        setTimeout(() => h.remove(), 1600);
-      }
+    if (!reduceMotion && clicks.length < 7) for (let i = 0; i < 3; i++) fx('✨', '', 14 + Math.random() * 72, 18 + Math.random() * 40, 1400);
+    clearTimeout(face.t);
+    face.t = setTimeout(() => { set('happy', false); set('blush', false); }, 1400);
+  });
+
+  function getCross(){
+    mood = 'cross'; clicks = [];
+    clearTimeout(face.t);
+    ['happy', 'hover', 'blush', 'shades'].forEach(k => set(k, false));
+    set('cross', true);
+    blush.classList.add('mad');
+    stage.classList.remove('shake'); void stage.offsetWidth; stage.classList.add('shake');
+    target.x = -0.8; target.y = 0;
+    say('Hey! Stop poking 😤<small>-10 HP</small>', 2600);
+    if (!reduceMotion) for (let i = 0; i < 4; i++) setTimeout(() => fx('💢', '', 18 + Math.random() * 60, 10 + Math.random() * 25, 1100), i * 300);
+    setTimeout(() => {
+      blush.classList.remove('mad');
+      set('cross', false);
+      mood = 'normal';
+      say('…fine. Hi. 🙂');
+    }, 3200);
+  }
+
+  /* ---- sunglasses: double-click, or the Konami code ---- */
+  function shades(ms, line){
+    if (mood !== 'normal') return;
+    clearTimeout(face.t);
+    ['happy', 'blush', 'hover'].forEach(k => set(k, false));
+    set('shades', true);
+    say(line, ms);
+    clearTimeout(shades.t);
+    shades.t = setTimeout(() => set('shades', false), ms);
+  }
+  face.addEventListener('dblclick', e => { e.preventDefault(); clicks = clicks.slice(0, -2); shades(2600, 'Deal with it 😎<small>data-driven &amp; dashboard-ready</small>'); });
+  const code = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let progress = 0;
+  window.addEventListener('keydown', e => {
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    progress = key === code[progress] ? progress + 1 : (key === code[0] ? 1 : 0);
+    if (progress === code.length) {
+      progress = 0;
+      shades(5000, 'LEGENDARY MODE 😎✨<small>you found the secret</small>');
+      if (!reduceMotion) for (let i = 0; i < 8; i++) setTimeout(() => fx('✨', '', 8 + Math.random() * 84, 10 + Math.random() * 60, 1400), i * 120);
     }
-    clearTimeout(timer);
-    timer = setTimeout(() => { locked = false; bubble.classList.remove('show'); }, 1500);
+  });
+
+  /* ---- coming back to the tab ---- */
+  let leftAt = 0;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { leftAt = performance.now(); return; }
+    if (leftAt && performance.now() - leftAt > 4000 && mood === 'normal') {
+      lastActive = performance.now();
+      say('Welcome back! 😊');
+      set('happy', true);
+      setTimeout(() => set('happy', false), 1200);
+    }
   });
 })();
 </script>
