@@ -134,6 +134,12 @@
     border:1px solid rgba(242,200,17,0.35); background:rgba(242,200,17,0.08);
     padding:4px 10px; border-radius:999px;
   }
+  .mode-link{
+    font-family:var(--mono); font-size:11px; color:var(--text); text-decoration:none;
+    border:1px solid var(--line); background:var(--panel); padding:4px 10px; border-radius:999px;
+    white-space:nowrap; transition:border-color .15s, color .15s;
+  }
+  .mode-link:hover{border-color:var(--blue); color:var(--blue);}
 
   .content{padding:24px 26px 60px; max-width:1180px; width:100%; margin:0 auto;}
 
@@ -357,6 +363,8 @@
         <div class="crumbs"><span>Workspace</span><span class="sep">/</span><b id="crumbCurrent">Overview</b></div>
       </div>
       <div class="topbar-right">
+        <a class="mode-link" href="avatar.html">👀 Chibi me</a>
+        <a class="mode-link" href="harshini_mitra_rpg.html">🎮 Game mode</a>
         <span class="avail" id="availTag">open to part-time work</span>
         <span class="refresh"><span class="dot"></span>last refreshed <span id="refreshTime">just now</span></span>
       </div>
