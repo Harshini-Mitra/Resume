@@ -106,20 +106,37 @@
   /* pixel-art avatar in the portrait slot */
   .portrait-wrap{position:relative; flex:0 0 auto;}
   .portrait.sprite-box{width:104px; height:104px; cursor:pointer; overflow:hidden; align-items:flex-end; position:relative;}
-  .sprite{position:relative; width:100px; height:100px; will-change:transform;}
-  .sprite-turn{position:absolute; inset:0;}
-  .sprite-turn.turning{animation:turning .24s ease-out 1;}
-  @keyframes turning{0%{transform:scaleX(1);} 40%{transform:scaleX(.92) translateY(-2px);} 100%{transform:scaleX(1);}}
-  .sprite img{position:absolute; inset:0; width:100%; height:100%; opacity:0; transition:opacity .18s ease; user-select:none; -webkit-user-drag:none;}
+  .sprite{position:relative; width:100px; height:100px; animation:idle 1s steps(1) infinite;}
+  .sprite img{position:absolute; inset:0; width:100%; height:100%; opacity:0; user-select:none; -webkit-user-drag:none;}
   .sprite img.on{opacity:1;}
+  .portrait.sprite-box.hop .sprite{animation:hop .45s steps(4) 1;}
+  @keyframes idle{50%{transform:translateY(4px);}}
+  @keyframes hop{0%{transform:translateY(0);} 40%{transform:translateY(-12px);} 100%{transform:translateY(0);}}
   .xp-pop{
-    position:absolute; left:50%; top:18px; transform:translateX(-50%); white-space:nowrap; pointer-events:none; z-index:2;
+    position:absolute; left:2px; top:18px; white-space:nowrap; pointer-events:none; z-index:2;
     font-family:var(--display); font-size:8px; color:var(--gold); text-shadow:2px 2px 0 var(--bg); opacity:0;
   }
   .xp-pop.show{animation:xpPop 1.1s ease-out 1;}
-  @keyframes xpPop{0%{opacity:0; transform:translate(-50%,6px);} 20%{opacity:1;} 100%{opacity:0; transform:translate(-50%,-22px);}}
+  @keyframes xpPop{0%{opacity:0; transform:translateY(6px);} 20%{opacity:1;} 100%{opacity:0; transform:translateY(-22px);}}
+  /* moods: sleepy, grumpy, legendary */
+  .portrait.sprite-box.sleeping .sprite{animation:idle 2.2s steps(1) infinite; filter:brightness(.8) saturate(.85);}
+  .anger-tint{position:absolute; inset:0; background:#FF2E4D; mix-blend-mode:multiply; opacity:0; pointer-events:none; transition:opacity .15s steps(2);}
+  .portrait.sprite-box.warned .anger-tint{opacity:.25;}
+  .portrait.sprite-box.angry .anger-tint{opacity:.6;}
+  .portrait.sprite-box.angry .sprite{animation:shake .3s steps(3) infinite;}
+  @keyframes shake{0%{transform:translateX(-3px);} 50%{transform:translateX(3px);} 100%{transform:translateX(-2px);}}
+  .portrait.sprite-box.legendary{box-shadow:0 0 0 3px var(--gold), 0 0 0 6px var(--panel), 0 0 26px 4px rgba(255,210,63,.55);}
+  .mood-fx{position:absolute; pointer-events:none; z-index:3; font-family:var(--display); text-shadow:2px 2px 0 var(--bg);}
+  .zzz{color:var(--blue); font-size:12px; animation:zzz 2s steps(8) forwards;}
+  @keyframes zzz{0%{opacity:0; transform:translate(0,0) scale(.7);} 15%{opacity:1;} 100%{opacity:0; transform:translate(18px,-30px) scale(1.3);}}
+  .vein{color:#FF2E4D; font-size:14px; animation:vein .5s steps(2) infinite;}
+  @keyframes vein{50%{transform:scale(1.35);}}
+  .xp-pop.red{color:#FF4D6A;}
+  .xp-pop.blue{color:var(--blue);}
+  .status-pill.afk{background:var(--blue);}
+  .status-pill.grumpy{background:#FF4D6A;}
   @media (max-width:640px){ .portrait.sprite-box{width:80px; height:80px;} .sprite{width:76px; height:76px;} }
-  @media (prefers-reduced-motion:reduce){ .sprite img{transition:none;} .sprite-turn.turning{animation:none;} }
+  @media (prefers-reduced-motion:reduce){ .sprite, .portrait.sprite-box.hop .sprite, .portrait.sprite-box.sleeping .sprite, .portrait.sprite-box.angry .sprite, .vein{animation:none;} .zzz{animation-duration:.01s;} }
   .hud-mid{flex:1 1 260px; min-width:0;}
   .hud-name{font-family:var(--display); font-size:15px; margin:0 0 8px; color:var(--text); letter-spacing:.02em;}
   .hud-class{font-size:11.5px; color:var(--cyan); margin-bottom:10px;}
@@ -277,7 +294,7 @@
     <div class="hud-inner">
       <div class="portrait-wrap">
         <div class="portrait sprite-box" id="spriteBox" title="Click me!" role="img" aria-label="Blocky Harshini who turns to face your cursor">
-          <div class="sprite" id="sprite"><div class="sprite-turn" id="spriteTurn">
+          <div class="sprite" id="sprite">
             <img src="assets/voxel/front.webp" data-k="front" class="on" alt="">
             <img src="assets/voxel/left.webp" data-k="left" alt="">
             <img src="assets/voxel/right.webp" data-k="right" alt="">
@@ -286,7 +303,8 @@
             <img src="assets/voxel/down.webp" data-k="down" alt="">
             <img src="assets/voxel/down-right.webp" data-k="down-right" alt="">
             <img src="assets/voxel/back.webp" data-k="back" alt="">
-          </div></div>
+          </div>
+          <div class="anger-tint"></div>
         </div>
         <span class="xp-pop" id="xpPop">+1 PARTY MEMBER!</span>
       </div>
@@ -300,7 +318,7 @@
         </div>
       </div>
       <div class="hud-side">
-        <span class="status-pill">LFG — PART-TIME</span>
+        <span class="status-pill" id="statusPill">LFG — PART-TIME</span>
         <span class="status-pill small" style="background:var(--purple);">4 LANGUAGES</span>
       </div>
     </div>
@@ -510,96 +528,177 @@ document.getElementById('partyGrid').innerHTML = party.map(p => `
     <span class="val">${p.href ? `<a href="${p.href}" target="_blank" rel="noopener">${p.v}</a>` : p.v}</span>
   </div>`).join('');
 
-/* ---------------- blocky avatar: turns to face the cursor ---------------- */
+/* ---------------- blocky avatar: turns to face the cursor, sleeps, gets grumpy ---------------- */
 (() => {
   const sprite = document.getElementById('sprite');
-  const turn = document.getElementById('spriteTurn');
+  const box = document.getElementById('spriteBox');
+  const wrap = box.parentElement;
+  const pop = document.getElementById('xpPop');
+  const pill = document.getElementById('statusPill');
+  const PILL_TEXT = pill.textContent;
   const frames = {};
   sprite.querySelectorAll('img').forEach(i => frames[i.dataset.k] = i);
-  let current = 'front', spinStart = null, lastMove = performance.now();
-  function show(k, squash = true){
+  let current = 'front', busy = false, mood = 'normal', lastMove = performance.now();
+
+  function show(k){
     if (k === current) return;
     frames[current].classList.remove('on');
     frames[k].classList.add('on');
     current = k;
-    if (squash) { turn.classList.remove('turning'); void turn.offsetWidth; turn.classList.add('turning'); }
+  }
+  function say(text, color){
+    pop.textContent = text;
+    pop.classList.remove('show', 'red', 'blue');
+    void pop.offsetWidth;
+    if (color) pop.classList.add(color);
+    pop.classList.add('show');
+  }
+  function setPill(text, cls){
+    pill.textContent = text;
+    pill.classList.remove('afk', 'grumpy');
+    if (cls) pill.classList.add(cls);
+  }
+  function fx(cls, text, x, y, life){
+    const el = document.createElement('span');
+    el.className = 'mood-fx ' + cls;
+    el.textContent = text;
+    el.style.left = x + 'px'; el.style.top = y + 'px';
+    wrap.appendChild(el);
+    setTimeout(() => el.remove(), life);
+    return el;
   }
 
-  function pick(x, y){
-    if (y > 0.35 && x > 0.35) return 'down-right';
-    if (y > 0.35 && Math.abs(x) < y) return 'down';
-    if (y < -0.35 && Math.abs(x) < -y) return 'up';
-    if (x > 0.85) return 'profile-right';
-    if (x > 0.25) return 'right';
-    if (x < -0.25) return 'left';
-    return 'front';
-  }
-
-  // the head follows a spring toward the cursor so it leans, overshoots a little and settles
-  const target = {x: 0, y: 0}, pos = {x: 0, y: 0}, vel = {x: 0, y: 0};
-  function aim(cx, cy){
-    lastMove = performance.now();
+  /* ---- looking around ---- */
+  function lookAt(x, y){
     const r = sprite.getBoundingClientRect();
-    const reach = Math.max(window.innerWidth * 0.5, 240);
-    target.x = Math.max(-1, Math.min(1, (cx - (r.left + r.width / 2)) / reach));
-    target.y = Math.max(-1, Math.min(1, (cy - (r.top + r.height / 2)) / (reach * 0.35)));
+    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height / 2);
+    const t = 60;
+    if (dy > t && dx > t) show('down-right');
+    else if (dy > t && Math.abs(dx) < dy) show('down');
+    else if (dy < -t && Math.abs(dx) < -dy) show('up');
+    else if (dx > window.innerWidth * 0.45) show('profile-right');
+    else if (dx > t) show('right');
+    else if (dx < -t) show('left');
+    else show('front');
   }
-  window.addEventListener('pointermove', e => aim(e.clientX, e.clientY));
-  window.addEventListener('pointerdown', e => aim(e.clientX, e.clientY));
+  function activity(){
+    lastMove = performance.now();
+    if (mood === 'sleeping') wake();
+  }
+  window.addEventListener('pointermove', e => { activity(); if (!busy && mood === 'normal') lookAt(e.clientX, e.clientY); });
+  window.addEventListener('pointerdown', e => { activity(); if (!busy && mood === 'normal') lookAt(e.clientX, e.clientY); });
+  window.addEventListener('keydown', activity);
+  window.addEventListener('scroll', activity, {passive: true});
 
-  // look around on her own when nobody is moving the pointer (also covers phones)
+  /* ---- idle: glance around, then doze off (sooner late at night) ---- */
+  const idle = ['front', 'left', 'right', 'up', 'down', 'front'];
+  let zTimer = null;
   setInterval(() => {
-    if (performance.now() - lastMove > 3000) {
-      target.x = Math.random() * 1.2 - 0.6;
-      target.y = Math.random() * 1.2 - 0.6;
-    }
-  }, 1800);
+    if (busy || mood !== 'normal') return;
+    const still = performance.now() - lastMove;
+    const hour = new Date().getHours();
+    const sleepAfter = (hour >= 23 || hour < 5) ? 6000 : 15000;
+    if (still > sleepAfter) sleep();
+    else if (still > 3000) show(idle[Math.floor(Math.random() * idle.length)]);
+  }, 1600);
 
-  // turntable: angle in degrees -> which view, plus a little rotation inside each view
-  const turntable = [[0, 'front'], [50, 'right'], [100, 'profile-right'], [180, 'back'], [300, 'left'], [360, 'front']];
-  const SPIN_MS = 1000;
-
-  function frame(t){
-    if (reduceMotion) {
-      pos.x = target.x; pos.y = target.y;
-      if (spinStart === null) show(pick(pos.x, pos.y), false);
-    } else {
-      for (const k of ['x', 'y']) {
-        vel[k] += (target[k] - pos[k]) * 0.08;
-        vel[k] *= 0.78;
-        pos[k] += vel[k];
-      }
-      const bob = Math.sin(t / 700) * 2;
-      const breath = 1 + Math.sin(t / 700) * 0.015;
-      let rotY = pos.x * 20, rotX = -pos.y * 12, hop = 0;
-      if (spinStart !== null) {
-        const p = Math.min((t - spinStart) / SPIN_MS, 1);
-        const ease = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
-        const angle = ease * 360;
-        const [center, view] = turntable.reduce((a, b) => Math.abs(b[0] - angle) < Math.abs(a[0] - angle) ? b : a);
-        show(view, false);
-        rotY = Math.max(-25, Math.min(25, (angle - center) * 0.6));
-        rotX = 0;
-        hop = Math.sin(p * Math.PI) * 14;
-        if (p >= 1) spinStart = null;
-      } else {
-        show(pick(pos.x, pos.y));
-      }
-      sprite.style.transform =
-        `perspective(260px) rotateY(${rotY}deg) rotateX(${rotX}deg) ` +
-        `translate(${pos.x * 3}px, ${pos.y * 2 + bob - hop}px) scale(${breath})`;
-    }
-    requestAnimationFrame(frame);
+  function sleep(){
+    mood = 'sleeping';
+    show('down');
+    box.classList.add('sleeping');
+    setPill('ZZZ — AFK', 'afk');
+    let big = false;
+    const puff = () => { fx('zzz', big ? 'Z' : 'z', box.offsetWidth * 0.6, 40, 2000); big = !big; };
+    puff();
+    zTimer = setInterval(puff, 900);
   }
-  requestAnimationFrame(frame);
+  function wake(){
+    mood = 'normal';
+    clearInterval(zTimer);
+    box.classList.remove('sleeping');
+    setPill(PILL_TEXT);
+    show('up');
+    say('!? HUH— I WAS AWAKE', 'blue');
+    busy = true;
+    setTimeout(() => { busy = false; show('front'); }, 900);
+  }
 
-  // click: full turntable spin with a hop + xp pop-up
-  const box = document.getElementById('spriteBox'), pop = document.getElementById('xpPop');
+  /* ---- clicks: hop + spin + a line; too many clicks and she gets grumpy ---- */
+  const lines = ['+1 PARTY MEMBER!', 'HIRE ME? :)', 'SQL > SLEEP', 'I <3 DASHBOARDS', '+50 XP', 'CRIT! -60% MANUAL WORK', 'QUEST ACCEPTED?'];
+  let lineIdx = 0, clicks = [];
+  const spin = ['right', 'profile-right', 'back', 'left', 'front'];
+  function hopSpin(){
+    busy = true;
+    box.classList.remove('hop'); void box.offsetWidth; box.classList.add('hop');
+    const started = mood;
+    spin.forEach((k, i) => setTimeout(() => { if (mood === started) show(k); }, reduceMotion ? 0 : 90 * (i + 1)));
+    setTimeout(() => { if (mood === started) busy = false; box.classList.remove('hop'); }, 600);
+  }
   box.addEventListener('click', () => {
-    if (spinStart !== null) return;
-    if (!reduceMotion) spinStart = performance.now();
-    pop.classList.remove('show'); void pop.offsetWidth; pop.classList.add('show');
-    setTimeout(() => pop.classList.remove('show'), 1100);
+    if (mood === 'angry') { fx('vein', '#', 6 + Math.random() * 60, 4 + Math.random() * 30, 500); return; }
+    if (mood === 'sleeping') { wake(); return; }
+    const now = performance.now();
+    clicks = clicks.filter(t => now - t < 5000);
+    clicks.push(now);
+    if (clicks.length > 10) return getAngry();
+    if (clicks.length >= 7) {
+      box.classList.add('warned');
+      say(clicks.length >= 9 ? 'I SAID STOP >:|' : 'HEY! THAT TICKLES :|', 'red');
+    } else {
+      box.classList.remove('warned');
+      say(lines[lineIdx++ % lines.length]);
+    }
+    if (!busy) hopSpin();
+  });
+
+  function getAngry(){
+    mood = 'angry'; busy = true; clicks = [];
+    box.classList.remove('warned', 'hop');
+    box.classList.add('angry');
+    show('front');
+    setTimeout(() => { if (mood === 'angry') { show('back'); say('*SULKS*', 'red'); } }, 2000);
+    setPill('GRUMPY — DO NOT POKE', 'grumpy');
+    say('STOP POKING! -10 HP', 'red');
+    const veins = setInterval(() => fx('vein', '#', 8 + Math.random() * 70, 2 + Math.random() * 26, 500), 350);
+    setTimeout(() => {
+      clearInterval(veins);
+      box.classList.remove('angry');
+      setPill(PILL_TEXT);
+      show('left');
+      say('...HMPH. FINE. HI.');
+      mood = 'normal';
+      setTimeout(() => { busy = false; show('front'); }, 900);
+    }, 4000);
+  }
+
+  /* ---- coming back to the tab ---- */
+  let leftAt = 0;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { leftAt = performance.now(); return; }
+    if (leftAt && performance.now() - leftAt > 4000 && mood === 'normal') {
+      lastMove = performance.now();
+      show('front');
+      say('WELCOME BACK! :D');
+      if (!busy) hopSpin();
+    }
+  });
+
+  /* ---- secret: Konami code -> legendary mode ---- */
+  const code = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let progress = 0;
+  window.addEventListener('keydown', e => {
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    progress = key === code[progress] ? progress + 1 : (key === code[0] ? 1 : 0);
+    if (progress < code.length) return;
+    progress = 0;
+    if (mood !== 'normal') return;
+    box.classList.add('legendary');
+    say('LEGENDARY MODE UNLOCKED!');
+    const xp = document.getElementById('xpFill');
+    const before = xp.style.width;
+    xp.style.width = '100%';
+    [0, 650, 1300].forEach(d => setTimeout(() => { busy = false; hopSpin(); }, d));
+    setTimeout(() => { box.classList.remove('legendary'); xp.style.width = before; }, 6000);
   });
 })();
 
