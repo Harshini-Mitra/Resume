@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Harshini — Illustrated Avatar</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --bg:#FBF1F0; --text:#3A2422; --muted:#8C6E6B; --pink:#F08A99; --ring:#F6C9CF; }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Inter',sans-serif;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; padding:24px 16px; overflow-x:hidden;
+  }
+  .stage{position:relative; width:min(340px, 82vw); aspect-ratio:1;}
+  .face{
+    position:absolute; inset:0; border-radius:50%; overflow:hidden; cursor:pointer;
+    box-shadow:0 0 0 8px var(--ring), 0 18px 40px rgba(160,80,90,.25);
+    background:#fff; transition:transform .25s ease-out; -webkit-tap-highlight-color:transparent;
+  }
+  .face img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    opacity:0; transition:opacity .16s ease; user-select:none; -webkit-user-drag:none;
+  }
+  .face img.on{opacity:1;}
+  .bubble{
+    position:absolute; top:-6%; right:-8%; background:#fff; color:var(--text);
+    font-weight:700; font-size:14px; padding:9px 13px; border-radius:14px; z-index:2;
+    opacity:0; transform:translateY(6px) scale(.9); transition:all .2s ease; pointer-events:none;
+    box-shadow:0 6px 18px rgba(160,80,90,.25);
+  }
+  .bubble::after{content:""; position:absolute; left:14px; bottom:-7px; border:8px solid transparent; border-top-color:#fff; border-bottom:0;}
+  .bubble.show{opacity:1; transform:translateY(0) scale(1);}
+  .heart{position:absolute; font-size:22px; pointer-events:none; animation:float 1.3s ease-out forwards; z-index:2;}
+  @keyframes float{0%{opacity:0; transform:translateY(0) scale(.6);} 15%{opacity:1;} 100%{opacity:0; transform:translateY(-110px) scale(1.15);}}
+  .hint{margin-top:30px; font-size:13px; color:var(--muted); text-align:center;}
+  .links{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
+  .links a{color:var(--text); text-decoration:none; font-size:13px; border:1px solid var(--ring); background:#fff; padding:6px 12px; border-radius:999px;}
+  .links a:hover{border-color:var(--pink); color:#C2566A;}
+  @media (prefers-reduced-motion: reduce){ .face, .face img{transition:none;} .heart{display:none;} }
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="bubble" id="bubble">Hi, I'm Harshini! 💕</div>
+  <div class="face" id="face" role="img" aria-label="Illustrated Harshini who looks toward your cursor">
+    <img src="assets/illustrated/center.webp" data-k="center" class="on" alt="">
+    <img src="assets/illustrated/left.webp" data-k="left" alt="">
+    <img src="assets/illustrated/right.webp" data-k="right" alt="">
+    <img src="assets/illustrated/up-right.webp" data-k="up-right" alt="">
+    <img src="assets/illustrated/down-left.webp" data-k="down-left" alt="">
+    <img src="assets/illustrated/down-right.webp" data-k="down-right" alt="">
+    <img src="assets/illustrated/wink.webp" data-k="wink" alt="">
+    <img src="assets/illustrated/kiss.webp" data-k="kiss" alt="">
+  </div>
+</div>
+<div class="hint">Move your mouse (or tap) around her 👀 · click for a surprise</div>
+<div class="links">
+  <a href="index.html">📊 Dashboard resume</a>
+  <a href="harshini_mitra_rpg.html">🎮 Game resume</a>
+  <a href="avatar.html">✏️ Chibi me</a>
+</div>
+
+<script>
+(() => {
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stage = document.getElementById('stage');
+  const face = document.getElementById('face');
+  const imgs = {};
+  face.querySelectorAll('img').forEach(i => imgs[i.dataset.k] = i);
+
+  let current = 'center', locked = false, lastMove = performance.now();
+  function show(k){
+    if (k === current) return;
+    imgs[current].classList.remove('on');
+    imgs[k].classList.add('on');
+    current = k;
+  }
+
+  // which drawing to show for each direction (the art has no up-left glance, so that falls back to left)
+  const map = {
+    'L-U':'left',      'C-U':'up-right', 'R-U':'up-right',
+    'L-M':'left',      'C-M':'center',   'R-M':'right',
+    'L-D':'down-left', 'C-D':'center',   'R-D':'down-right',
+  };
+  function lookAt(x, y){
+    lastMove = performance.now();
+    const r = face.getBoundingClientRect();
+    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * 0.42);
+    const t = r.width * 0.3;
+    const h = dx < -t ? 'L' : dx > t ? 'R' : 'C';
+    const v = dy < -t ? 'U' : dy > t ? 'D' : 'M';
+    if (!reduceMotion) face.style.transform = `rotate(${Math.max(-1, Math.min(1, dx / 400)) * 4}deg)`;
+    if (!locked) show(map[h + '-' + v]);
+  }
+  window.addEventListener('pointermove', e => lookAt(e.clientX, e.clientY));
+  window.addEventListener('pointerdown', e => { if (!face.contains(e.target)) lookAt(e.clientX, e.clientY); });
+
+  // glance around on her own when nobody is moving the pointer (also covers phones)
+  const idle = ['left', 'right', 'up-right', 'center', 'down-left', 'down-right'];
+  setInterval(() => {
+    if (!locked && performance.now() - lastMove > 3000) show(idle[Math.floor(Math.random() * idle.length)]);
+  }, 1700);
+
+  // click: alternate wink and kiss, with floating hearts
+  const bubble = document.getElementById('bubble');
+  let clicks = 0, timer;
+  face.addEventListener('click', () => {
+    locked = true;
+    show(clicks++ % 2 === 0 ? 'wink' : 'kiss');
+    bubble.classList.add('show');
+    if (!reduceMotion) {
+      for (let i = 0; i < 5; i++) {
+        const h = document.createElement('span');
+        h.className = 'heart';
+        h.textContent = ['💕', '💖', '✨'][i % 3];
+        h.style.left = (15 + Math.random() * 70) + '%';
+        h.style.top = (35 + Math.random() * 30) + '%';
+        h.style.animationDelay = (i * 0.08) + 's';
+        stage.appendChild(h);
+        setTimeout(() => h.remove(), 1600);
+      }
+    }
+    clearTimeout(timer);
+    timer = setTimeout(() => { locked = false; bubble.classList.remove('show'); show('center'); }, 1500);
+  });
+})();
+</script>
+</body>
+</html>
