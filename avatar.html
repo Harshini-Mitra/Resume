@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Harshini — Chibi Avatar</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D1117; --text:#E6EDF3; --muted:#8891A0;
+    --skin:#E9B999; --skin-shade:#D69C7E; --hair:#1C1212; --hair-hi:#3B2724;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0; height:100%;}
+  body{
+    background:var(--bg); color:var(--text); font-family:'Inter',sans-serif;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    min-height:100vh; padding:24px 16px; overflow-x:hidden;
+  }
+  .avatar-wrap{position:relative; width:min(340px, 86vw);}
+  .avatar{width:100%; height:auto; display:block; cursor:pointer; -webkit-tap-highlight-color:transparent;}
+  .bob{animation:bob 3.2s ease-in-out infinite; transform-box:fill-box; transform-origin:50% 100%;}
+  @keyframes bob{50%{transform:translateY(-3px);}}
+  .tilt{transition:transform .25s ease-out; transform-box:view-box; transform-origin:160px 250px;}
+  .eye{transform-box:fill-box; transform-origin:50% 50%; transition:transform .07s ease-in;}
+  .eye.shut{transform:scaleY(.08);}
+  .happy{opacity:0; transition:opacity .15s;}
+  .is-happy .happy{opacity:1;}
+  .is-happy .eye{opacity:0;}
+  .earring{transform-box:fill-box; transform-origin:50% 0%; animation:swing 2.6s ease-in-out infinite;}
+  .earring.r{animation-delay:-1.3s;}
+  @keyframes swing{0%,100%{transform:rotate(6deg);} 50%{transform:rotate(-6deg);}}
+  .win{animation:twinkle 4s steps(1) infinite;}
+  @keyframes twinkle{50%{opacity:.35;}}
+  .bubble{
+    position:absolute; top:4%; right:-4%; background:#fff; color:#1C1212;
+    font-weight:700; font-size:14px; padding:9px 13px; border-radius:14px;
+    opacity:0; transform:translateY(6px) scale(.9); transition:all .2s ease; pointer-events:none;
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+  }
+  .bubble::after{content:""; position:absolute; left:14px; bottom:-7px; border:8px solid transparent; border-top-color:#fff; border-bottom:0;}
+  .bubble.show{opacity:1; transform:translateY(0) scale(1);}
+  .hint{margin-top:18px; font-size:13px; color:var(--muted); text-align:center;}
+  @media (prefers-reduced-motion: reduce){
+    .bob,.earring,.win{animation:none;}
+    .tilt{transition:none;}
+  }
+</style>
+</head>
+<body>
+
+<div class="avatar-wrap">
+  <div class="bubble" id="bubble">Hi, I'm Harshini! 👋</div>
+  <svg class="avatar" id="avatar" viewBox="0 0 320 380" role="img" aria-label="Chibi illustration of Harshini with eyes that follow the cursor">
+    <defs>
+      <clipPath id="badge"><circle cx="160" cy="200" r="152"/></clipPath>
+      <clipPath id="eyeL"><ellipse cx="128" cy="166" rx="19" ry="21"/></clipPath>
+      <clipPath id="eyeR"><ellipse cx="192" cy="166" rx="19" ry="21"/></clipPath>
+      <radialGradient id="iris" cx="50%" cy="65%" r="60%">
+        <stop offset="0%" stop-color="#8A5A36"/>
+        <stop offset="70%" stop-color="#4E2E1A"/>
+        <stop offset="100%" stop-color="#2A170D"/>
+      </radialGradient>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#0E1230"/>
+        <stop offset="100%" stop-color="#22284F"/>
+      </linearGradient>
+    </defs>
+
+    <g clip-path="url(#badge)">
+      <!-- Sydney night backdrop -->
+      <rect x="0" y="0" width="320" height="380" fill="url(#sky)"/>
+      <g fill="#171B3A">
+        <rect x="10" y="120" width="40" height="200"/>
+        <rect x="52" y="80" width="34" height="240"/>
+        <rect x="232" y="70" width="38" height="250"/>
+        <rect x="272" y="110" width="44" height="210"/>
+        <rect x="200" y="130" width="30" height="190"/>
+      </g>
+      <g fill="#FFD98A" class="win">
+        <rect x="18" y="135" width="4" height="4"/><rect x="30" y="150" width="4" height="4"/><rect x="18" y="170" width="4" height="4"/>
+        <rect x="60" y="95" width="4" height="4"/><rect x="72" y="110" width="4" height="4"/><rect x="60" y="130" width="4" height="4"/>
+        <rect x="240" y="85" width="4" height="4"/><rect x="254" y="100" width="4" height="4"/><rect x="240" y="120" width="4" height="4"/>
+        <rect x="282" y="125" width="4" height="4"/><rect x="296" y="140" width="4" height="4"/><rect x="208" y="145" width="4" height="4"/>
+      </g>
+      <g fill="#FFD98A" opacity=".55">
+        <rect x="30" y="190" width="4" height="4"/><rect x="72" y="150" width="4" height="4"/><rect x="254" y="140" width="4" height="4"/>
+        <rect x="296" y="170" width="4" height="4"/><rect x="218" y="170" width="4" height="4"/><rect x="18" y="210" width="4" height="4"/>
+      </g>
+      <rect x="0" y="292" width="320" height="90" fill="#1A2A44"/>
+      <path d="M0 300 H320 M0 312 H320" stroke="#FFD98A" stroke-opacity=".18" stroke-width="2" stroke-dasharray="10 14"/>
+
+      <g class="bob">
+       <g class="tilt" id="tilt">
+        <!-- back hair -->
+        <path fill="var(--hair)" d="M160 50 C95 50 58 100 60 160 C48 185 66 202 54 226 C42 250 66 266 52 290 C40 315 64 332 52 360 L268 360 C256 332 280 315 268 290 C254 266 278 250 266 226 C254 202 272 185 260 160 C262 100 225 50 160 50 Z"/>
+
+        <!-- body -->
+        <rect x="146" y="226" width="28" height="34" fill="var(--skin-shade)"/>
+        <path fill="#1B1B22" d="M78 380 C80 300 112 266 160 262 C208 266 240 300 242 380 Z"/>
+        <path fill="var(--skin)" d="M136 258 L184 258 L190 306 C176 300 144 300 130 306 Z"/>
+        <path fill="#F2EDE6" d="M130 306 C144 300 176 300 190 306 L194 380 L126 380 Z"/>
+        <path fill="#24242D" d="M78 380 C80 300 112 266 140 260 L124 380 Z"/>
+        <path fill="#24242D" d="M242 380 C240 300 208 266 180 260 L196 380 Z"/>
+        <path d="M128 330 L124 380 M192 330 L196 380" stroke="#55555F" stroke-width="2"/>
+
+        <!-- face -->
+        <path fill="var(--skin)" d="M84 152 C84 96 120 70 160 70 C200 70 236 96 236 152 C236 202 204 236 160 239 C116 236 84 202 84 152 Z"/>
+
+        <g id="face">
+          <!-- brows -->
+          <path d="M106 126 Q124 115 146 123" stroke="#2A1A14" stroke-width="5" fill="none" stroke-linecap="round"/>
+          <path d="M174 123 Q196 115 214 126" stroke="#2A1A14" stroke-width="5" fill="none" stroke-linecap="round"/>
+
+          <!-- eyes -->
+          <g class="eye" id="eyeGL">
+            <ellipse cx="128" cy="166" rx="19" ry="21" fill="#fff"/>
+            <g clip-path="url(#eyeL)">
+              <g id="irisL">
+                <circle cx="128" cy="168" r="14" fill="url(#iris)"/>
+                <circle cx="128" cy="168" r="6.5" fill="#160C07"/>
+                <circle cx="122" cy="161" r="4.5" fill="#fff"/>
+                <circle cx="133" cy="173" r="2" fill="#fff" opacity=".85"/>
+              </g>
+            </g>
+            <path d="M108 162 C112 144 142 142 149 156" stroke="#160C07" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+            <path d="M110 158 L99 150" stroke="#160C07" stroke-width="3.5" stroke-linecap="round"/>
+          </g>
+          <g class="eye" id="eyeGR">
+            <ellipse cx="192" cy="166" rx="19" ry="21" fill="#fff"/>
+            <g clip-path="url(#eyeR)">
+              <g id="irisR">
+                <circle cx="192" cy="168" r="14" fill="url(#iris)"/>
+                <circle cx="192" cy="168" r="6.5" fill="#160C07"/>
+                <circle cx="186" cy="161" r="4.5" fill="#fff"/>
+                <circle cx="197" cy="173" r="2" fill="#fff" opacity=".85"/>
+              </g>
+            </g>
+            <path d="M171 156 C178 142 208 144 212 162" stroke="#160C07" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+            <path d="M210 158 L221 150" stroke="#160C07" stroke-width="3.5" stroke-linecap="round"/>
+          </g>
+          <!-- happy ^ ^ eyes (on click) -->
+          <g class="happy" stroke="#160C07" stroke-width="5" fill="none" stroke-linecap="round">
+            <path d="M112 172 Q128 152 144 172"/>
+            <path d="M176 172 Q192 152 208 172"/>
+          </g>
+
+          <!-- glasses -->
+          <g fill="rgba(255,255,255,.06)" stroke="#121212" stroke-width="3.5">
+            <circle cx="127" cy="168" r="31"/>
+            <circle cx="193" cy="168" r="31"/>
+          </g>
+          <path d="M156 163 Q160 157 164 163" stroke="#121212" stroke-width="3.5" fill="none"/>
+          <path d="M106 150 Q112 144 120 142 M172 150 Q178 144 186 142" stroke="#fff" stroke-opacity=".45" stroke-width="3" fill="none" stroke-linecap="round"/>
+
+          <!-- blush, nose, smile -->
+          <ellipse cx="106" cy="206" rx="13" ry="7" fill="#F08080" opacity=".38"/>
+          <ellipse cx="214" cy="206" rx="13" ry="7" fill="#F08080" opacity=".38"/>
+          <path d="M157 195 Q160 199 164 196" stroke="var(--skin-shade)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path fill="#C86A6E" d="M145 210 Q160 223 175 210 Q160 215 145 210 Z"/>
+          <path d="M143 209 Q160 218 177 209" stroke="#A24F55" stroke-width="2" fill="none" stroke-linecap="round"/>
+        </g>
+
+        <!-- front hair: crown + side-part curtains -->
+        <path fill="var(--hair)" d="M84 132 C80 80 120 50 160 50 C200 50 240 80 236 132 C228 102 200 74 166 68 C130 72 96 100 84 132 Z"/>
+        <path fill="var(--hair)" d="M166 58 C130 60 92 76 80 122 C74 152 82 176 76 202 C72 228 84 246 72 270 C92 252 90 226 90 200 C88 160 98 120 122 98 C136 86 152 74 166 66 Z"/>
+        <path fill="var(--hair)" d="M166 58 C196 60 230 78 240 122 C246 152 238 176 244 202 C248 228 236 246 248 270 C228 252 230 226 230 200 C232 160 220 120 198 98 C186 86 176 76 166 66 Z"/>
+        <!-- wavy locks over shoulders -->
+        <path fill="var(--hair)" d="M76 236 C58 262 90 276 70 302 C58 322 84 338 74 362 L100 362 C110 336 86 320 100 298 C114 276 88 262 98 240 Z"/>
+        <path fill="var(--hair)" d="M244 236 C262 262 230 276 250 302 C262 322 236 338 246 362 L220 362 C210 336 234 320 220 298 C206 276 232 262 222 240 Z"/>
+        <!-- hair shine -->
+        <g stroke="var(--hair-hi)" stroke-width="3" fill="none" stroke-linecap="round">
+          <path d="M140 66 C118 78 100 100 92 130"/>
+          <path d="M196 72 C214 86 226 104 232 128"/>
+          <path d="M84 250 C76 264 90 276 82 292"/>
+          <path d="M236 250 C244 264 230 276 238 292"/>
+          <path d="M66 180 C58 200 72 214 62 236 C54 254 70 268 60 290"/>
+          <path d="M254 180 C262 200 248 214 258 236 C266 254 250 268 260 290"/>
+        </g>
+
+        <!-- pearl drop earrings -->
+        <g class="earring">
+          <path d="M101 212 V232" stroke="#D9B45A" stroke-width="1.6"/>
+          <circle cx="101" cy="237" r="5" fill="#F7F2EA"/><circle cx="99.5" cy="235.5" r="1.6" fill="#fff"/>
+        </g>
+        <g class="earring r">
+          <path d="M219 212 V232" stroke="#D9B45A" stroke-width="1.6"/>
+          <circle cx="219" cy="237" r="5" fill="#F7F2EA"/><circle cx="217.5" cy="235.5" r="1.6" fill="#fff"/>
+        </g>
+       </g>
+      </g>
+    </g>
+    <circle cx="160" cy="200" r="152" fill="none" stroke="#2F3A55" stroke-width="4"/>
+  </svg>
+</div>
+<div class="hint">Move your mouse (or tap) — she's watching 👀 · click to say hi</div>
+
+<script>
+(() => {
+  const svg = document.getElementById('avatar');
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const irises = [
+    {el: document.getElementById('irisL'), cx: 128, cy: 166},
+    {el: document.getElementById('irisR'), cx: 192, cy: 166},
+  ];
+  const face = document.getElementById('face');
+  const tilt = document.getElementById('tilt');
+  const MAX_X = 7, MAX_Y = 6;
+
+  let target = {x: 0, y: 0};   // desired look offset, -1..1
+  let cur = {x: 0, y: 0};
+  let lastMove = performance.now();
+
+  function lookAt(clientX, clientY){
+    const r = svg.getBoundingClientRect();
+    const cx = r.left + r.width / 2, cy = r.top + r.height * 0.44;
+    const dx = clientX - cx, dy = clientY - cy;
+    const dist = Math.hypot(dx, dy) || 1;
+    const reach = Math.min(dist / (r.width * 0.6), 1);
+    target = {x: dx / dist * reach, y: dy / dist * reach};
+    lastMove = performance.now();
+  }
+  window.addEventListener('pointermove', e => lookAt(e.clientX, e.clientY));
+  window.addEventListener('pointerdown', e => lookAt(e.clientX, e.clientY));
+
+  // wander when nobody is moving the pointer (also covers phones)
+  setInterval(() => {
+    if (performance.now() - lastMove > 3000) {
+      target = {x: Math.random() * 1.6 - 0.8, y: Math.random() * 1.2 - 0.6};
+    }
+  }, 1600);
+
+  function frame(){
+    const k = reduceMotion ? 1 : 0.18;
+    cur.x += (target.x - cur.x) * k;
+    cur.y += (target.y - cur.y) * k;
+    irises.forEach(i => i.el.setAttribute('transform', `translate(${cur.x * MAX_X} ${cur.y * MAX_Y})`));
+    face.setAttribute('transform', `translate(${cur.x * 3} ${cur.y * 2})`);
+    tilt.style.transform = `rotate(${cur.x * 3}deg)`;
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // blinking
+  const eyes = document.querySelectorAll('.eye');
+  function blink(){
+    eyes.forEach(e => e.classList.add('shut'));
+    setTimeout(() => eyes.forEach(e => e.classList.remove('shut')), 120);
+    setTimeout(blink, 2500 + Math.random() * 3500);
+  }
+  if (!reduceMotion) setTimeout(blink, 2000);
+
+  // click: happy eyes + speech bubble
+  const bubble = document.getElementById('bubble');
+  let happyTimer;
+  svg.addEventListener('click', () => {
+    svg.classList.add('is-happy');
+    bubble.classList.add('show');
+    clearTimeout(happyTimer);
+    happyTimer = setTimeout(() => { svg.classList.remove('is-happy'); bubble.classList.remove('show'); }, 1800);
+  });
+})();
+</script>
+</body>
+</html>
