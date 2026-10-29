@@ -15,16 +15,22 @@
     min-height:100vh; padding:24px 16px; overflow-x:hidden;
   }
   .stage{position:relative; width:min(340px, 82vw); aspect-ratio:1;}
+  .stage.boing{animation:boing .5s cubic-bezier(.3,1.6,.5,1) 1;}
+  @keyframes boing{0%{transform:scale(1);} 30%{transform:scale(1.07,.93);} 60%{transform:scale(.96,1.04);} 100%{transform:scale(1);}}
   .face{
     position:absolute; inset:0; border-radius:50%; overflow:hidden; cursor:pointer;
     box-shadow:0 0 0 8px var(--ring), 0 18px 40px rgba(160,80,90,.25);
-    background:#fff; transition:transform .25s ease-out; -webkit-tap-highlight-color:transparent;
+    background:#fff; -webkit-tap-highlight-color:transparent; will-change:transform;
   }
-  .face img{
-    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-    opacity:0; transition:opacity .16s ease; user-select:none; -webkit-user-drag:none;
+  .rig{position:absolute; inset:0; will-change:transform;}
+  .turn{position:absolute; inset:0;}
+  .turn.turning{animation:turning .28s ease-out 1;}
+  @keyframes turning{0%{transform:scaleX(1);} 40%{transform:scaleX(.95) translateY(-2px);} 100%{transform:scaleX(1);}}
+  .turn img{
+    position:absolute; inset:-9%; width:118%; height:118%; object-fit:cover;
+    opacity:0; transition:opacity .26s ease; user-select:none; -webkit-user-drag:none;
   }
-  .face img.on{opacity:1;}
+  .turn img.on{opacity:1;}
   .bubble{
     position:absolute; top:-6%; right:-8%; background:#fff; color:var(--text);
     font-weight:700; font-size:14px; padding:9px 13px; border-radius:14px; z-index:2;
@@ -39,25 +45,28 @@
   .links{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
   .links a{color:var(--text); text-decoration:none; font-size:13px; border:1px solid var(--ring); background:#fff; padding:6px 12px; border-radius:999px;}
   .links a:hover{border-color:var(--pink); color:#C2566A;}
-  @media (prefers-reduced-motion: reduce){ .face, .face img{transition:none;} .heart{display:none;} }
+  @media (prefers-reduced-motion: reduce){ .turn img{transition:none;} .heart{display:none;} .stage.boing, .turn.turning{animation:none;} }
 </style>
 </head>
 <body>
 
 <div class="stage" id="stage">
   <div class="bubble" id="bubble">Hi, I'm Harshini! 💕</div>
-  <div class="face" id="face" role="img" aria-label="Illustrated Harshini who looks toward your cursor">
-    <img src="assets/illustrated/center.webp" data-k="center" class="on" alt="">
-    <img src="assets/illustrated/left.webp" data-k="left" alt="">
-    <img src="assets/illustrated/right.webp" data-k="right" alt="">
-    <img src="assets/illustrated/up-right.webp" data-k="up-right" alt="">
-    <img src="assets/illustrated/down-left.webp" data-k="down-left" alt="">
-    <img src="assets/illustrated/down-right.webp" data-k="down-right" alt="">
-    <img src="assets/illustrated/wink.webp" data-k="wink" alt="">
-    <img src="assets/illustrated/kiss.webp" data-k="kiss" alt="">
+  <div class="face" id="face" role="img" aria-label="Illustrated Harshini who turns toward your cursor">
+    <div class="rig" id="rig">
+      <div class="turn" id="turn">
+        <img src="assets/illustrated/center.webp" data-k="center" class="on" alt="">
+        <img src="assets/illustrated/left.webp" data-k="left" alt="">
+        <img src="assets/illustrated/right.webp" data-k="right" alt="">
+        <img src="assets/illustrated/up-right.webp" data-k="up-right" alt="">
+        <img src="assets/illustrated/down-left.webp" data-k="down-left" alt="">
+        <img src="assets/illustrated/down-right.webp" data-k="down-right" alt="">
+        <img src="assets/illustrated/wink.webp" data-k="wink" alt="">
+      </div>
+    </div>
   </div>
 </div>
-<div class="hint">Move your mouse (or tap) around her 👀 · click for a surprise</div>
+<div class="hint">Move your mouse (or tap) around her 👀 · click to say hi</div>
 <div class="links">
   <a href="index.html">📊 Dashboard resume</a>
   <a href="harshini_mitra_rpg.html">🎮 Game resume</a>
@@ -69,8 +78,10 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const stage = document.getElementById('stage');
   const face = document.getElementById('face');
+  const rig = document.getElementById('rig');
+  const turn = document.getElementById('turn');
   const imgs = {};
-  face.querySelectorAll('img').forEach(i => imgs[i.dataset.k] = i);
+  turn.querySelectorAll('img').forEach(i => imgs[i.dataset.k] = i);
 
   let current = 'center', locked = false, lastMove = performance.now();
   function show(k){
@@ -78,40 +89,67 @@
     imgs[current].classList.remove('on');
     imgs[k].classList.add('on');
     current = k;
+    turn.classList.remove('turning'); void turn.offsetWidth; turn.classList.add('turning');
   }
 
-  // which drawing to show for each direction (the art has no up-left glance, so that falls back to left)
-  const map = {
-    'L-U':'left',      'C-U':'up-right', 'R-U':'up-right',
-    'L-M':'left',      'C-M':'center',   'R-M':'right',
-    'L-D':'down-left', 'C-D':'center',   'R-D':'down-right',
-  };
-  function lookAt(x, y){
+  // which drawing fits a head direction (the art has no up-left glance, so that falls back to left)
+  function pick(x, y){
+    if (y < -0.35) return x < -0.3 ? 'left' : 'up-right';
+    if (y > 0.35) return x < -0.15 ? 'down-left' : x > 0.15 ? 'down-right' : 'center';
+    return x < -0.3 ? 'left' : x > 0.3 ? 'right' : 'center';
+  }
+
+  // the head follows a spring toward the cursor so it leans, overshoots a little and settles
+  const target = {x: 0, y: 0}, pos = {x: 0, y: 0}, vel = {x: 0, y: 0};
+  function aim(clientX, clientY){
     lastMove = performance.now();
     const r = face.getBoundingClientRect();
-    const dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * 0.42);
-    const t = r.width * 0.3;
-    const h = dx < -t ? 'L' : dx > t ? 'R' : 'C';
-    const v = dy < -t ? 'U' : dy > t ? 'D' : 'M';
-    if (!reduceMotion) face.style.transform = `rotate(${Math.max(-1, Math.min(1, dx / 400)) * 4}deg)`;
-    if (!locked) show(map[h + '-' + v]);
+    const dx = clientX - (r.left + r.width / 2), dy = clientY - (r.top + r.height * 0.42);
+    const reach = Math.max(r.width * 0.9, 260);
+    target.x = Math.max(-1, Math.min(1, dx / reach));
+    target.y = Math.max(-1, Math.min(1, dy / reach));
   }
-  window.addEventListener('pointermove', e => lookAt(e.clientX, e.clientY));
-  window.addEventListener('pointerdown', e => { if (!face.contains(e.target)) lookAt(e.clientX, e.clientY); });
+  window.addEventListener('pointermove', e => aim(e.clientX, e.clientY));
+  window.addEventListener('pointerdown', e => { if (!face.contains(e.target)) aim(e.clientX, e.clientY); });
 
-  // glance around on her own when nobody is moving the pointer (also covers phones)
-  const idle = ['left', 'right', 'up-right', 'center', 'down-left', 'down-right'];
+  // drift around on her own when nobody is moving the pointer (also covers phones)
   setInterval(() => {
-    if (!locked && performance.now() - lastMove > 3000) show(idle[Math.floor(Math.random() * idle.length)]);
-  }, 1700);
+    if (performance.now() - lastMove > 3000) {
+      target.x = Math.random() * 1.6 - 0.8;
+      target.y = Math.random() * 1.2 - 0.6;
+    }
+  }, 1900);
 
-  // click: alternate wink and kiss, with floating hearts
+  function frame(t){
+    if (reduceMotion) {
+      pos.x = target.x; pos.y = target.y;
+    } else {
+      for (const k of ['x', 'y']) {
+        vel[k] += (target[k] - pos[k]) * 0.07;
+        vel[k] *= 0.8;
+        pos[k] += vel[k];
+      }
+      const breath = 1 + Math.sin(t / 1500) * 0.012;
+      const bob = Math.sin(t / 1500) * 3;
+      const sway = Math.sin(t / 2300) * 0.8;
+      rig.style.transform =
+        `perspective(700px) rotateY(${pos.x * 14}deg) rotateX(${-pos.y * 9}deg) ` +
+        `translate(${pos.x * 8}px, ${pos.y * 6 + bob}px) scale(${breath})`;
+      face.style.transform = `rotate(${pos.x * 3 + sway}deg)`;
+    }
+    if (!locked) show(pick(pos.x, pos.y));
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  // click: wink, bounce, speech bubble and floating hearts
   const bubble = document.getElementById('bubble');
-  let clicks = 0, timer;
+  let timer;
   face.addEventListener('click', () => {
     locked = true;
-    show(clicks++ % 2 === 0 ? 'wink' : 'kiss');
+    show('wink');
     bubble.classList.add('show');
+    stage.classList.remove('boing'); void stage.offsetWidth; stage.classList.add('boing');
     if (!reduceMotion) {
       for (let i = 0; i < 5; i++) {
         const h = document.createElement('span');
@@ -125,7 +163,7 @@
       }
     }
     clearTimeout(timer);
-    timer = setTimeout(() => { locked = false; bubble.classList.remove('show'); show('center'); }, 1500);
+    timer = setTimeout(() => { locked = false; bubble.classList.remove('show'); }, 1500);
   });
 })();
 </script>
