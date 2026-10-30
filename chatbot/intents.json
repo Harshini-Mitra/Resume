@@ -717,7 +717,10 @@
         "can you work mondays",
         "when are you free to work",
         "shift availability",
-        "can you work evenings"
+        "can you work evenings",
+        "how fast can you start",
+        "how quickly can you join",
+        "are you free to work on saturdays and sundays"
       ],
       "tests": [
         "how quickly could you start",
@@ -934,7 +937,7 @@
     },
     {
       "id": "hobbies",
-      "answer": "Outside work I love swimming, playing badminton, reading and gaming. 🏸📚🎮",
+      "answer": "Outside work I'm a gamer at heart — Valorant especially 🎮 — and I also love swimming, playing badminton and reading. 🏸📚",
       "follow": [
         "What languages do you speak?",
         "Tell me about yourself"
@@ -953,12 +956,28 @@
         "what are you passionate about outside work",
         "pastimes",
         "tell me something fun about you",
-        "fun fact"
+        "fun fact",
+        "do you play valorant",
+        "valorant",
+        "what games do you play",
+        "favourite game",
+        "are you a gamer",
+        "what do you play",
+        "do you like video games",
+        "which game do you play the most",
+        "fps games",
+        "what is your favorite game to play",
+        "favourite games",
+        "what is the best game",
+        "which video games do you like",
+        "do you play any video games"
       ],
       "tests": [
         "what do you do in your spare time",
         "any hobbies?",
-        "what do you enjoy outside of work"
+        "what do you enjoy outside of work",
+        "do you game?",
+        "what's your favourite video game"
       ]
     },
     {

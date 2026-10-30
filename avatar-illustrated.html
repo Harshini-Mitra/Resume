@@ -74,8 +74,30 @@
   @keyframes ring{0%{transform:scale(.95); opacity:1;} 100%{transform:scale(1.18); opacity:0;}}
   .chat-btn:hover{transform:translateY(-2px); box-shadow:0 16px 34px rgba(224,96,126,.45);}
   .chat-btn:focus-visible{outline:3px solid #3A2422; outline-offset:4px;}
-  .layout.chatting .chat-btn{display:none;}
   .chat-btn small{font-weight:500; font-size:12px; opacity:.9;}
+  .actions{margin-top:22px; display:flex; gap:12px; flex-wrap:wrap; justify-content:center;}
+  .actions .chat-btn{margin-top:0;}
+  .about-btn{display:inline-flex; align-items:center; gap:8px; cursor:pointer; font:700 16px 'Inter', sans-serif; color:var(--text);
+    padding:14px 24px; border-radius:999px; background:#fff; border:2px solid var(--ring); box-shadow:0 10px 24px rgba(160,80,90,.14);
+    transition:transform .2s, border-color .2s;}
+  .about-btn:hover{transform:translateY(-2px); border-color:var(--pink);}
+  .about-btn:focus-visible{outline:3px solid #3A2422; outline-offset:4px;}
+  .layout.chatting .actions, .layout.about-open .actions{display:none;}
+  /* about-me card */
+  .about-card{width:min(440px, 100%); display:none; background:#fff; border:1px solid var(--ring); border-radius:20px; padding:26px 26px 22px;
+    box-shadow:0 18px 40px rgba(160,80,90,.16); position:relative;}
+  .layout.about-open .about-card{display:block; animation:chatIn .4s cubic-bezier(.2,.9,.3,1.2);}
+  .about-card h2{margin:0 0 4px; font-size:24px; letter-spacing:-.01em;}
+  .about-card .role{color:var(--muted); font-size:13.5px; margin-bottom:14px;}
+  .about-card p{font-size:14.5px; line-height:1.65; margin:0 0 12px;}
+  .about-card .facts{display:flex; flex-wrap:wrap; gap:7px; margin:16px 0 18px;}
+  .about-card .facts span{font-size:12.5px; padding:6px 10px; border-radius:999px; background:var(--bg); border:1px solid var(--ring);}
+  .about-card .row{display:flex; gap:10px; flex-wrap:wrap;}
+  .about-card .row button, .about-card .row a{font:600 13.5px 'Inter', sans-serif; padding:10px 16px; border-radius:999px; cursor:pointer; text-decoration:none;}
+  .about-card .go-chat{border:0; color:#fff; background:linear-gradient(135deg, #F28BA0, #E0607E);}
+  .about-card .go-report{border:1px solid var(--ring); color:var(--text); background:#fff;}
+  .about-card .x{position:absolute; top:12px; right:14px; border:0; background:none; font-size:22px; color:var(--muted); cursor:pointer; line-height:1;}
+  .about-card .x:hover{color:var(--text);}
   @media (max-width:900px){ .layout{gap:28px;} .chat{height:480px;} }
   @media (prefers-reduced-motion: reduce){ .fx{display:none;} .stage.boing, .stage.shake{animation:none;} .ov{transition:none;} }
 </style>
@@ -102,7 +124,10 @@
     </div>
   </div>
 </div>
-<button class="chat-btn" id="chatBtn" type="button">💬 Chat with me <small>· ask me anything</small></button>
+<div class="actions">
+  <button class="chat-btn" id="chatBtn" type="button">💬 Chat with me <small>· ask me anything</small></button>
+  <button class="about-btn" id="aboutBtn" type="button">✨ About me</button>
+</div>
 <div class="hint">Move your mouse (or tap) around her 👀 · click to say hi · double-click for something cool</div>
 <div class="links">
   <a href="index.html">📊 Dashboard resume</a>
@@ -110,6 +135,22 @@
 </div>
 </div>
 <div class="chat" id="chatMount"></div>
+<section class="about-card" id="aboutCard" aria-labelledby="aboutTitle" tabindex="-1">
+  <button class="x" type="button" aria-label="Close" data-close-panel>×</button>
+  <h2 id="aboutTitle">Hi, I'm Harshini 👋</h2>
+  <div class="role">Data &amp; Analytics · Sydney · Master's student at UTS</div>
+  <p>I've spent over two years as a Software Developer / Data Analyst at Carvewing Solutions, turning messy data into Power BI and QuickSight dashboards, writing SQL, and automating the boring bits with Python.</p>
+  <p>What I'm best at is people: I'm a clear communicator who loves understanding what a client actually needs and bringing it to the team. I'm now studying a Master of Data Science and Innovation at UTS and looking for a part-time role in tech support, data or BI.</p>
+  <p>Off the clock you'll usually find me gaming — Valorant is my favourite 🎮 — or swimming, playing badminton and reading.</p>
+  <div class="facts">
+    <span>💼 2+ yrs experience</span><span>📊 Power BI · QuickSight</span><span>🧮 SQL · Python</span>
+    <span>💬 Clear communicator</span><span>📅 Available now</span><span>🎓 UTS · Nov 2027</span><span>🎮 Valorant</span>
+  </div>
+  <div class="row">
+    <button class="go-chat" type="button" data-open-chat>💬 Chat with me</button>
+    <a class="go-report" href="index.html">📊 See my resume report</a>
+  </div>
+</section>
 </main>
 
 <script>
@@ -316,6 +357,10 @@
     thinking = false;
     clearTimeout(face.t);
     ['happy', 'blush', 'hover', 'shades', 'thinking'].forEach(k => set(k, false));
+    if (e.detail.state === 'listening') {
+      target.x = 0; target.y = 0;  // look straight at the person talking
+      return;
+    }
     if (e.detail.state === 'thinking') {
       set('thinking', true);
       target.x = 0.5; target.y = -0.6;
@@ -328,25 +373,36 @@
 
   /* ---- chat: hidden until asked for; she glides aside to make room ---- */
   const layout = document.querySelector('.layout'), me = document.querySelector('.me');
-  function toggleChat(open){
+  function toggleChat(open, panel = 'chatting'){
     const before = me.getBoundingClientRect();
-    layout.classList.toggle('chatting', open);
+    layout.classList.remove('chatting', 'about-open');
+    if (open) layout.classList.add(panel);
     const after = me.getBoundingClientRect();
     if (!reduceMotion) me.animate([{transform:`translate(${before.left - after.left}px, ${before.top - after.top}px)`}, {transform:'none'}],
                                   {duration:450, easing:'cubic-bezier(.2,.9,.3,1)'});
     if (open) {
-      const chatEl = $('chatMount');
-      if (innerWidth <= 900) setTimeout(() => chatEl.scrollIntoView({behavior:reduceMotion ? 'auto' : 'smooth', block:'start'}), 120);
-      setTimeout(() => { const i = chatEl.querySelector('.rc-input'); if (i && matchMedia('(pointer:fine)').matches) i.focus(); }, 300);
+      const el = panel === 'about-open' ? $('aboutCard') : $('chatMount');
+      if (innerWidth <= 900) setTimeout(() => el.scrollIntoView({behavior:reduceMotion ? 'auto' : 'smooth', block:'start'}), 120);
+      setTimeout(() => {
+        if (panel === 'about-open') el.focus({preventScroll:true});
+        else { const i = el.querySelector('.rc-input'); if (i && matchMedia('(pointer:fine)').matches) i.focus(); }
+      }, 300);
       set('happy', true); clearTimeout(face.t); face.t = setTimeout(() => set('happy', false), 1000);
+      if (panel === 'about-open') say("That's me! 😊<small>nice to meet you</small>", 2200);
     } else {
       $('chatBtn').focus();
     }
   }
   $('chatBtn').addEventListener('click', () => toggleChat(true));
+  $('aboutBtn').addEventListener('click', () => toggleChat(true, 'about-open'));
+  $('aboutCard').addEventListener('click', e => {
+    if (e.target.closest('[data-close-panel]')) toggleChat(false);
+    if (e.target.closest('[data-open-chat]')) toggleChat(true);
+  });
+  $('aboutCard').addEventListener('keydown', e => { if (e.key === 'Escape') toggleChat(false); });
   $('chatMount').addEventListener('click', e => { if (e.target.closest('.rc-close')) toggleChat(false); });
   $('chatMount').addEventListener('keydown', e => { if (e.key === 'Escape') toggleChat(false); });
-  setTimeout(() => { if (mood === 'normal' && !layout.classList.contains('chatting')) say('Ask me anything! 💬<small>tap the button below</small>', 2600); }, 2200);
+  setTimeout(() => { if (mood === 'normal' && !layout.classList.contains('chatting') && !layout.classList.contains('about-open')) say('Ask me anything! 💬<small>or tap “About me” below</small>', 2600); }, 2200);
 
   /* ---- coming back to the tab ---- */
   let leftAt = 0;

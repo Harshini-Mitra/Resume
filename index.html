@@ -348,6 +348,81 @@
   .model-legend{display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-bottom:14px;}
   .model-legend svg{width:30px; height:8px; vertical-align:middle; margin-right:6px;}
 
+  /* ================= query view: the resume as a live SQLite database ================= */
+  .qhero{position:relative; margin-bottom:18px; padding:26px 28px; border-radius:16px; overflow:hidden; border:1px solid var(--line);
+    background:radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--yellow) 16%, transparent), transparent 55%),
+               radial-gradient(90% 120% at 100% 100%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%), var(--panel);}
+  .qhero h1{margin:0 0 8px; font-size:clamp(24px, 3.4vw, 38px); font-weight:800; letter-spacing:-.03em; line-height:1.1;}
+  .qhero h1 em{font-style:normal; background:linear-gradient(90deg, var(--yellow), var(--orange)); -webkit-background-clip:text; background-clip:text; color:transparent;}
+  .qhero p{margin:0 0 16px; color:var(--muted); font-size:14.5px; max-width:640px; line-height:1.55;}
+  .qhero .cta .btn{font-size:13.5px;}
+  .qgrid{display:grid; grid-template-columns:230px minmax(0, 1fr); gap:14px; align-items:start;}
+  .qgrid > aside{min-width:0;}
+  .qlib{display:grid; gap:6px;}
+  .qlib button{text-align:left; background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:9px 11px; cursor:pointer; font-size:13px;
+    transition:border-color .15s, background .15s, transform .15s;}
+  .qlib button:hover{border-color:var(--yellow); transform:translateX(2px);}
+  .qlib button.on{border-color:var(--yellow); background:var(--glow);}
+  .qlib .sec{font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted-2); margin:10px 2px 2px;}
+  .schema{font-family:var(--mono); font-size:11.5px;}
+  .schema details{border:1px solid var(--line); border-radius:8px; background:var(--panel); margin-bottom:5px;}
+  .schema summary{cursor:pointer; padding:6px 9px; display:flex; justify-content:space-between; gap:6px; list-style:none;}
+  .schema summary::-webkit-details-marker{display:none;}
+  .schema summary b{color:var(--yellow); font-weight:600;}
+  .schema summary span{color:var(--muted-2);}
+  .schema ul{list-style:none; margin:0; padding:0 9px 7px 18px; color:var(--muted);}
+  .schema ul li span{color:var(--muted-2);}
+  .schema .peek{margin:0 9px 8px; font-size:11px; background:none; border:1px dashed var(--line-2); color:var(--muted); border-radius:6px; padding:3px 8px; cursor:pointer;}
+  .schema .peek:hover{color:var(--yellow); border-color:var(--yellow);}
+  .editor-card{border-radius:14px; overflow:hidden; border:1px solid var(--line-2); background:#0A0E16;
+    box-shadow:0 20px 50px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.02), 0 0 60px -20px color-mix(in srgb, var(--yellow) 40%, transparent);}
+  :root[data-theme="light"] .editor-card{background:#FBFCFE; box-shadow:0 14px 36px rgba(30,40,60,.12);}
+  .editor-top{display:flex; align-items:center; gap:10px; padding:9px 12px; border-bottom:1px solid var(--line); background:var(--panel);}
+  .lights{display:flex; gap:6px;} .lights i{width:11px; height:11px; border-radius:50%; background:#FF5F57;} .lights i:nth-child(2){background:#FEBC2E;} .lights i:nth-child(3){background:#28C840;}
+  .editor-top .file{font-family:var(--mono); font-size:12px; color:var(--muted); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .run{display:inline-flex; align-items:center; gap:6px; background:var(--yellow); color:#14110A; border:0; border-radius:7px; padding:6px 12px; font-weight:700; font-size:12.5px; cursor:pointer;}
+  .run:hover{filter:brightness(1.06);}
+  .run kbd{font:10.5px var(--mono); opacity:.7;}
+  .ghost{background:none; border:1px solid var(--line-2); color:var(--muted); border-radius:7px; padding:5px 9px; font-size:12px; cursor:pointer;}
+  .ghost:hover{color:var(--text); border-color:var(--yellow);}
+  .editor{position:relative; display:grid; grid-template-columns:auto 1fr; font-family:var(--mono); font-size:13.5px; line-height:1.65;}
+  .gutter{padding:14px 10px 14px 14px; text-align:right; color:var(--muted-2); user-select:none; border-right:1px solid var(--line); white-space:pre;}
+  .code{position:relative; min-height:150px;}
+  .code pre, .code textarea{margin:0; padding:14px 16px; font:inherit; line-height:inherit; white-space:pre-wrap; word-break:break-word; tab-size:2; border:0;}
+  .code pre{position:absolute; inset:0; pointer-events:none; color:var(--text); overflow:hidden;}
+  .code textarea{position:relative; display:block; width:100%; min-height:150px; resize:vertical; background:transparent; color:transparent;
+    caret-color:var(--yellow); outline:none; overflow:hidden;}
+  .code textarea::selection{background:color-mix(in srgb, var(--blue) 35%, transparent); color:transparent;}
+  .tk-k{color:var(--purple); font-weight:600;} .tk-s{color:var(--green);} .tk-n{color:var(--orange);} .tk-c{color:var(--muted-2); font-style:italic;}
+  .tk-t{color:var(--yellow);} .tk-f{color:var(--blue);}
+  .qstatus{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; border-top:1px solid var(--line);
+    font-family:var(--mono); font-size:11.5px; color:var(--muted); background:var(--panel);}
+  .qstatus .ok{color:var(--green);} .qstatus .err{color:var(--pink);}
+  .spin{display:inline-block; width:10px; height:10px; border:2px solid var(--muted-2); border-top-color:var(--yellow); border-radius:50%; animation:spin .6s linear infinite; vertical-align:-1px;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .results{display:grid; grid-template-columns:minmax(0, 1fr); gap:14px; margin-top:14px;}
+  .results.with-chart{grid-template-columns:minmax(0, 1.25fr) minmax(0, 1fr);}
+  .rgrid-wrap{overflow:auto; max-height:420px; border-radius:12px; border:1px solid var(--line); background:var(--panel);}
+  .rgrid{width:100%; border-collapse:collapse; font-size:13px;}
+  .rgrid th{position:sticky; top:0; background:var(--panel-2); text-align:left; font-family:var(--mono); font-size:11px; color:var(--muted); font-weight:600; padding:8px 12px; border-bottom:1px solid var(--line); white-space:nowrap;}
+  .rgrid td{padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .rgrid td.num{font-family:var(--mono); text-align:right; color:var(--orange);}
+  .rgrid td.nul{color:var(--muted-2); font-style:italic;}
+  .rgrid tbody tr{animation:rowIn .35s ease both;}
+  .rgrid tbody tr:hover{background:var(--panel-2);}
+  @keyframes rowIn{from{opacity:0; transform:translateY(6px);}}
+  .qerr{padding:14px; border-radius:12px; border:1px solid color-mix(in srgb, var(--pink) 45%, transparent); background:color-mix(in srgb, var(--pink) 8%, transparent);
+    font-family:var(--mono); font-size:12.5px; line-height:1.6;}
+  .qerr b{color:var(--pink);}
+  .rchart{height:300px;}
+  @media (max-width:1100px){ .qgrid{grid-template-columns:minmax(0, 1fr);} .results.with-chart{grid-template-columns:minmax(0, 1fr);} .qlib{grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));} }
+  @media (max-width:560px){
+    .qhero{padding:20px 18px;} .editor{font-size:12.5px;} .gutter{padding-left:8px;}
+    #qlib{display:flex; overflow-x:auto; gap:8px; padding-bottom:4px; scrollbar-width:none;} #qlib::-webkit-scrollbar{display:none;}
+    #qlib .sec{display:none;} #qlib button{flex:0 0 auto; white-space:nowrap;}
+    #qlib + .qlib, #schema{display:none;}
+  }
+
   /* table view modal */
   .modal{position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.45); backdrop-filter:blur(3px); padding:16px;}
   .modal.show{display:flex;}
@@ -477,6 +552,7 @@
     <div class="rgroup"><span class="rgroup-label">View</span>
       <button class="rbtn" id="btnBookmarks" aria-haspopup="true"><span class="ic">🔖</span>Bookmarks</button>
       <button class="rbtn" id="btnTheme"><span class="ic" id="themeIc">☀</span>Theme</button>
+      <button class="rbtn" id="btnQuery"><span class="ic">⛁</span>Query me</button>
       <button class="rbtn" id="btnModel"><span class="ic">⧉</span>Model view</button>
     </div>
     <div class="rgroup"><span class="rgroup-label">Ask</span>
@@ -498,7 +574,10 @@
   <div class="body">
     <!-- view rail -->
     <nav class="rail" aria-label="Views">
-      <button class="active" id="railReport" data-tip="Report view" aria-label="Report view">
+      <button class="active" id="railQuery" data-tip="Query view · SQL" aria-label="Query view">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
+      </button>
+      <button id="railReport" data-tip="Report view" aria-label="Report view">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
       </button>
       <button id="railModel" data-tip="Model view" aria-label="Model view">
@@ -509,8 +588,44 @@
     <main class="canvas" id="canvas">
       <div class="focus-backdrop" id="focusBackdrop"></div>
 
+      <!-- ===================== QUERY VIEW ===================== -->
+      <div class="view active" id="viewQuery">
+        <div class="qhero">
+          <h1>Most resumes are documents.<br><em>Mine is a database.</em></h1>
+          <p>This is real SQLite running in your browser, loaded with my experience, skills and education. Run the query below, pick one from the library, or write your own.</p>
+          <div class="cta">
+            <button class="btn primary" type="button" data-goto-report>📊 Open the report</button>
+            <button class="btn" type="button" data-openchat>💬 Rather ask in plain English?</button>
+            <button class="btn" type="button" data-pdf>⤓ PDF resume</button>
+          </div>
+        </div>
+        <div class="qgrid">
+          <aside>
+            <div class="qlib" id="qlib"></div>
+            <div class="qlib"><div class="sec">Tables</div></div>
+            <div class="schema" id="schema"></div>
+          </aside>
+          <div style="min-width:0;">
+            <div class="editor-card">
+              <div class="editor-top">
+                <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span class="file">harshini_mitra.db — query.sql</span>
+                <button class="ghost" type="button" id="qReset" title="Reload the original data">↺ Reset</button>
+                <button class="run" type="button" id="qRun">▶ Run <kbd>Ctrl ⏎</kbd></button>
+              </div>
+              <div class="editor">
+                <div class="gutter" id="qGutter" aria-hidden="true">1</div>
+                <div class="code"><pre id="qHi" aria-hidden="true"></pre><textarea id="qSql" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="SQL query"></textarea></div>
+              </div>
+              <div class="qstatus"><span id="qState"><span class="spin"></span> loading SQLite…</span><span id="qMeta">harshini_mitra.db</span></div>
+            </div>
+            <div class="results" id="qResults"></div>
+          </div>
+        </div>
+      </div>
+
       <!-- ===================== REPORT VIEW ===================== -->
-      <div class="view active" id="viewReport">
+      <div class="view" id="viewReport">
 
         <!-- ---------- OVERVIEW ---------- -->
         <section class="page active" id="page-overview" data-title="Overview">
@@ -708,6 +823,7 @@
 <div id="printResume"></div>
 
 <script src="assets/vendor/chart-4.5.1.umd.min.js"></script>
+<script src="assets/vendor/sqljs/sql-wasm.js"></script>
 <script>
 (() => {
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
@@ -834,13 +950,20 @@ $$('.ptab').forEach(t => t.addEventListener('click', () => go(t.dataset.page)));
 $$('[data-back]').forEach(b => b.addEventListener('click', () => go(history.pop() || 'overview', {back:true})));
 
 function showView(v){
-  $('#viewReport').classList.toggle('active', v === 'report');
-  $('#viewModel').classList.toggle('active', v === 'model');
-  $('#railReport').classList.toggle('active', v === 'report');
-  $('#railModel').classList.toggle('active', v === 'model');
+  ['query', 'report', 'model'].forEach(k => {
+    const id = k[0].toUpperCase() + k.slice(1);
+    $('#view' + id).classList.toggle('active', v === k);
+    $('#rail' + id).classList.toggle('active', v === k);
+  });
   $('#btnModel').classList.toggle('active', v === 'model');
+  $('#btnQuery').classList.toggle('active', v === 'query');
+  $$('.ptab').forEach(t => t.classList.toggle('active', v === 'report' && t.dataset.page === current));
   if (v === 'model') { drawModel(); $('#pageCount').textContent = 'Model view'; }
+  if (v === 'query') { $('#pageCount').textContent = 'Query view · SQLite'; $('#canvas').scrollTop = 0; }
 }
+$('#railQuery').addEventListener('click', () => showView('query'));
+$('#btnQuery').addEventListener('click', () => showView('query'));
+$$('[data-goto-report]').forEach(b => b.addEventListener('click', () => go('overview')));
 $('#railReport').addEventListener('click', () => go(current));
 $('#railModel').addEventListener('click', () => showView('model'));
 $('#btnModel').addEventListener('click', () => showView($('#viewModel').classList.contains('active') ? 'report' : 'model'));
@@ -1280,7 +1403,7 @@ const mtables = [
   {id:'Education', c:'--green', x:250, y:390, cols:[['EduKey', 'int', 1], ['Degree', 'text'], ['Institution', 'text'], ['Status', 'text'], ['Tool', 'text']],
     rows:education.map((e, i) => ({EduKey:i + 1, Degree:e.title, Institution:e.meta, Status:e.badge, Tool:e.tools.join(', ') || '—'}))},
   {id:'Languages', c:'--orange', x:20, y:300, cols:[['Language', 'text', 1], ['Level', 'text']],
-    rows:languages.map(l => ({Language:l.replace('Basic ', ''), Level:l.startsWith('Basic') ? 'Basic' : 'Fluent'}))},
+    rows:languages.map(l => ({Language:l.replace('Basic ', ''), Level:l.startsWith('Basic') ? 'Basic' : 'Spoken'}))},
 ];
 const rels = [
   {a:'Roles', b:'Experience', ca:'1', cb:'*'},
@@ -1361,13 +1484,186 @@ function closeModal(){ $('#modal').classList.remove('show'); }
 $('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('[data-close]')) closeModal(); });
 
 /* =====================================================================
+   QUERY VIEW: the resume as a real SQLite database (sql.js)
+   ===================================================================== */
+const q = v => v === null || v === undefined ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`;
+const insert = (table, rows) => rows.map(r => `INSERT INTO ${table} VALUES (${r.map(q).join(', ')});`).join('\n');
+const plain = h => h.replace(/<[^>]+>/g, '');
+const summaries = ['Power BI KPI dashboards', 'QuickSight + Redshift reporting', 'QuickSight chatbot training', 'Automated PDF data extraction',
+                   'Client needs → dashboards', 'Data validation & quality checks', 'Presenting insights to stakeholders'];
+const SEED_SQL = `
+CREATE TABLE harshini (name TEXT, headline TEXT, location TEXT, available TEXT, work_rights TEXT, looking_for TEXT, experience_years REAL, email TEXT);
+CREATE TABLE roles (id INTEGER PRIMARY KEY, title TEXT, company TEXT, start_date TEXT, end_date TEXT, months INTEGER, client TEXT);
+CREATE TABLE highlights (id INTEGER PRIMARY KEY, role_id INTEGER REFERENCES roles(id), summary TEXT, detail TEXT);
+CREATE TABLE tools (name TEXT PRIMARY KEY, area TEXT, score REAL);
+CREATE TABLE highlight_tools (highlight_id INTEGER REFERENCES highlights(id), tool TEXT REFERENCES tools(name));
+CREATE TABLE skills (area TEXT PRIMARY KEY, score INTEGER);
+CREATE TABLE education (degree TEXT, institution TEXT, status TEXT, year INTEGER);
+CREATE TABLE certifications (name TEXT, issuer TEXT, year INTEGER);
+CREATE TABLE languages (language TEXT, level TEXT);
+CREATE TABLE strengths (strength TEXT);
+CREATE TABLE hobbies (hobby TEXT, note TEXT);
+${insert('harshini', [['Harshini Mitra', 'Data & Analytics · Software Developer / Data Analyst', 'Sydney, NSW', 'Immediately · any day', 'Student visa · part-time',
+  'Part-time tech support, data or BI role', 2.3, 'harshini.g.official@gmail.com']])}
+${insert('roles', [[1, 'Software Developer / Data Analyst', 'Carvewing Solutions', '2023-09', '2025-12', 27, 'Paxia']])}
+${insert('highlights', points.map((p, i) => [i + 1, 1, summaries[i], plain(p.text)]))}
+${insert('tools', tools.map(t => [t.name, t.area, t.score]))}
+${insert('highlight_tools', points.flatMap((p, i) => p.tools.map(t => [i + 1, t])))}
+${insert('skills', AREAS.map(a => [a, skills[a]]))}
+${insert('education', [['Master of Data Science and Innovation', 'University of Technology Sydney', 'In progress', 2027],
+                       ['Bachelor of Engineering, Computer Science', 'Sapthagiri College of Engineering, Bangalore', 'Completed', 2023]])}
+${insert('certifications', [['Machine Learning Using Python', 'ATS Learning Solutions', 2020], ['Data Analysis using Excel, Tableau & Python', 'Alnitek Solutions', 2022]])}
+${insert('languages', [['English', 'Spoken'], ['Hindi', 'Spoken'], ['Kannada', 'Spoken'], ['Arabic', 'Basic']])}
+${insert('strengths', [['Clear communication'], ['Handling multiple clients at once'], ['Translating business needs into requirements'], ['Learning new systems quickly']])}
+${insert('hobbies', [['Valorant', 'favourite game 🎮'], ['Gaming', 'all kinds'], ['Swimming', ''], ['Badminton', ''], ['Reading', '']])}
+`;
+const HERO_SQL = `-- Most resumes are documents. Mine is a database.
+SELECT name, headline, available, location
+FROM harshini;`;
+const library = [
+  {sec:'Start here'},
+  {t:'👋 Who is she?', sql:HERO_SQL},
+  {t:'📅 Can she start now?', sql:'SELECT available, work_rights, looking_for\nFROM harshini;'},
+  {t:'💼 What did she do?', sql:'SELECT h.id, h.summary, r.company\nFROM highlights AS h\nJOIN roles AS r ON r.id = h.role_id;'},
+  {sec:'Skills'},
+  {t:'🧰 Top tools', sql:'SELECT name AS tool, score\nFROM tools\nORDER BY score DESC;'},
+  {t:'📈 Skill areas', sql:'SELECT area, score\nFROM skills\nORDER BY score DESC;'},
+  {t:'🔎 Tools used at work', sql:'-- which tools show up in her work highlights?\nSELECT tool, COUNT(*) AS highlights\nFROM highlight_tools\nGROUP BY tool\nORDER BY highlights DESC;'},
+  {t:'🧠 Strengths', sql:'SELECT * FROM strengths;'},
+  {sec:'Background'},
+  {t:'🎓 Education & certs', sql:"SELECT degree AS name, institution AS issuer, year\nFROM education\nUNION ALL\nSELECT name, issuer, year FROM certifications\nORDER BY year DESC;"},
+  {t:'⏱️ Experience in years', sql:'SELECT company, months,\n       ROUND(months / 12.0, 1) AS years\nFROM roles;'},
+  {t:'🗣️ Languages', sql:'SELECT * FROM languages;'},
+  {t:'🎮 After hours', sql:'SELECT * FROM hobbies;'},
+];
+let db = null, SQL = null, sqlReady = null;
+function loadDb(){ if (db) db.close(); db = new SQL.Database(); db.run(SEED_SQL); }
+function initSql(){
+  if (!sqlReady) sqlReady = (typeof initSqlJs === 'function'
+      ? initSqlJs({locateFile:f => 'assets/vendor/sqljs/' + f})
+      : Promise.reject(new Error('sql.js did not load')))
+    .then(s => { SQL = s; loadDb(); renderSchema(); setState('ok', 'SQLite ready · 11 tables'); })
+    .catch(e => setState('err', 'Could not start SQLite in this browser: ' + e.message));
+  return sqlReady;
+}
+
+const KW = 'SELECT|FROM|WHERE|JOIN|LEFT|INNER|ON|AS|GROUP|BY|ORDER|DESC|ASC|LIMIT|OFFSET|AND|OR|NOT|IN|IS|NULL|LIKE|DISTINCT|HAVING|UNION|ALL|CASE|WHEN|THEN|ELSE|END|WITH|INSERT|INTO|VALUES|UPDATE|SET|DELETE|CREATE|TABLE|DROP|BETWEEN|EXISTS';
+const FN = 'COUNT|SUM|AVG|MIN|MAX|ROUND|LENGTH|UPPER|LOWER|COALESCE|SUBSTR|REPLACE|GROUP_CONCAT|TRIM|ABS|DATE|STRFTIME';
+const TABLES = ['harshini', 'roles', 'highlights', 'tools', 'highlight_tools', 'skills', 'education', 'certifications', 'languages', 'strengths', 'hobbies'];
+const hiRe = new RegExp(`(--[^\\n]*)|('(?:[^']|'')*')|\\b(\\d+(?:\\.\\d+)?)\\b|\\b(${KW})\\b|\\b(${FN})(?=\\s*\\()|\\b(${TABLES.join('|')})\\b`, 'gi');
+const escH = s => s.replace(/[&<>]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;'}[c]));
+function highlight(src){
+  let out = '', last = 0;
+  src.replace(hiRe, (m, c, str, num, kw, fn, tb, idx) => {
+    out += escH(src.slice(last, idx));
+    const cls = c ? 'c' : str ? 's' : num ? 'n' : kw ? 'k' : fn ? 'f' : 't';
+    out += `<span class="tk-${cls}">${escH(m)}</span>`;
+    last = idx + m.length;
+    return m;
+  });
+  return out + escH(src.slice(last)) + '\n';
+}
+const ta = $('#qSql');
+function syncEditor(){
+  $('#qHi').innerHTML = highlight(ta.value);
+  ta.style.height = 'auto'; ta.style.height = Math.max(150, ta.scrollHeight) + 'px';
+  $('#qGutter').textContent = Array.from({length:ta.value.split('\n').length}, (_, i) => i + 1).join('\n');
+}
+ta.addEventListener('input', syncEditor);
+ta.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runQuery(); }
+  else if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); const a = ta.selectionStart; ta.setRangeText('  ', a, ta.selectionEnd, 'end'); syncEditor(); }
+});
+function setState(kind, text){ $('#qState').innerHTML = kind === 'busy' ? `<span class="spin"></span> ${text}` : `<span class="${kind}">${kind === 'ok' ? '✓' : '✗'}</span> ${text}`; }
+
+let qChart = null;
+function runQuery(){
+  stopTyping();
+  const sql = ta.value.trim();
+  if (!sql) return;
+  if (!db) { setState('busy', 'loading SQLite…'); initSql().then(() => db && runQuery()); return; }
+  setState('busy', 'running…');
+  const out = $('#qResults');
+  if (qChart) { qChart.destroy(); qChart = null; }
+  const t0 = performance.now();
+  let res;
+  try { res = db.exec(sql); }
+  catch (e) {
+    out.className = 'results';
+    out.innerHTML = `<div class="qerr"><b>SQLite error:</b> ${escH(e.message)}<br><span style="color:var(--muted)">Tables you can query: ${TABLES.join(', ')} — or pick a query from the library.</span></div>`;
+    setState('err', 'query failed'); return;
+  }
+  const ms = Math.max(1, Math.round(performance.now() - t0));
+  if (/\b(drop|delete|update|insert|create|alter)\b/i.test(sql)) renderSchema();
+  const r = res[res.length - 1];
+  if (!r) { out.className = 'results'; out.innerHTML = `<div class="qerr" style="border-color:var(--line); background:var(--panel)">Done — no rows returned. ${/drop|delete/i.test(sql) ? "You just changed my data 😱 — hit <b>↺ Reset</b> to put it back." : ''}</div>`; setState('ok', `ok · ${ms} ms`); return; }
+  const {columns, values} = r;
+  const isNum = c => values.length && values.every(row => row[c] === null || typeof row[c] === 'number');
+  out.innerHTML = `<div class="rgrid-wrap"><table class="rgrid"><thead><tr>${columns.map(c => `<th>${escH(c)}</th>`).join('')}</tr></thead>
+    <tbody>${values.map((row, i) => `<tr style="animation-delay:${Math.min(i, 12) * 35}ms">${row.map((v, c) =>
+      v === null ? '<td class="nul">NULL</td>' : `<td class="${typeof v === 'number' ? 'num' : ''}">${escH(String(v))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+  // auto-visualise: one text column + one numeric column -> bar chart
+  const lab = columns.findIndex((_, c) => !isNum(c)), num = columns.findIndex((_, c) => isNum(c));
+  const chartable = lab >= 0 && num >= 0 && values.length >= 2 && values.length <= 20;
+  out.className = 'results' + (chartable ? ' with-chart' : '');
+  if (chartable) {
+    out.insertAdjacentHTML('beforeend', `<div class="visual" style="padding:12px 14px;"><div class="vhead"><div><h3>${escH(columns[num])} by ${escH(columns[lab])}</h3><div class="sub">auto-visualised from your query</div></div></div><div class="rchart"><canvas id="qChart"></canvas></div></div>`);
+    chartDefaults();
+    qChart = new Chart($('#qChart'), {type:'bar',
+      data:{labels:values.map(v => v[lab]), datasets:[{data:values.map(v => v[num]), borderRadius:6, barThickness:16,
+        backgroundColor:values.map(v => alpha(css(AREA_COLOR[toolArea[v[lab]] || v[lab]] || '--yellow'), .9))}]},
+      options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:reduceMotion ? false : {duration:700, easing:'easeOutQuart'},
+        scales:{x:{beginAtZero:true, grid:{color:css('--line')}}, y:{grid:{display:false}, ticks:{color:css('--text'), font:{family:"'Inter'", size:11.5, weight:'600'}}}},
+        plugins:{legend:{display:false}}}});
+  }
+  setState('ok', `${values.length} row${values.length === 1 ? '' : 's'} · ${ms} ms`);
+  $('#qMeta').textContent = `${columns.length} column${columns.length === 1 ? '' : 's'}`;
+}
+$('#qRun').addEventListener('click', runQuery);
+$('#qReset').addEventListener('click', () => { if (!SQL) return; loadDb(); renderSchema(); setState('ok', 'data reset to the original resume'); toast('↺ Database reset'); });
+
+function setQuery(sql, run){ stopTyping(); ta.value = sql; syncEditor(); if (run) runQuery(); }
+$('#qlib').innerHTML = library.map((l, i) => l.sec ? `<div class="sec">${l.sec}</div>` : `<button type="button" data-q="${i}">${l.t}</button>`).join('');
+$$('#qlib [data-q]').forEach(b => b.addEventListener('click', () => {
+  $$('#qlib [data-q]').forEach(x => x.classList.toggle('on', x === b));
+  setQuery(library[+b.dataset.q].sql, true);
+}));
+function renderSchema(){
+  if (!db) return;
+  $('#schema').innerHTML = TABLES.map(t => {
+    let cols = [], n = 0;
+    try { cols = db.exec(`PRAGMA table_info(${t})`)[0].values.map(v => [v[1], v[2]]); n = db.exec(`SELECT COUNT(*) FROM ${t}`)[0].values[0][0]; } catch (e) { return ''; }
+    return `<details><summary><b>${t}</b><span>${n} rows</span></summary><ul>${cols.map(([c, ty]) => `<li>${c} <span>${ty.toLowerCase()}</span></li>`).join('')}</ul>
+      <button class="peek" type="button" data-peek="${t}">SELECT * FROM ${t}</button></details>`;
+  }).join('');
+  $$('#schema [data-peek]').forEach(b => b.addEventListener('click', () => setQuery(`SELECT *\nFROM ${b.dataset.peek}\nLIMIT 20;`, true)));
+}
+
+// intro: type the first query out like someone is writing it, then run it
+let typer = null;
+function stopTyping(){ if (typer) { clearInterval(typer); typer = null; ta.value = HERO_SQL; syncEditor(); } }
+function typeHero(){
+  ta.value = ''; syncEditor();
+  if (reduceMotion) { setQuery(HERO_SQL); initSql().then(runQuery); return; }
+  let i = 0;
+  typer = setInterval(() => {
+    i += HERO_SQL[i] === ' ' ? 2 : 1;
+    ta.value = HERO_SQL.slice(0, i); syncEditor();
+    if (i >= HERO_SQL.length) { clearInterval(typer); typer = null; initSql().then(() => setTimeout(runQuery, 250)); }
+  }, 32);
+}
+ta.addEventListener('pointerdown', stopTyping);
+initSql();
+
+/* =====================================================================
    BOOT SEQUENCE
    ===================================================================== */
 function boot(){
   const el = $('#boot'), steps = $$('#bootSteps li'), bar = $('#bootBar');
   let seen = false; try { seen = sessionStorage.getItem('report-booted') === '1'; sessionStorage.setItem('report-booted', '1'); } catch(e) {}
   let done = false;
-  const finish = () => { if (done) return; done = true; el.classList.add('done'); countUp(); buildCharts(); setTimeout(() => toast('👋 Welcome! Click any visual to <b>cross-filter</b> · try <b>Bookmarks</b> and <b>Model view</b>'), 500); };
+  const finish = () => { if (done) return; done = true; el.classList.add('done'); countUp(); buildCharts(); typeHero();
+    setTimeout(() => toast('👋 Welcome! This resume is a <b>live database</b> — query it, or open the <b>report</b>'), 600); };
   if (seen || reduceMotion) { finish(); return; }
   el.addEventListener('click', finish);
   steps.forEach((s, i) => setTimeout(() => {
@@ -1381,7 +1677,7 @@ function boot(){
 /* =====================================================================
    INIT
    ===================================================================== */
-renderTimeline(); renderStatic(); renderFields(); render(); go('overview');
+renderTimeline(); renderStatic(); renderFields(); render(); go('overview'); showView('query');
 showMeasure('Years Experience');
 boot();
 let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if ($('#viewModel').classList.contains('active')) { fitModel(); drawRels(); } }, 100); });
