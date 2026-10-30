@@ -62,7 +62,20 @@
   .links a:hover{border-color:var(--pink); color:#C2566A;}
   .layout{display:flex; align-items:center; justify-content:center; gap:56px; flex-wrap:wrap; width:100%; max-width:1080px;}
   .me{display:flex; flex-direction:column; align-items:center; padding-top:40px;}
-  .chat{width:min(420px, 100%); height:540px;}
+  .chat{width:min(420px, 100%); height:540px; display:none;}
+  .layout.chatting .chat{display:block; animation:chatIn .4s cubic-bezier(.2,.9,.3,1.2);}
+  @keyframes chatIn{from{opacity:0; transform:translateX(30px) scale(.97);} to{opacity:1; transform:none;}}
+  .chat .rc.inline .rc-close{display:block;}
+  .chat-btn{margin-top:22px; display:inline-flex; align-items:center; gap:10px; border:0; cursor:pointer;
+    font:700 16px 'Inter', sans-serif; color:#fff; padding:14px 26px; border-radius:999px;
+    background:linear-gradient(135deg, #F28BA0, #E0607E); box-shadow:0 12px 28px rgba(224,96,126,.35);
+    position:relative; transition:transform .2s, box-shadow .2s;}
+  .chat-btn::after{content:""; position:absolute; inset:-6px; border-radius:999px; border:2px solid rgba(232,118,138,.45); animation:ring 2.2s ease-out infinite;}
+  @keyframes ring{0%{transform:scale(.95); opacity:1;} 100%{transform:scale(1.18); opacity:0;}}
+  .chat-btn:hover{transform:translateY(-2px); box-shadow:0 16px 34px rgba(224,96,126,.45);}
+  .chat-btn:focus-visible{outline:3px solid #3A2422; outline-offset:4px;}
+  .layout.chatting .chat-btn{display:none;}
+  .chat-btn small{font-weight:500; font-size:12px; opacity:.9;}
   @media (max-width:900px){ .layout{gap:28px;} .chat{height:480px;} }
   @media (prefers-reduced-motion: reduce){ .fx{display:none;} .stage.boing, .stage.shake{animation:none;} .ov{transition:none;} }
 </style>
@@ -89,6 +102,7 @@
     </div>
   </div>
 </div>
+<button class="chat-btn" id="chatBtn" type="button">💬 Chat with me <small>· ask me anything</small></button>
 <div class="hint">Move your mouse (or tap) around her 👀 · click to say hi · double-click for something cool</div>
 <div class="links">
   <a href="index.html">📊 Dashboard resume</a>
@@ -311,6 +325,28 @@
     set(k, true);
     face.t = setTimeout(() => set(k, false), 1300);
   });
+
+  /* ---- chat: hidden until asked for; she glides aside to make room ---- */
+  const layout = document.querySelector('.layout'), me = document.querySelector('.me');
+  function toggleChat(open){
+    const before = me.getBoundingClientRect();
+    layout.classList.toggle('chatting', open);
+    const after = me.getBoundingClientRect();
+    if (!reduceMotion) me.animate([{transform:`translate(${before.left - after.left}px, ${before.top - after.top}px)`}, {transform:'none'}],
+                                  {duration:450, easing:'cubic-bezier(.2,.9,.3,1)'});
+    if (open) {
+      const chatEl = $('chatMount');
+      if (innerWidth <= 900) setTimeout(() => chatEl.scrollIntoView({behavior:reduceMotion ? 'auto' : 'smooth', block:'start'}), 120);
+      setTimeout(() => { const i = chatEl.querySelector('.rc-input'); if (i && matchMedia('(pointer:fine)').matches) i.focus(); }, 300);
+      set('happy', true); clearTimeout(face.t); face.t = setTimeout(() => set('happy', false), 1000);
+    } else {
+      $('chatBtn').focus();
+    }
+  }
+  $('chatBtn').addEventListener('click', () => toggleChat(true));
+  $('chatMount').addEventListener('click', e => { if (e.target.closest('.rc-close')) toggleChat(false); });
+  $('chatMount').addEventListener('keydown', e => { if (e.key === 'Escape') toggleChat(false); });
+  setTimeout(() => { if (mood === 'normal' && !layout.classList.contains('chatting')) say('Ask me anything! 💬<small>tap the button below</small>', 2600); }, 2200);
 
   /* ---- coming back to the tab ---- */
   let leftAt = 0;

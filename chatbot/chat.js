@@ -247,7 +247,10 @@
     const m = window.RESUME_CHAT_MODEL;
     const bytes = Uint8Array.from(atob(m.weights), c => c.charCodeAt(0));
     model = Object.assign({}, m, {W: new Int8Array(bytes.buffer)});
-    window.ResumeChat = {ask, classify};
+    // lets other parts of the page (e.g. the dashboard's Q&A visual) use the same model
+    const reply = q => { const {label, confidence} = classify(q); return label ? Object.assign({label, confidence}, model.answers[label]) : null; };
+    window.ResumeChat = {ask, classify, reply, starters: model.starters};
+    window.dispatchEvent(new Event('resumechat:ready'));
     if (mountId) greet();
   }
   if (window.RESUME_CHAT_MODEL) ready();
