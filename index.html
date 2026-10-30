@@ -479,7 +479,7 @@
           <div class="th" style="margin:0"><h3>Master's at UTS</h3></div>
           <div class="ring"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="50"/><circle class="fg" id="ringFg" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
             <div class="in"><div><b id="monthsLeft">–</b><span>months to go</span></div></div></div>
-          <div class="cap">Data Science &amp; Innovation · graduating <b>Nov 2027</b></div>
+          <div class="cap">Data Science &amp; Innovation<br>Feb 2026 → graduating <b>Nov 2027</b></div>
         </div>
         <div class="tile s4">
           <div class="th"><h3>Off the clock</h3><span class="hint">when I'm not in a dashboard</span></div>
@@ -637,8 +637,8 @@ const points = [
   {text:'Presented insights and reports to stakeholders, highlighting trends, risks, and opportunities.', tools:[], skills:['Stakeholder Comms', 'BI & Dashboards']},
 ];
 const education = [
-  {badge:'In progress · Nov 2027', title:'Master of Data Science and Innovation', meta:'University of Technology Sydney', tools:[], skills:[]},
-  {badge:'Completed · 2023', title:'Bachelor of Engineering, Computer Science', meta:'Sapthagiri College of Engineering, Bangalore', tools:['JavaScript', 'C / C++', 'Java'], skills:[]},
+  {badge:'Feb 2026 — Nov 2027 · in progress', title:'Master of Data Science and Innovation', meta:'University of Technology Sydney', tools:[], skills:[]},
+  {badge:'Aug 2019 — 2023 · completed', title:'Bachelor of Engineering, Computer Science', meta:'Sapthagiri College of Engineering, Bangalore', tools:['JavaScript', 'C / C++', 'Java'], skills:[]},
 ];
 const certs = [
   {badge:'2020', title:'Machine Learning Using Python', meta:'ATS Learning Solutions', tools:['Python (pandas)'], skills:['Programming']},
@@ -755,12 +755,13 @@ function countUp(){
     requestAnimationFrame(step);
   });
 }
-// graduation countdown (whole months until Nov 2027)
+// Master's progress: Feb 2026 -> Nov 2027, ring fills with the months done
 (() => {
-  const now = new Date(), grad = new Date(2027, 10, 1);
-  const months = Math.max(0, (grad.getFullYear() - now.getFullYear()) * 12 + grad.getMonth() - now.getMonth());
+  const now = new Date(), start = new Date(2026, 1, 1), grad = new Date(2027, 10, 1);
+  const monthsBetween = (a, b) => (b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth();
+  const months = Math.max(0, monthsBetween(now, grad));
   $('#monthsLeft').textContent = months;
-  const frac = Math.max(0.04, Math.min(1, 1 - months / 24));   // ring shows the last two years filling up
+  const frac = Math.max(0.04, Math.min(1, monthsBetween(start, now) / monthsBetween(start, grad)));
   setTimeout(() => $('#ringFg').style.strokeDashoffset = (314.16 * (1 - frac)).toFixed(1), 250);
 })();
 
@@ -769,21 +770,26 @@ function renderTimeline(){
   const f = d => (d.getTime() - start) / (end - start), pct = d => (f(d) * 100).toFixed(2) + '%';
   const edge = d => f(d) < .1 ? ' l' : f(d) > .88 ? ' r' : '';
   const now = new Date();
+  const span = (a, b, bg, title) => `<div class="tl-span" title="${title}" style="left:${pct(a)}; width:calc(${pct(b)} - ${pct(a)}); background:${bg}"></div>`;
   const ms = [
-    {d:new Date(2020, 5), t:'ML with Python', s:'certification · 2020', c:'--honey', pos:'up'},
-    {d:new Date(2022, 5), t:'Data Analysis cert.', s:'Excel · Tableau · Python', c:'--honey', pos:'down'},
-    {d:new Date(2023, 5), t:'B.E. Computer Science', s:'completed · 2023', c:'--iris', pos:'up'},
-    {d:new Date(2023, 8), t:'Joined Carvewing', s:'Sep 2023', c:'--rose', pos:'down'},
-    {d:new Date(2025, 11), t:'Moved on to UTS', s:'Dec 2025', c:'--rose', pos:'up'},
-    {d:now, t:'Now', s:"Master's at UTS", c:'--green', pos:'down', now:true},
+    {d:new Date(2019, 7), t:'Started B.E.', s:'Computer Science · Aug 2019', c:'--iris', pos:'up'},
+    {d:new Date(2020, 5), t:'ML with Python', s:'certification · 2020', c:'--honey', pos:'down'},
+    {d:new Date(2022, 5), t:'Data Analysis cert.', s:'Excel · Tableau · Python', c:'--honey', pos:'up'},
+    {d:new Date(2023, 5), t:'B.E. completed', s:'2023', c:'--iris', pos:'down'},
+    {d:new Date(2023, 8), t:'Joined Carvewing', s:'Sep 2023', c:'--rose', pos:'up'},
+    {d:new Date(2025, 11), t:'Left Carvewing', s:'Dec 2025', c:'--rose', pos:'down', align:' r'},
+    {d:new Date(2026, 1), t:"Started Master's", s:'UTS · Feb 2026', c:'--teal', pos:'up'},
+    {d:now, t:'Now', s:'you are here', c:'--green', pos:'down', now:true, align:' l'},
     {d:new Date(2027, 10), t:'Graduate', s:'Nov 2027', c:'--teal', pos:'up'},
   ];
   $('#timeline').innerHTML = `<div class="tl-axis"></div>
-    <div class="tl-span" style="left:${pct(new Date(2023, 8))}; width:calc(${pct(new Date(2025, 11))} - ${pct(new Date(2023, 8))}); background:color-mix(in srgb, var(--rose) 35%, transparent)"></div>
-    <div class="tl-span" style="left:${pct(now)}; width:calc(${pct(new Date(2027, 10))} - ${pct(now)}); background:repeating-linear-gradient(90deg, color-mix(in srgb, var(--teal) 40%, transparent) 0 6px, transparent 6px 10px)"></div>
+    ${span(new Date(2019, 7), new Date(2023, 5), 'color-mix(in srgb, var(--iris) 30%, transparent)', 'B.E. Computer Science · Aug 2019 — 2023')}
+    ${span(new Date(2023, 8), new Date(2025, 11), 'color-mix(in srgb, var(--rose) 35%, transparent)', 'Carvewing Solutions · Sep 2023 — Dec 2025')}
+    ${span(new Date(2026, 1), now, 'color-mix(in srgb, var(--teal) 45%, transparent)', "Master's at UTS · Feb 2026 — now")}
+    ${span(now, new Date(2027, 10), 'repeating-linear-gradient(90deg, color-mix(in srgb, var(--teal) 40%, transparent) 0 6px, transparent 6px 10px)', "Master's at UTS · to Nov 2027")}
     ${[2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027].map(y => `<span class="tl-year" style="left:${pct(new Date(y, 0, 1))}">${y}</span>`).join('')}
     ${ms.map(m => `<span class="tl-dot${m.now ? ' now' : ''}" style="left:${pct(m.d)}; --c:var(${m.c})" title="${m.t} · ${m.s}"></span>
-      <div class="tl-lbl ${m.pos}${edge(m.d)}" style="left:${pct(m.d)}"><b>${m.t}</b><span>${m.s}</span></div>`).join('')}`;
+      <div class="tl-lbl ${m.pos}${m.align || edge(m.d)}" style="left:${pct(m.d)}"><b>${m.t}</b><span>${m.s}</span></div>`).join('')}`;
   $('#timelineList').innerHTML = ms.map(m => `<li style="--c:var(${m.c})">${m.t}<span>${m.s}</span></li>`).join('');
 }
 function tagChips(it){ return it.tools.map(t => `<span class="tag c" style="--c:var(${AREA_COLOR[toolArea[t]]})">${t}</span>`).join('') + it.skills.map(s => `<span class="tag">${s}</span>`).join(''); }
@@ -791,7 +797,7 @@ const level = s => s >= 9 ? ['Expert', '--rose'] : s >= 7 ? ['Advanced', '--iris
 function renderLists(){
   $('#points').innerHTML = points.map((p, i) => `<li class="point ${filter ? (matches(p) ? 'match' : 'dim') : ''}"><span class="n">${i + 1}</span><div><p>${p.text}</p><div class="tagrow" style="margin:0">${tagChips(p)}</div></div></li>`).join('');
   const card = (it, pill) => `<div class="card ${filter ? (matches(it) ? 'match' : 'dim') : ''}"><span class="pill ${pill}">${it.badge}</span><h4>${it.title}</h4><div class="meta">${it.meta}</div>${it.tools.length ? `<div class="tagrow">${tagChips(it)}</div>` : ''}</div>`;
-  $('#eduCards').innerHTML = education.map(e => card(e, e.badge.startsWith('In') ? 'rose' : 'green')).join('');
+  $('#eduCards').innerHTML = education.map(e => card(e, e.badge.includes('progress') ? 'rose' : 'green')).join('');
   $('#certCards').innerHTML = certs.map(c => card(c, 'green')).join('');
   $('#toolTable').innerHTML = `<thead><tr><th>Tool</th><th>Skill area</th><th style="width:34%">Proficiency</th><th>Evidence</th><th>Level</th></tr></thead><tbody>${tools.map(t => {
     const [lv, lc] = level(t.score), ev = evidenceFor(it => it.tools.includes(t.name)), sel = filter && filter.kind === 'tool' && filter.values.has(t.name);
@@ -814,7 +820,7 @@ function renderStatic(){
     ['Location', 'Sydney', 'Ideally near the CBD or within ~10 km · on-site, hybrid or remote.'],
     ['Experience', '2.3 yrs · Software Developer / Data Analyst', 'Carvewing Solutions, Sep 2023 — Dec 2025 · clients including Paxia.'],
     ['Top tools', 'Power BI · QuickSight · SQL · Python', 'Plus Tableau, JavaScript, C/C++ and Java.'],
-    ['Education', 'Master of Data Science & Innovation, UTS', 'Graduating Nov 2027 · B.E. Computer Science, 2023.'],
+    ['Education', 'Master of Data Science & Innovation, UTS', 'Feb 2026 — Nov 2027 · B.E. Computer Science, Aug 2019 — 2023.'],
     ['Strengths', 'Clear communication · client relationships', 'Comfortable handling several clients at once.'],
     ['Pay', 'Open to discussion', 'Happy to talk through what fits the role.'],
   ];
@@ -991,8 +997,8 @@ function buildPrint(){
       <p><b>Business:</b> requirements translation, data quality, stakeholder communication</p>
     </div>
     <h2>Education</h2>
-    <div class="row"><b>Master of Data Science and Innovation · University of Technology Sydney</b><span class="muted">expected Nov 2027</span></div>
-    <div class="row"><b>Bachelor of Engineering, Computer Science · Sapthagiri College of Engineering, Bangalore</b><span class="muted">2023</span></div>
+    <div class="row"><b>Master of Data Science and Innovation · University of Technology Sydney</b><span class="muted">Feb 2026 — Nov 2027 (expected)</span></div>
+    <div class="row"><b>Bachelor of Engineering, Computer Science · Sapthagiri College of Engineering, Bangalore</b><span class="muted">Aug 2019 — 2023</span></div>
     <h2>Certifications</h2>
     ${certs.map(c => `<div class="row"><span>${c.title}</span><span class="muted">${c.meta} · ${c.badge}</span></div>`).join('')}
     <h2>Additional</h2>
@@ -1017,7 +1023,7 @@ CREATE TABLE highlights (id INTEGER PRIMARY KEY, role_id INTEGER REFERENCES role
 CREATE TABLE tools (name TEXT PRIMARY KEY, area TEXT, score REAL);
 CREATE TABLE highlight_tools (highlight_id INTEGER REFERENCES highlights(id), tool TEXT REFERENCES tools(name));
 CREATE TABLE skills (area TEXT PRIMARY KEY, score INTEGER);
-CREATE TABLE education (degree TEXT, institution TEXT, status TEXT, year INTEGER);
+CREATE TABLE education (degree TEXT, institution TEXT, status TEXT, start_date TEXT, year INTEGER);
 CREATE TABLE certifications (name TEXT, issuer TEXT, year INTEGER);
 CREATE TABLE languages (language TEXT, level TEXT);
 CREATE TABLE strengths (strength TEXT);
@@ -1029,7 +1035,7 @@ ${insert('highlights', points.map((p, i) => [i + 1, 1, summaries[i], plain(p.tex
 ${insert('tools', tools.map(t => [t.name, t.area, t.score]))}
 ${insert('highlight_tools', points.flatMap((p, i) => p.tools.map(t => [i + 1, t])))}
 ${insert('skills', AREAS.map(a => [a, skills[a]]))}
-${insert('education', [['Master of Data Science and Innovation', 'University of Technology Sydney', 'In progress', 2027], ['Bachelor of Engineering, Computer Science', 'Sapthagiri College of Engineering, Bangalore', 'Completed', 2023]])}
+${insert('education', [['Master of Data Science and Innovation', 'University of Technology Sydney', 'In progress', '2026-02', 2027], ['Bachelor of Engineering, Computer Science', 'Sapthagiri College of Engineering, Bangalore', 'Completed', '2019-08', 2023]])}
 ${insert('certifications', [['Machine Learning Using Python', 'ATS Learning Solutions', 2020], ['Data Analysis using Excel, Tableau & Python', 'Alnitek Solutions', 2022]])}
 ${insert('languages', [['English', 'Spoken'], ['Hindi', 'Spoken'], ['Kannada', 'Spoken'], ['Arabic', 'Basic']])}
 ${insert('strengths', [['Clear communication'], ['Handling multiple clients at once'], ['Translating business needs into requirements'], ['Learning new systems quickly']])}

@@ -202,7 +202,7 @@
     },
     {
       "id": "current_status",
-      "answer": "Right now I'm studying a Master of Data Science and Innovation at the University of Technology Sydney (graduating November 2027), and I'm looking for a part-time role in technical support, data or BI alongside my studies.",
+      "answer": "Right now I'm studying a Master of Data Science and Innovation at the University of Technology Sydney (started February 2026, graduating November 2027), and I'm looking for a part-time role in technical support, data or BI alongside my studies.",
       "follow": [
         "Are you available to start?",
         "Do you have work rights?"
@@ -574,7 +574,7 @@
     },
     {
       "id": "education",
-      "answer": "I'm studying a Master of Data Science and Innovation at the University of Technology Sydney (UTS), graduating in November 2027. Before that I completed a Bachelor of Engineering in Computer Science at Sapthagiri College of Engineering, Bangalore, in 2023.",
+      "answer": "I'm studying a Master of Data Science and Innovation at the University of Technology Sydney (UTS) — I started in February 2026 and graduate in November 2027. Before that I did a Bachelor of Engineering in Computer Science at Sapthagiri College of Engineering, Bangalore, from August 2019 to 2023.",
       "follow": [
         "When do you graduate?",
         "Do you have any certifications?"
@@ -596,7 +596,9 @@
         "which university",
         "do you have a degree",
         "what course are you doing",
-        "computer science degree"
+        "computer science degree",
+        "when did you do your bachelors",
+        "when did you study engineering"
       ],
       "tests": [
         "what's your educational background",
@@ -606,7 +608,7 @@
     },
     {
       "id": "graduation",
-      "answer": "I'm graduating from my Master of Data Science and Innovation at UTS in November 2027.",
+      "answer": "I started my Master of Data Science and Innovation at UTS in February 2026, and I'm graduating in November 2027.",
       "follow": [
         "Are you available to start?",
         "Do you have work rights?"
@@ -622,7 +624,11 @@
         "when do you finish uni",
         "how many years left in your studies",
         "final year",
-        "when will you complete your degree"
+        "when will you complete your degree",
+        "when did you start your masters",
+        "when did you start uni",
+        "when did you start at uts",
+        "start date of your degree"
       ],
       "tests": [
         "when do you finish",
