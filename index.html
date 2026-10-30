@@ -472,7 +472,7 @@
       <div class="grid">
         <div class="tile s5 hey">
           <div class="th"><h3 id="fitTitle">Hi, I'm Harshini</h3><span class="hint" id="fitHint">profile</span></div>
-          <p>I turn messy data into dashboards people actually use. Over <b>two years at Carvewing Solutions</b> I built Power BI and QuickSight reporting, wrote SQL and automated the boring bits with Python — and I'm at my best with people, understanding what a client needs and bringing it to the team.</p>
+          <p id="heyIntro">I turn messy data into dashboards people actually use. Over <b>two years at Carvewing Solutions</b> I built Power BI and QuickSight reporting, wrote SQL and automated the boring bits with Python — and I'm at my best with people, understanding what a client needs and bringing it to the team.</p>
           <ul class="fit" id="fitList"></ul>
         </div>
         <div class="tile s3 count">
@@ -680,16 +680,14 @@ const views = {
     'Python automation that took slow manual work off the team',
     'Clear communicator — comfortable with several clients at once',
     'Available now, any day · student visa, part-time']}},
-  data:{label:'Data & BI role', areas:['BI & Dashboards', 'SQL & Databases', 'Automation & Scripting'], fit:{title:'Why I fit a Data & BI role', hint:'view · Data & BI', items:[
+  data:{label:'Data & BI role', areas:['BI & Dashboards', 'SQL & Databases', 'Automation & Scripting'],
+    sub:'Viewing as a Data &amp; BI hiring manager: dashboards, SQL reporting and Python automation, highlighted across the dashboard.',
+    intro:'I build the reporting people make decisions with. At Carvewing Solutions I designed <b>Power BI dashboards</b> tracking KPIs and operational performance, built <b>Amazon QuickSight</b> reporting on <b>SQL (Redshift)</b>, automated PDF data extraction with <b>Python</b>, and ran the validation and quality checks that kept the numbers trustworthy.',
+    fit:{title:'Why I fit a Data & BI role', hint:'view · Data & BI', items:[
     'Designed interactive Power BI dashboards tracking KPIs and operations',
     'Built reporting in Amazon QuickSight with SQL on Redshift',
     'Automated data extraction with Python (pandas, pdfplumber)',
     'Ran data validation and quality checks on reporting outputs']}},
-  support:{label:'Tech support role', areas:['Stakeholder Comms', 'Programming'], fit:{title:'Why I fit a Tech support role', hint:'view · Tech support', items:[
-    'Experience troubleshooting data issues and supporting clients and internal teams',
-    'I translate what people need into something the team can build',
-    'Quick to learn new systems and tools — and I enjoy it',
-    'Available now, any day of the week']}},
   recruiter:{label:'Recruiter', page:'glance'},
 };
 $('#views').innerHTML = Object.entries(views).map(([id, v]) => `<button type="button" role="tab" data-view="${id}">${v.label}</button>`).join('');
@@ -713,7 +711,8 @@ function go(id){
   pages.forEach(p => p.classList.toggle('active', p.id === 'page-' + id));
   $$('.nav [data-page]').forEach(b => { const on = b.dataset.page === id; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'page' : 'false'); });
   const p = $('#page-' + id);
-  $('#pageTitle').innerHTML = p.dataset.title; $('#pageSub').innerHTML = p.dataset.sub;
+  $('#pageTitle').innerHTML = p.dataset.title;
+  $('#pageSub').innerHTML = id === 'overview' && views[view] && views[view].sub ? views[view].sub : p.dataset.sub;
   $('#slicerBar').style.display = ['overview', 'skills', 'experience', 'education'].includes(id) ? '' : 'none';
   $$('#views [data-view]').forEach(b => b.classList.toggle('on', id === 'glance' ? b.dataset.view === 'recruiter' : b.dataset.view === view));
   if (id === 'model') drawModel();
@@ -909,7 +908,10 @@ function render(){
     ctx.innerHTML = `Showing <b>${[...filter.values].join(', ')}</b> · ${n} of ${evidence.length} match <button type="button">Clear</button>`;
     ctx.querySelector('button').addEventListener('click', clearFilter);
   }
-  const fit = (views[view] || views.all).fit;
+  const v = views[view] || views.all, fit = v.fit;
+  if (!render.intro) { render.intro = $('#heyIntro').innerHTML; render.sub = $('#page-overview').dataset.sub; }
+  $('#heyIntro').innerHTML = v.intro || render.intro;
+  if (current === 'overview') $('#pageSub').innerHTML = v.sub || render.sub;
   $('#fitTitle').textContent = fit.title; $('#fitHint').textContent = fit.hint;
   $('#fitList').innerHTML = fit.items.map(i => `<li>${i}</li>`).join('');
   renderLists(); paint();
