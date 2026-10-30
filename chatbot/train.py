@@ -20,7 +20,7 @@ HERE = Path(__file__).parent
 DIM = 2048            # hashed feature space size
 CHAR_WEIGHT = 0.5     # character trigrams count half as much as whole words
 L2 = 1e-5
-EPOCHS = 400
+EPOCHS = 800
 SEED = 7
 
 # shorthand people type, mapped to the words used in the training questions

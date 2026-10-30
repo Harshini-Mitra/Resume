@@ -76,6 +76,9 @@
     rpg:       {bg: '#161331', panel: '#0B0A18', line: '#3A2E7A', text: '#F2EFE3', muted: '#9691C4', accent: '#38E1C6',
                 accentText: '#0B0A18', bot: '#1D1A42', user: '#FF4D8D', userText: '#0B0A18', font: "'Space Mono', monospace",
                 head: "'Press Start 2P', monospace", radius: '2px'},
+    warm:      {bg: '#FFFFFF', panel: '#FAF6F3', line: '#EADFD8', text: '#2A1F2D', muted: '#82737F', accent: '#C8496A',
+                accentText: '#fff', bot: '#F4EEEA', user: '#2A1F2D', userText: '#fff', font: "'Plus Jakarta Sans', system-ui, sans-serif",
+                head: "'Plus Jakarta Sans', system-ui, sans-serif", radius: '14px'},
     avatar:    {bg: '#FFFFFF', panel: '#FFF8F7', line: '#F6C9CF', text: '#3A2422', muted: '#8C6E6B', accent: '#E8768A',
                 accentText: '#fff', bot: '#FBEDEE', user: '#E8768A', userText: '#fff', font: "'Inter', system-ui, sans-serif",
                 head: "'Inter', system-ui, sans-serif", radius: '16px'},
@@ -130,6 +133,12 @@
   .rc-send{background:var(--rc-accent); color:var(--rc-accent-text); border:0; border-radius:var(--rc-radius);
       padding:0 14px; font:600 13px ${t.font}; cursor:pointer;}
   .rc-send:disabled{opacity:.5; cursor:default;}
+  .rc-mic{flex:0 0 auto; width:42px; border-radius:var(--rc-radius); border:1px solid var(--rc-line); background:var(--rc-bg);
+      color:var(--rc-text); font-size:17px; cursor:pointer; position:relative;}
+  .rc-mic:hover{border-color:var(--rc-accent);}
+  .rc-mic.listening{background:#E5484D; border-color:#E5484D; color:#fff;}
+  .rc-mic.listening::after{content:""; position:absolute; inset:-4px; border-radius:inherit; border:2px solid #E5484D; animation:rc-ring 1.2s ease-out infinite;}
+  @keyframes rc-ring{from{opacity:1; transform:scale(.95);} to{opacity:0; transform:scale(1.25);}}
   .rc-foot{font-size:11px; color:var(--rc-muted); padding:0 12px 10px; background:var(--rc-panel);}
   @media (max-width:480px){
     .rc.floating .rc-panel{right:0; bottom:0; width:100vw; height:min(85vh, 600px); border-radius:var(--rc-radius) var(--rc-radius) 0 0;}
@@ -152,7 +161,8 @@
       </div>
       <div class="rc-log" role="log" aria-live="polite"></div>
       <form class="rc-form" autocomplete="off">
-        <input class="rc-input" type="text" maxlength="300" placeholder="Type a question…" aria-label="Your question">
+        <input class="rc-input" type="text" maxlength="300" placeholder="Type or 🎤 ask a question…" aria-label="Your question">
+        <button class="rc-mic" type="button" aria-label="Ask with your voice" title="Ask with your voice" hidden>🎤</button>
         <button class="rc-send" type="submit">Send</button>
       </form>
       <div class="rc-foot">Answers come from a small model trained on Harshini's resume.</div>
@@ -226,6 +236,50 @@
   }
   form.addEventListener('submit', e => { e.preventDefault(); ask(input.value); });
 
+  /* ---------------- voice input (browsers with the Web Speech API) ---------------- */
+  const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  // listen(onText, onState): one utterance; onText(text, isFinal), onState('listening' | 'idle' | 'error', message)
+  function listen(onText, onState){
+    if (!Recognition) return null;
+    const rec = new Recognition();
+    rec.lang = navigator.language && navigator.language.startsWith('en') ? navigator.language : 'en-AU';
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+    let finalText = '';
+    rec.onstart = () => onState('listening');
+    rec.onresult = e => {
+      let interim = '';
+      for (let i = e.resultIndex; i < e.results.length; i++) {
+        if (e.results[i].isFinal) finalText += e.results[i][0].transcript;
+        else interim += e.results[i][0].transcript;
+      }
+      onText((finalText + interim).trim(), false);
+    };
+    rec.onerror = e => onState('error', e.error === 'not-allowed' || e.error === 'service-not-allowed'
+      ? 'Microphone is blocked — you can type instead' : e.error === 'no-speech' ? "Didn't catch that — try again" : 'Voice input stopped');
+    rec.onend = () => { onState('idle'); if (finalText.trim()) onText(finalText.trim(), true); };
+    rec.start();
+    return rec;
+  }
+  const mic = root.querySelector('.rc-mic');
+  let rec = null, micError = false;
+  if (!Recognition) input.placeholder = 'Type a question…';
+  else {
+    mic.hidden = false;
+    mic.addEventListener('click', () => {
+      if (rec) { rec.stop(); return; }
+      micError = false;
+      rec = listen((text, done) => { input.value = text; if (done) ask(text); }, (state, msg) => {
+        mic.classList.toggle('listening', state === 'listening');
+        mic.setAttribute('aria-label', state === 'listening' ? 'Stop listening' : 'Ask with your voice');
+        if (state === 'listening') input.placeholder = 'Listening… ask your question';
+        if (state === 'error') { micError = true; input.placeholder = msg; }
+        if (state !== 'listening') { rec = null; if (state === 'idle' && !micError) input.placeholder = 'Type or 🎤 ask a question…'; }
+        if (state === 'listening') emit('listening');
+      });
+    });
+  }
+
   function greet(){
     if (log.childElementCount) return;
     bubble("Hi! 👋 I'm Harshini — well, a little AI version of me. Ask me about my experience, skills, education or availability, or tap a question below.", 'bot');
@@ -247,7 +301,10 @@
     const m = window.RESUME_CHAT_MODEL;
     const bytes = Uint8Array.from(atob(m.weights), c => c.charCodeAt(0));
     model = Object.assign({}, m, {W: new Int8Array(bytes.buffer)});
-    window.ResumeChat = {ask, classify};
+    // lets other parts of the page (e.g. the dashboard's Q&A visual) use the same model
+    const reply = q => { const {label, confidence} = classify(q); return label ? Object.assign({label, confidence}, model.answers[label]) : null; };
+    window.ResumeChat = {ask, classify, reply, listen: Recognition ? listen : null, starters: model.starters};
+    window.dispatchEvent(new Event('resumechat:ready'));
     if (mountId) greet();
   }
   if (window.RESUME_CHAT_MODEL) ready();
