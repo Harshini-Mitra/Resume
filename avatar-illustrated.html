@@ -60,11 +60,17 @@
   .links{margin-top:14px; display:flex; gap:10px; flex-wrap:wrap; justify-content:center;}
   .links a{color:var(--text); text-decoration:none; font-size:13px; border:1px solid var(--ring); background:#fff; padding:6px 12px; border-radius:999px;}
   .links a:hover{border-color:var(--pink); color:#C2566A;}
+  .layout{display:flex; align-items:center; justify-content:center; gap:56px; flex-wrap:wrap; width:100%; max-width:1080px;}
+  .me{display:flex; flex-direction:column; align-items:center; padding-top:40px;}
+  .chat{width:min(420px, 100%); height:540px;}
+  @media (max-width:900px){ .layout{gap:28px;} .chat{height:480px;} }
   @media (prefers-reduced-motion: reduce){ .fx{display:none;} .stage.boing, .stage.shake{animation:none;} .ov{transition:none;} }
 </style>
 </head>
 <body>
 
+<main class="layout">
+<div class="me">
 <div class="stage" id="stage">
   <div class="bubble" id="bubble"></div>
   <div class="face" id="face" role="img" aria-label="Illustrated Harshini whose eyes follow your cursor">
@@ -83,11 +89,14 @@
     </div>
   </div>
 </div>
-<div class="hint">Move your mouse (or tap) around her 👀 · hover · click to say hi · double-click for something cool</div>
+<div class="hint">Move your mouse (or tap) around her 👀 · click to say hi · double-click for something cool</div>
 <div class="links">
   <a href="index.html">📊 Dashboard resume</a>
   <a href="harshini_mitra_rpg.html">🎮 Game resume</a>
 </div>
+</div>
+<div class="chat" id="chatMount"></div>
+</main>
 
 <script>
 (() => {
@@ -101,7 +110,7 @@
   // eye centre and how far the irises can travel, as fractions of the picture
   const EYE = {x: 0.49, y: 0.362}, TRAVEL = {x: 0.0088, y: 0.0032};
 
-  let mood = 'normal', lastActive = performance.now(), hovering = false, thinking = false;
+  let mood = 'normal', lastActive = performance.now(), hovering = false, thinking = false, chatAt = -Infinity;
   const target = {x: 0, y: 0}, pos = {x: 0, y: 0}, vel = {x: 0, y: 0};
 
   function say(html, ms = 1800){
@@ -143,6 +152,7 @@
   let zTimer;
   setInterval(() => {
     if (mood !== 'normal') return;
+    if (performance.now() - chatAt < 45000) return;
     const still = performance.now() - lastActive;
     const hour = new Date().getHours();
     const night = hour >= 23 || hour < 5;
@@ -284,6 +294,24 @@
     }
   });
 
+  /* ---- react to the chat: think while it "types", smile when it answers ---- */
+  window.addEventListener('resumechat', e => {
+    chatAt = lastActive = performance.now();
+    if (mood === 'sleeping') wake();
+    if (mood !== 'normal') return;
+    thinking = false;
+    clearTimeout(face.t);
+    ['happy', 'blush', 'hover', 'shades', 'thinking'].forEach(k => set(k, false));
+    if (e.detail.state === 'thinking') {
+      set('thinking', true);
+      target.x = 0.5; target.y = -0.6;
+      return;
+    }
+    const k = e.detail.state === 'answered' ? 'happy' : 'blush';
+    set(k, true);
+    face.t = setTimeout(() => set(k, false), 1300);
+  });
+
   /* ---- coming back to the tab ---- */
   let leftAt = 0;
   document.addEventListener('visibilitychange', () => {
@@ -297,5 +325,6 @@
   });
 })();
 </script>
+<script src="chatbot/chat.js" data-theme="avatar" data-mount="chatMount" defer></script>
 </body>
 </html>
