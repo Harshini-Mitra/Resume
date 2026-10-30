@@ -1,504 +1,380 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Harshini Mitra — Resume Report</title>
-<meta name="description" content="Harshini Mitra's resume as an interactive Power BI-style report: cross-filtering, bookmarks, Q&A, model view and PDF export.">
+<title>Harshini Mitra — Resume Dashboard</title>
+<meta name="description" content="Harshini Mitra's resume as an interactive dashboard: data & analytics, Sydney.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#090C12; --canvas:#0D1119; --panel:#131924; --panel-2:#192131; --line:#232C3C; --line-2:#2E3A4F;
-    --text:#E8EDF5; --muted:#8C97AA; --muted-2:#5D687C;
-    --yellow:#F2C811; --blue:#5B8CFF; --teal:#2BD4BD; --pink:#FF6B9A; --green:#3ECF8E; --purple:#A78BFA; --orange:#FF9F43;
-    --glow:rgba(242,200,17,.18); --shadow:0 10px 30px rgba(0,0,0,.35);
-    --dot:rgba(255,255,255,.045);
-    --mono:'JetBrains Mono', ui-monospace, monospace; --sans:'Inter', system-ui, sans-serif;
+    --bg:#F4EEEA; --surface:#FFFFFF; --surface-2:#FAF6F3; --sunken:#F1EAE5;
+    --ink:#2A1F2D; --ink-2:#4A3D4C; --muted:#82737F; --faint:#B3A6AF; --line:#EADFD8; --line-2:#DDCFC7;
+    --rose:#C8496A; --rose-soft:#F7E3E8; --teal:#2F8F83; --honey:#D99A2B; --iris:#6C63C7; --blue:#3E7CB1; --green:#3C9D6B;
+    --shadow:0 1px 2px rgba(42,31,45,.04), 0 10px 30px rgba(42,31,45,.06);
+    --radius:18px;
+    --sans:'Plus Jakarta Sans', system-ui, sans-serif; --mono:'JetBrains Mono', ui-monospace, monospace;
   }
-  :root[data-theme="light"]{
-    --bg:#E9EDF3; --canvas:#F4F6FA; --panel:#FFFFFF; --panel-2:#F1F4F9; --line:#DCE2EB; --line-2:#C9D2DF;
-    --text:#18202C; --muted:#5A6577; --muted-2:#8A94A6;
-    --yellow:#D9A900; --blue:#2F6BFF; --teal:#0FA896; --pink:#E0457A; --green:#1E9E66; --purple:#7C5CE0; --orange:#E5801E;
-    --glow:rgba(217,169,0,.16); --shadow:0 8px 24px rgba(30,40,60,.10);
-    --dot:rgba(20,30,50,.07);
+  :root[data-theme="dark"]{
+    --bg:#151017; --surface:#1F1822; --surface-2:#251D29; --sunken:#1A141D;
+    --ink:#F3ECEF; --ink-2:#D9CED5; --muted:#A495A0; --faint:#6E616B; --line:#33293A; --line-2:#433649;
+    --rose:#EC6F8E; --rose-soft:#3A2230; --teal:#4DB6A8; --honey:#E8B04F; --iris:#958DE6; --blue:#6BA3D6; --green:#5CC18C;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.25);
   }
   *{box-sizing:border-box;}
-  html,body{margin:0; height:100%;}
-  body{background:var(--bg); color:var(--text); font-family:var(--sans); font-size:14px; overflow:hidden;}
+  html,body{margin:0;}
+  body{background:var(--bg); color:var(--ink); font-family:var(--sans); font-size:14px; line-height:1.5; -webkit-font-smoothing:antialiased;}
   button{font:inherit; color:inherit;}
-  a{color:var(--blue);}
-  .mono{font-family:var(--mono);}
+  a{color:var(--rose);}
+  :focus-visible{outline:2px solid var(--rose); outline-offset:2px;}
   @media (prefers-reduced-motion:reduce){ *{animation-duration:.01s !important; transition-duration:.01s !important;} }
 
-  /* ================= boot screen ================= */
-  .boot{position:fixed; inset:0; z-index:500; display:flex; align-items:center; justify-content:center; background:var(--bg);
-    transition:opacity .45s ease, visibility .45s;}
-  .boot.done{opacity:0; visibility:hidden;}
-  .boot-card{width:min(420px, 88vw);}
-  .boot-logo{display:flex; align-items:flex-end; gap:5px; height:44px; margin-bottom:22px;}
-  .boot-logo i{width:12px; border-radius:3px; background:var(--yellow); animation:bars 1.1s ease-in-out infinite;}
-  .boot-logo i:nth-child(1){height:40%; opacity:.55;} .boot-logo i:nth-child(2){height:70%; opacity:.8; animation-delay:.12s;}
-  .boot-logo i:nth-child(3){height:100%; animation-delay:.24s;}
-  @keyframes bars{50%{transform:scaleY(.75); transform-origin:bottom;}}
-  .boot-file{font-family:var(--mono); font-size:13px; color:var(--muted); margin-bottom:6px;}
-  .boot-title{font-size:22px; font-weight:800; margin:0 0 18px; letter-spacing:-.01em;}
-  .boot-steps{list-style:none; margin:0 0 18px; padding:0; font-family:var(--mono); font-size:12.5px; color:var(--muted-2);}
-  .boot-steps li{padding:4px 0; transition:color .2s;}
-  .boot-steps li::before{content:"○"; display:inline-block; width:20px; color:var(--muted-2);}
-  .boot-steps li.on{color:var(--text);} .boot-steps li.on::before{content:"◌"; color:var(--yellow);}
-  .boot-steps li.ok{color:var(--muted);} .boot-steps li.ok::before{content:"✓"; color:var(--green);}
-  .boot-bar{height:4px; border-radius:4px; background:var(--panel-2); overflow:hidden;}
-  .boot-bar i{display:block; height:100%; width:0; background:linear-gradient(90deg, var(--yellow), var(--orange)); transition:width .35s ease;}
-  .boot-skip{margin-top:14px; font-size:12px; color:var(--muted-2);}
+  /* ================= shell ================= */
+  .shell{display:grid; grid-template-columns:256px minmax(0, 1fr); min-height:100vh;}
+  .side{position:sticky; top:0; height:100vh; display:flex; flex-direction:column; gap:22px; padding:26px 18px 20px; border-right:1px solid var(--line); background:var(--surface-2);}
+  .me{display:flex; flex-direction:column; align-items:center; text-align:center; gap:4px;}
+  .mark{width:72px; height:72px; border-radius:22px; display:grid; place-items:center; margin-bottom:10px; color:#fff; font-weight:800; font-size:25px; letter-spacing:-.03em;
+    background:linear-gradient(135deg, var(--rose), #E2896C); box-shadow:0 10px 24px color-mix(in srgb, var(--rose) 30%, transparent); text-decoration:none;
+    transition:transform .25s cubic-bezier(.3,1.6,.5,1);}
+  .mark:hover{transform:rotate(-6deg) scale(1.05);}
+  .me-name{font-size:18px; font-weight:800; letter-spacing:-.01em;}
+  .me-role{font-size:12.5px; color:var(--muted);}
+  .status{display:inline-flex; align-items:center; gap:7px; margin-top:8px; font-size:11.5px; font-weight:600; color:var(--green);
+    background:color-mix(in srgb, var(--green) 12%, transparent); padding:4px 10px; border-radius:999px;}
+  .status i{width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 0 3px color-mix(in srgb, var(--green) 25%, transparent); animation:breathe 2.4s ease-in-out infinite;}
+  @keyframes breathe{50%{box-shadow:0 0 0 6px color-mix(in srgb, var(--green) 8%, transparent);}}
+  .nav{display:flex; flex-direction:column; gap:2px;}
+  .nav-label{font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--faint); font-weight:700; margin:6px 10px 6px;}
+  .nav button{display:flex; align-items:center; gap:11px; width:100%; padding:9px 12px; border:0; border-radius:11px; background:none; cursor:pointer;
+    font-size:13.5px; font-weight:600; color:var(--ink-2); text-align:left; transition:background .15s, color .15s;}
+  .nav button svg{width:17px; height:17px; flex:0 0 auto; color:var(--muted); transition:color .15s;}
+  .nav button:hover{background:var(--sunken);}
+  .nav button.on{background:var(--surface); color:var(--ink); box-shadow:var(--shadow);}
+  .nav button.on svg{color:var(--rose);}
+  .nav .new{margin-left:auto; font-size:10px; font-weight:700; color:var(--rose); background:var(--rose-soft); padding:1px 7px; border-radius:999px;}
+  .side-foot{margin-top:auto; display:grid; gap:8px;}
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 14px; border-radius:12px; border:1px solid var(--line-2);
+    background:var(--surface); font-size:13px; font-weight:700; cursor:pointer; text-decoration:none; color:var(--ink); transition:transform .15s, border-color .15s, background .15s;}
+  .btn:hover{border-color:var(--ink-2); transform:translateY(-1px);}
+  .btn.primary{background:var(--ink); color:var(--surface); border-color:var(--ink);}
+  .btn.primary:hover{background:var(--ink-2);}
+  .btn svg{width:16px; height:16px;}
+  .side-links{display:flex; justify-content:center; gap:14px; font-size:12px; margin-top:4px;}
+  .side-links a, .side-links button{color:var(--muted); text-decoration:none; background:none; border:0; cursor:pointer; font-size:12px; padding:0;}
+  .side-links a:hover, .side-links button:hover{color:var(--ink);}
 
-  /* ================= app shell ================= */
-  .app{display:grid; grid-template-rows:auto auto auto 1fr auto; height:100vh; height:100dvh;}
-  .titlebar{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:8px 14px;
-    background:var(--bg); border-bottom:1px solid var(--line);}
-  .brand{display:flex; align-items:center; gap:10px; min-width:0;}
-  .brand-mark{display:flex; align-items:flex-end; gap:2px; height:18px;}
-  .brand-mark i{width:5px; border-radius:1.5px; background:var(--yellow);}
-  .brand-mark i:nth-child(1){height:45%; opacity:.6;} .brand-mark i:nth-child(2){height:75%; opacity:.8;} .brand-mark i:nth-child(3){height:100%;}
-  .brand-name{font-weight:700; font-size:13.5px; white-space:nowrap;}
-  .brand-file{font-family:var(--mono); font-size:11.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .title-links{display:flex; gap:8px; flex:0 0 auto;}
-  .pill-link{font-size:12px; text-decoration:none; color:var(--text); border:1px solid var(--line-2); background:var(--panel);
-    padding:5px 11px; border-radius:999px; white-space:nowrap; transition:border-color .15s, color .15s, box-shadow .15s;}
-  .pill-link:hover{border-color:var(--yellow); color:var(--yellow); box-shadow:0 0 0 4px var(--glow);}
-
-  .ribbon{display:flex; gap:4px; padding:6px 10px; background:var(--panel); border-bottom:1px solid var(--line); overflow-x:auto; scrollbar-width:none;}
-  .ribbon::-webkit-scrollbar{display:none;}
-  .rgroup{display:flex; align-items:stretch; gap:2px; padding:0 8px; border-right:1px solid var(--line); flex:0 0 auto;}
-  .rgroup:last-child{border-right:0;}
-  .rgroup-label{writing-mode:vertical-rl; transform:rotate(180deg); font-size:9.5px; letter-spacing:.08em; text-transform:uppercase;
-    color:var(--muted-2); margin-right:4px; text-align:center;}
-  .rbtn{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; min-width:62px; padding:6px 8px;
-    background:none; border:1px solid transparent; border-radius:8px; cursor:pointer; font-size:11.5px; color:var(--text); white-space:nowrap;
-    transition:background .15s, border-color .15s;}
-  .rbtn .ic{font-size:17px; line-height:1;}
-  .rbtn:hover{background:var(--panel-2); border-color:var(--line-2);}
-  .rbtn.active{background:var(--glow); border-color:var(--yellow);}
-  .rbtn:focus-visible, .ptab:focus-visible, .chip:focus-visible, .kpi:focus-visible{outline:2px solid var(--yellow); outline-offset:2px;}
-
-  .formula{display:flex; align-items:center; gap:10px; padding:5px 12px; background:var(--canvas); border-bottom:1px solid var(--line);
-    font-family:var(--mono); font-size:12px; min-width:0;}
-  .fx{color:var(--muted); font-style:italic; font-weight:600; flex:0 0 auto; padding-right:10px; border-right:1px solid var(--line);}
-  .fx-code{flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:var(--text);}
-  .fx-code .k{color:var(--purple);} .fx-code .f{color:var(--blue);} .fx-code .s{color:var(--green);} .fx-code .n{color:var(--orange);} .fx-code .m{color:var(--yellow);}
-  .fx-val{flex:0 0 auto; color:var(--bg); background:var(--yellow); border-radius:5px; padding:1px 8px; font-weight:600;}
-  .fx-code.flash{animation:flash .6s ease;}
-  @keyframes flash{0%{background:var(--glow);} 100%{background:transparent;}}
-
-  .body{display:grid; grid-template-columns:48px 1fr auto; min-height:0;}
-  .rail{display:flex; flex-direction:column; align-items:center; gap:6px; padding:10px 0; background:var(--panel); border-right:1px solid var(--line);}
-  .rail button{width:36px; height:36px; display:grid; place-items:center; border-radius:8px; border:1px solid transparent; background:none; cursor:pointer; color:var(--muted); position:relative;}
-  .rail button svg{width:19px; height:19px;}
-  .rail button:hover{background:var(--panel-2); color:var(--text);}
-  .rail button.active{color:var(--yellow); background:var(--glow);}
-  .rail button.active::before{content:""; position:absolute; left:-6px; top:8px; bottom:8px; width:3px; border-radius:3px; background:var(--yellow);}
-  .rail button[data-tip]:hover::after{content:attr(data-tip); position:absolute; left:44px; top:50%; transform:translateY(-50%); white-space:nowrap;
-    background:var(--panel-2); border:1px solid var(--line-2); color:var(--text); font-size:11.5px; padding:4px 8px; border-radius:6px; z-index:5; pointer-events:none;}
-
-  .canvas{position:relative; overflow:auto; background:var(--canvas);
-    background-image:radial-gradient(var(--dot) 1px, transparent 1px); background-size:18px 18px;}
-  .view{display:none; padding:22px 24px 40px;}
-  .view.active{display:block;}
-  .page{display:none;}
-  .page.active{display:block; animation:pageIn .35s ease;}
-  @keyframes pageIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:none;}}
-
-  .page-head{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:16px;}
-  .page-head h1{margin:0 0 4px; font-size:24px; font-weight:800; letter-spacing:-.02em;}
-  .page-head p{margin:0; color:var(--muted); font-size:13.5px; max-width:640px;}
-  .back{display:none; align-items:center; gap:6px; background:var(--panel); border:1px solid var(--line-2); border-radius:8px; padding:6px 10px; cursor:pointer; font-size:12.5px;}
-  .back.show{display:inline-flex;}
-  .back:hover{border-color:var(--yellow);}
-
-  .context{display:none; align-items:center; gap:10px; flex-wrap:wrap; margin:-4px 0 16px; padding:9px 12px; border-radius:10px;
-    background:var(--glow); border:1px solid color-mix(in srgb, var(--yellow) 45%, transparent); font-size:13px;}
-  .context.show{display:flex; animation:pageIn .25s ease;}
-  .context b{color:var(--yellow);}
-  .context button{margin-left:auto; background:none; border:1px solid var(--line-2); border-radius:6px; padding:3px 9px; cursor:pointer; font-size:12px;}
-  .context button:hover{border-color:var(--yellow);}
-
-  /* ================= visuals ================= */
-  .grid{display:grid; grid-template-columns:repeat(12, 1fr); gap:14px;}
-  .span-3{grid-column:span 3;} .span-4{grid-column:span 4;} .span-5{grid-column:span 5;} .span-6{grid-column:span 6;}
-  .span-7{grid-column:span 7;} .span-8{grid-column:span 8;} .span-12{grid-column:span 12;}
-  .visual{position:relative; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px 14px;
-    box-shadow:var(--shadow); transition:border-color .2s, box-shadow .2s, transform .2s; min-width:0;}
-  .visual::before{content:""; position:absolute; inset:0; border-radius:12px; pointer-events:none;
-    background:linear-gradient(180deg, rgba(255,255,255,.035), transparent 40%);}
-  .visual:hover{border-color:var(--line-2); box-shadow:var(--shadow), 0 0 0 4px var(--glow);}
-  .vhead{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;}
-  .vhead h3{margin:0; font-size:13.5px; font-weight:700;}
-  .vhead .sub{font-size:11.5px; color:var(--muted); margin-top:2px;}
-  .vtools{display:flex; gap:2px; opacity:0; transition:opacity .15s;}
-  .visual:hover .vtools, .visual:focus-within .vtools, .visual.focused .vtools{opacity:1;}
-  .vtools button:not(.focus-exit){width:26px; height:26px; border-radius:6px; border:0; background:none; cursor:pointer; color:var(--muted); display:grid; place-items:center;}
-  .vtools button:hover{background:var(--panel-2); color:var(--text);}
-  .vtools svg{width:14px; height:14px;}
-  .chart{position:relative; height:240px;}
-  .chart.tall{height:300px;}
-  .visual.loading::after{content:""; position:absolute; inset:0; border-radius:12px; pointer-events:none;
-    background:linear-gradient(100deg, transparent 20%, var(--glow) 50%, transparent 80%); background-size:220% 100%; animation:shimmer .7s linear;}
-  @keyframes shimmer{from{background-position:120% 0;} to{background-position:-120% 0;}}
-
-  /* focus mode */
-  .focus-backdrop{position:absolute; inset:0; z-index:20; background:color-mix(in srgb, var(--canvas) 70%, transparent); backdrop-filter:blur(3px); display:none;}
-  .focus-backdrop.show{display:block;}
-  .visual.focused{position:fixed; z-index:30; inset:auto; left:50%; top:50%; transform:translate(-50%,-50%);
-    width:min(1000px, calc(100vw - 40px)); max-height:calc(100vh - 80px); overflow:auto; box-shadow:0 30px 80px rgba(0,0,0,.5), 0 0 0 1px var(--yellow);}
-  .visual.focused .chart{height:min(520px, 60vh);}
-  .focus-exit{display:none;}
-  .visual.focused .focus-exit{display:inline-flex; margin-left:6px; font-size:12px; background:var(--yellow); color:#111; border:0; border-radius:6px; padding:4px 10px; cursor:pointer;}
-
-  /* KPI cards */
-  .kpis{display:grid; grid-template-columns:repeat(4, 1fr); gap:14px; margin-bottom:14px;}
-  .kpi{position:relative; overflow:hidden; text-align:left; cursor:pointer; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:14px 16px 10px;
-    box-shadow:var(--shadow); transition:transform .2s, border-color .2s, box-shadow .2s;}
-  .kpi::after{content:""; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent);}
-  .kpi::before{content:""; position:absolute; right:-40px; top:-40px; width:120px; height:120px; border-radius:50%;
-    background:radial-gradient(circle, color-mix(in srgb, var(--accent) 28%, transparent), transparent 70%); transition:transform .3s;}
-  .kpi:hover{transform:translateY(-2px); border-color:color-mix(in srgb, var(--accent) 60%, var(--line)); box-shadow:var(--shadow), 0 0 0 4px color-mix(in srgb, var(--accent) 16%, transparent);}
-  .kpi:hover::before{transform:scale(1.3);}
-  .kpi .lbl{display:flex; justify-content:space-between; gap:8px; font-size:12px; color:var(--muted); font-weight:500;}
-  .kpi .lbl em{font-style:normal; font-size:10.5px; color:var(--accent); font-family:var(--mono);}
-  .kpi .val{font-size:30px; font-weight:800; letter-spacing:-.02em; margin:6px 0 2px; font-variant-numeric:tabular-nums;}
-  .kpi .val small{font-size:14px; color:var(--muted); font-weight:600; margin-left:2px;}
-  .kpi .drill{font-size:11px; color:var(--muted-2); font-family:var(--mono);}
-  .kpi:hover .drill{color:var(--accent);}
-  .kpi .spark{height:30px; margin-top:6px;}
+  .main{min-width:0; padding:26px 32px 48px;}
+  .top{display:flex; align-items:flex-start; justify-content:space-between; gap:18px; flex-wrap:wrap; margin-bottom:20px;}
+  .hello{font-size:12.5px; color:var(--muted); font-weight:600;}
+  .top h1{margin:2px 0 4px; font-size:27px; font-weight:800; letter-spacing:-.025em;}
+  .top p{margin:0; color:var(--muted); font-size:13.5px; max-width:560px;}
+  .top-right{display:flex; flex-direction:column; align-items:flex-end; gap:10px;}
+  .seg{display:inline-flex; padding:4px; border-radius:12px; background:var(--sunken); border:1px solid var(--line);}
+  .seg button{border:0; background:none; padding:7px 12px; border-radius:9px; cursor:pointer; font-size:12.5px; font-weight:600; color:var(--muted); white-space:nowrap;}
+  .seg button:hover{color:var(--ink);}
+  .seg button.on{background:var(--surface); color:var(--ink); box-shadow:var(--shadow);}
+  .seg-label{font-size:11px; color:var(--faint); font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-right:8px; align-self:center;}
+  .ask{position:relative; width:min(380px, 100%);}
+  .ask form{display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--line-2); border-radius:12px; padding:3px 4px 3px 12px; box-shadow:var(--shadow);}
+  .ask form:focus-within{border-color:var(--rose);}
+  .ask svg{width:16px; height:16px; color:var(--muted); flex:0 0 auto;}
+  .ask input{flex:1; min-width:0; border:0; outline:none; background:none; color:var(--ink); font:500 13.5px var(--sans); padding:8px 0;}
+  .ask input::placeholder{color:var(--faint);}
+  .ask .mic, .ask .go{border:0; border-radius:9px; cursor:pointer; height:32px; min-width:32px; display:grid; place-items:center;}
+  .ask .mic{background:none; color:var(--muted);} .ask .mic:hover{color:var(--ink); background:var(--sunken);}
+  .ask .mic.listening{background:var(--rose); color:#fff;}
+  .ask .go{background:var(--ink); color:var(--surface); padding:0 12px; font-weight:700; font-size:12.5px;}
+  .ask-pop{position:absolute; right:0; top:calc(100% + 8px); width:min(420px, 92vw); z-index:40; background:var(--surface); border:1px solid var(--line-2); border-radius:14px;
+    box-shadow:0 20px 50px rgba(42,31,45,.18); padding:14px 16px; display:none;}
+  .ask-pop.show{display:block; animation:pop .2s ease;}
+  @keyframes pop{from{opacity:0; transform:translateY(-4px);}}
+  .ask-pop .meta{font-size:11px; color:var(--faint); font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between;}
+  .ask-pop p{margin:0; font-size:13.5px; line-height:1.6;}
+  .ask-pop .follow{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
+  .chipq{font-size:12px; padding:5px 10px; border-radius:999px; border:1px solid var(--line-2); background:var(--surface-2); cursor:pointer; color:var(--ink-2);}
+  .chipq:hover{border-color:var(--rose); color:var(--rose);}
 
   /* slicer */
-  .slicer{display:flex; flex-wrap:wrap; gap:8px; align-items:center;}
-  .slicer-label{font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted-2); margin-right:4px;}
-  .chip{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; padding:6px 12px; border-radius:999px; cursor:pointer;
-    background:var(--panel-2); border:1px solid var(--line-2); transition:all .15s;}
-  .chip:hover{border-color:var(--yellow);}
-  .chip.on{background:var(--yellow); color:#14110A; border-color:var(--yellow); font-weight:600; box-shadow:0 0 0 4px var(--glow);}
-  .chip i{width:8px; height:8px; border-radius:50%; background:var(--c, var(--muted));}
-  .info-chip{font-size:12px; padding:5px 11px; border-radius:999px; background:var(--panel); border:1px solid var(--line); color:var(--muted);}
-  .info-chip b{color:var(--text); font-weight:600; margin-right:4px;}
+  .slicer{display:flex; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:18px;}
+  .slicer-label{font-size:11px; color:var(--faint); font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-right:2px;}
+  .chip{display:inline-flex; align-items:center; gap:7px; padding:6px 12px; border-radius:999px; border:1px solid var(--line-2); background:var(--surface);
+    font-size:12.5px; font-weight:600; cursor:pointer; color:var(--ink-2); transition:all .15s;}
+  .chip i{width:8px; height:8px; border-radius:50%; background:var(--c);}
+  .chip:hover{border-color:var(--c);}
+  .chip.on{background:var(--c); border-color:var(--c); color:#fff;}
+  .chip.on i{background:#fff;}
+  #chips{display:flex; flex-wrap:wrap; gap:8px;}
+  .ctx{margin-left:auto; font-size:12.5px; color:var(--muted); display:none; align-items:center; gap:8px;}
+  .ctx.show{display:inline-flex;}
+  .ctx b{color:var(--ink);}
+  .ctx button{border:0; background:var(--sunken); border-radius:8px; padding:4px 9px; cursor:pointer; font-size:12px; font-weight:600;}
+  .ctx button:hover{background:var(--line);}
 
-  /* profile + fit list */
-  .lede{font-size:14px; line-height:1.65; color:var(--text); margin:0 0 12px;}
-  .fit{list-style:none; margin:0; padding:0; display:grid; gap:8px;}
-  .fit li{display:flex; gap:10px; align-items:flex-start; font-size:13px; line-height:1.5; padding:8px 10px; border-radius:8px; background:var(--panel-2);}
-  .fit li::before{content:"▸"; color:var(--yellow); font-weight:700;}
-  .tags{display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;}
-  .tag{font-size:11px; padding:3px 8px; border-radius:6px; background:var(--panel-2); border:1px solid var(--line); color:var(--muted); font-family:var(--mono);}
+  /* ================= tiles ================= */
+  .page{display:none;}
+  .page.active{display:block;}
+  .page.active .tile, .page.active .kpi{animation:rise .5s cubic-bezier(.2,.8,.2,1) both;}
+  @keyframes rise{from{opacity:0; transform:translateY(10px);}}
+  .grid{display:grid; grid-template-columns:repeat(12, minmax(0, 1fr)); gap:16px;}
+  .s3{grid-column:span 3;} .s4{grid-column:span 4;} .s5{grid-column:span 5;} .s6{grid-column:span 6;} .s7{grid-column:span 7;} .s8{grid-column:span 8;} .s12{grid-column:span 12;}
+  .tile{position:relative; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px; box-shadow:var(--shadow); min-width:0;}
+  .th{display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:12px;}
+  .th h3{margin:0; font-size:14.5px; font-weight:700; letter-spacing:-.005em;}
+  .th .hint{font-size:11.5px; color:var(--faint); font-weight:600;}
+  .chart{position:relative; height:250px;}
+  .chart.tall{height:310px;}
 
-  /* Q&A visual */
-  .qa-box{display:flex; gap:8px; align-items:center; background:var(--panel-2); border:1px solid var(--line-2); border-radius:10px; padding:4px 4px 4px 12px; transition:border-color .15s, box-shadow .15s;}
-  .qa-box:focus-within{border-color:var(--yellow); box-shadow:0 0 0 4px var(--glow);}
-  .qa-box input{flex:1; min-width:0; background:none; border:0; outline:none; color:var(--text); font:14px var(--sans); padding:8px 0;}
-  .qa-box button{background:var(--yellow); color:#14110A; border:0; border-radius:7px; padding:8px 12px; font-weight:700; cursor:pointer; font-size:12.5px;}
-  .qa-sugs{display:flex; flex-wrap:wrap; gap:6px; margin:10px 0;}
-  .qa-sug{font-size:12px; padding:5px 10px; border-radius:999px; border:1px dashed var(--line-2); background:none; cursor:pointer; color:var(--muted);}
-  .qa-sug:hover{border-color:var(--yellow); color:var(--yellow);}
-  .qa-out{min-height:96px; padding:12px; border-radius:10px; background:var(--canvas); border:1px solid var(--line); font-size:13.5px; line-height:1.6;}
-  .qa-meta{font-family:var(--mono); font-size:11px; color:var(--muted-2); margin-bottom:6px; display:flex; justify-content:space-between; gap:10px;}
-  .qa-meta b{color:var(--teal); font-weight:600;}
-  .qa-conf{height:3px; border-radius:3px; background:var(--panel-2); margin-top:10px; overflow:hidden;}
-  .qa-conf i{display:block; height:100%; background:var(--teal); transition:width .5s ease;}
-  .caret{display:inline-block; width:7px; height:15px; background:var(--yellow); vertical-align:-2px; margin-left:2px; animation:blink 1s steps(1) infinite;}
-  @keyframes blink{50%{opacity:0;}}
+  .kpi{position:relative; text-align:left; cursor:pointer; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:16px 18px 10px;
+    box-shadow:var(--shadow); transition:transform .2s, border-color .2s; overflow:hidden;}
+  .kpi:hover{transform:translateY(-2px); border-color:color-mix(in srgb, var(--c) 45%, var(--line));}
+  .kpi .lbl{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); font-weight:600;}
+  .kpi .lbl i{width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:color-mix(in srgb, var(--c) 14%, transparent); color:var(--c); font-style:normal;}
+  .kpi .lbl svg{width:15px; height:15px;}
+  .kpi .val{font-size:32px; font-weight:800; letter-spacing:-.03em; margin:10px 0 0; font-variant-numeric:tabular-nums; line-height:1.1;}
+  .kpi .val small{font-size:14px; color:var(--muted); font-weight:700; margin-left:3px; letter-spacing:0;}
+  .kpi .sub{font-size:11.5px; color:var(--faint); font-weight:600; margin-top:2px;}
+  .kpi .go{position:absolute; right:14px; top:14px; font-size:11px; color:var(--faint); font-weight:700; opacity:0; transition:opacity .15s;}
+  .kpi:hover .go{opacity:1; color:var(--c);}
+  .kpi .spark{height:36px; margin:8px -4px 0;}
 
-  /* career timeline */
-  .tl{position:relative; height:150px; margin:8px 6px 0;}
-  .tl-axis{position:absolute; left:0; right:0; top:74px; height:2px; background:var(--line-2);}
-  .tl-span{position:absolute; top:70px; height:10px; border-radius:6px;}
-  .tl-dot{position:absolute; top:66px; width:18px; height:18px; margin-left:-9px; border-radius:50%; background:var(--panel); border:3px solid var(--c);
-    cursor:default; transition:transform .15s; box-shadow:0 0 0 4px color-mix(in srgb, var(--c) 18%, transparent);}
-  .tl-dot:hover{transform:scale(1.25);}
-  .tl-dot.now{animation:pulse 1.8s ease-in-out infinite;}
-  @keyframes pulse{50%{box-shadow:0 0 0 9px color-mix(in srgb, var(--c) 10%, transparent);}}
-  .tl-lbl{position:absolute; width:130px; margin-left:-65px; text-align:center; font-size:11.5px; line-height:1.3;}
-  .tl-lbl b{display:block; font-size:12px;}
-  .tl-lbl span{color:var(--muted); font-family:var(--mono); font-size:10.5px;}
-  .tl-lbl.up{top:0;} .tl-lbl.down{top:96px;}
-  .tl-lbl.l{margin-left:-14px; text-align:left;} .tl-lbl.r{margin-left:-116px; text-align:right;}
-  .tl-list{display:none; list-style:none; margin:0; padding:0 0 0 14px; border-left:2px solid var(--line-2);}
-  .tl-list li{position:relative; padding:6px 0 6px 10px; font-size:13px;}
-  .tl-list li::before{content:""; position:absolute; left:-21px; top:10px; width:12px; height:12px; border-radius:50%; background:var(--panel); border:3px solid var(--c);}
-  .tl-list span{display:block; color:var(--muted); font-family:var(--mono); font-size:11px;}
-  .tl-year{position:absolute; top:84px; font-family:var(--mono); font-size:10px; color:var(--muted-2); transform:translateX(-50%);}
+  .hey p{margin:0 0 12px; font-size:14px; line-height:1.7; color:var(--ink-2);}
+  .hey p b{color:var(--ink);}
+  .fit{list-style:none; margin:0; padding:0; display:grid; gap:7px;}
+  .fit li{position:relative; padding:9px 12px 9px 30px; border-radius:11px; background:var(--surface-2); font-size:13px; color:var(--ink-2);}
+  .fit li::before{content:""; position:absolute; left:13px; top:15px; width:7px; height:7px; border-radius:50%; background:var(--rose);}
+  .tagrow{display:flex; flex-wrap:wrap; gap:6px; margin-top:12px;}
+  .tag{font-size:11.5px; font-weight:600; padding:4px 9px; border-radius:8px; background:var(--sunken); color:var(--ink-2);}
+  .tag.c{color:var(--c); background:color-mix(in srgb, var(--c) 12%, transparent);}
 
-  /* tool table with data bars */
+  .count{display:flex; flex-direction:column; justify-content:space-between; gap:14px;}
+  .ring{position:relative; width:118px; height:118px; margin:2px auto 0;}
+  .ring svg{width:100%; height:100%; transform:rotate(-90deg);}
+  .ring circle{fill:none; stroke-width:10; stroke-linecap:round;}
+  .ring .bg{stroke:var(--sunken);} .ring .fg{stroke:var(--teal); transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1);}
+  .ring .in{position:absolute; inset:0; display:grid; place-items:center; text-align:center;}
+  .ring .in b{display:block; font-size:28px; font-weight:800; letter-spacing:-.03em; line-height:1;}
+  .ring .in span{font-size:11px; color:var(--muted); font-weight:700;}
+  .count .cap{text-align:center; font-size:12.5px; color:var(--muted);}
+  .count .cap b{color:var(--ink);}
+
+  .otc{display:grid; grid-template-columns:1fr 1fr; gap:8px;}
+  .otc div{display:flex; align-items:center; gap:10px; padding:10px 11px; border-radius:12px; background:var(--surface-2); font-size:13px; font-weight:600;}
+  .otc div em{font-style:normal; font-size:18px;}
+  .otc div small{display:block; font-size:11px; color:var(--muted); font-weight:500;}
+  .otc .star{grid-column:span 2; background:linear-gradient(135deg, color-mix(in srgb, var(--rose) 14%, var(--surface-2)), var(--surface-2));}
+
+  /* timeline */
+  .tl{position:relative; height:150px; margin:6px 8px 0;}
+  .tl-axis{position:absolute; left:0; right:0; top:74px; height:2px; background:var(--line);}
+  .tl-span{position:absolute; top:71px; height:8px; border-radius:6px;}
+  .tl-dot{position:absolute; top:67px; width:16px; height:16px; margin-left:-8px; border-radius:50%; background:var(--surface); border:3px solid var(--c);}
+  .tl-dot.now{box-shadow:0 0 0 5px color-mix(in srgb, var(--c) 18%, transparent);}
+  .tl-lbl{position:absolute; width:128px; margin-left:-64px; text-align:center; font-size:11.5px; line-height:1.3;}
+  .tl-lbl b{display:block; font-size:12px; font-weight:700;}
+  .tl-lbl span{color:var(--muted);}
+  .tl-lbl.up{top:0;} .tl-lbl.down{top:94px;}
+  .tl-lbl.l{margin-left:-12px; text-align:left;} .tl-lbl.r{margin-left:-116px; text-align:right;}
+  .tl-year{position:absolute; top:82px; font-size:10px; color:var(--faint); font-weight:700; transform:translateX(-50%);}
+  .tl-list{display:none; list-style:none; margin:0; padding:0 0 0 14px; border-left:2px solid var(--line);}
+  .tl-list li{position:relative; padding:6px 0 6px 10px; font-size:13px; font-weight:600;}
+  .tl-list li::before{content:""; position:absolute; left:-21px; top:10px; width:12px; height:12px; border-radius:50%; background:var(--surface); border:3px solid var(--c);}
+  .tl-list span{display:block; color:var(--muted); font-weight:500; font-size:12px;}
+
+  /* tool table */
   .ttable{width:100%; border-collapse:collapse; font-size:13px;}
-  .ttable th{text-align:left; font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted-2); font-weight:600; padding:6px 8px; border-bottom:1px solid var(--line);}
-  .ttable td{padding:8px; border-bottom:1px solid var(--line);}
+  .ttable th{text-align:left; font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--faint); font-weight:700; padding:6px 10px; border-bottom:1px solid var(--line);}
+  .ttable td{padding:10px; border-bottom:1px solid var(--line);}
   .ttable tbody tr{cursor:pointer; transition:background .15s, opacity .2s;}
-  .ttable tbody tr:hover{background:var(--panel-2);}
-  .ttable tr.dim{opacity:.32;}
-  .ttable tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--yellow);}
-  .bar{position:relative; height:16px; border-radius:4px; background:var(--panel-2); min-width:90px;}
-  .ttable tr.dim .bar i{filter:grayscale(1);}
-  .bar i{position:absolute; left:0; top:0; bottom:0; border-radius:4px; background:linear-gradient(90deg, color-mix(in srgb, var(--c) 55%, transparent), var(--c)); transition:width .6s ease;}
-  .bar span{position:absolute; right:6px; top:0; font-size:10.5px; line-height:16px; font-family:var(--mono);}
-  .rarity{font-size:10px; font-family:var(--mono); padding:2px 6px; border-radius:4px; border:1px solid currentColor;}
+  .ttable tbody tr:hover{background:var(--surface-2);}
+  .ttable tr.dim{opacity:.35;}
+  .ttable tr.sel td:first-child{box-shadow:inset 3px 0 0 var(--rose);}
+  .bar{position:relative; height:8px; border-radius:6px; background:var(--sunken); min-width:90px;}
+  .bar i{position:absolute; left:0; top:0; bottom:0; border-radius:6px; background:var(--c); transition:width .6s ease;}
+  .lvl{font-size:11px; font-weight:700; padding:3px 8px; border-radius:999px; color:var(--c); background:color-mix(in srgb, var(--c) 12%, transparent);}
 
   /* experience */
-  .role-head{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:12px;}
-  .role-head h3{margin:0; font-size:17px;}
-  .role-head .co{color:var(--muted); font-size:13px; margin-top:3px;}
-  .badge{font-family:var(--mono); font-size:11px; padding:4px 9px; border-radius:999px; border:1px solid var(--line-2); color:var(--muted); white-space:nowrap;}
-  .badge.y{color:var(--yellow); border-color:color-mix(in srgb, var(--yellow) 50%, transparent); background:var(--glow);}
-  .badge.g{color:var(--green); border-color:color-mix(in srgb, var(--green) 50%, transparent);}
-  .points{list-style:none; margin:0; padding:0; display:grid; gap:8px;}
-  .point{display:grid; grid-template-columns:auto 1fr; gap:12px; padding:11px 12px; border-radius:10px; background:var(--panel-2); border:1px solid transparent;
-    transition:opacity .25s, border-color .25s, transform .25s;}
-  .point .n{font-family:var(--mono); font-size:11px; color:var(--muted-2); padding-top:2px;}
-  .point p{margin:0 0 6px; font-size:13.5px; line-height:1.55;}
-  .point.match{border-color:color-mix(in srgb, var(--yellow) 55%, transparent); box-shadow:0 0 0 3px var(--glow);}
-  .point.dim, .card.dim{opacity:.3;}
-  .metric{font-weight:700; color:var(--yellow);}
+  .role{display:flex; justify-content:space-between; align-items:flex-start; gap:12px; flex-wrap:wrap; margin-bottom:14px;}
+  .role h3{margin:0; font-size:18px; font-weight:800; letter-spacing:-.01em;}
+  .role .co{color:var(--muted); font-size:13px; margin-top:3px;}
+  .pill{font-size:11.5px; font-weight:700; padding:5px 10px; border-radius:999px; background:var(--sunken); color:var(--ink-2); white-space:nowrap;}
+  .pill.rose{background:var(--rose-soft); color:var(--rose);}
+  .pill.green{background:color-mix(in srgb, var(--green) 12%, transparent); color:var(--green);}
+  .points{list-style:none; margin:0; padding:0; display:grid; gap:9px;}
+  .point{display:grid; grid-template-columns:28px 1fr; gap:10px; padding:12px 14px; border-radius:14px; background:var(--surface-2); border:1px solid transparent;
+    transition:opacity .25s, border-color .25s, background .25s;}
+  .point .n{width:26px; height:26px; border-radius:8px; display:grid; place-items:center; background:var(--surface); font-size:11.5px; font-weight:800; color:var(--muted);}
+  .point p{margin:2px 0 8px; font-size:13.5px; line-height:1.6;}
+  .point.match{border-color:color-mix(in srgb, var(--rose) 40%, transparent); background:var(--surface);}
+  .point.match .n{background:var(--rose); color:#fff;}
+  .point.dim, .card.dim{opacity:.35;}
+  .metric{font-weight:800; color:var(--rose);}
   .cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:12px;}
-  .card{background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:14px; transition:opacity .25s, border-color .25s;}
-  .card.match{border-color:color-mix(in srgb, var(--yellow) 55%, transparent);}
-  .card h4{margin:8px 0 4px; font-size:14px; line-height:1.35;}
-  .card .meta{font-size:12px; color:var(--muted);}
+  .card{border-radius:14px; background:var(--surface-2); padding:15px 16px; border:1px solid transparent; transition:opacity .25s, border-color .25s;}
+  .card.match{border-color:color-mix(in srgb, var(--rose) 40%, transparent); background:var(--surface);}
+  .card h4{margin:10px 0 4px; font-size:14.5px; line-height:1.35;}
+  .card .meta{font-size:12.5px; color:var(--muted);}
 
-  /* quick scan */
-  .scan{display:grid; grid-template-columns:repeat(3, 1fr); gap:14px;}
-  .scan .visual{padding:16px;}
-  .scan .k{font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted-2); margin-bottom:8px; display:flex; align-items:center; gap:6px;}
-  .scan .v{font-size:16px; font-weight:700; line-height:1.35;}
-  .scan .d{font-size:12.5px; color:var(--muted); margin-top:5px; line-height:1.5;}
-  .cta{display:flex; gap:10px; flex-wrap:wrap; margin-top:4px;}
-  .btn{display:inline-flex; align-items:center; gap:8px; padding:9px 14px; border-radius:9px; border:1px solid var(--line-2); background:var(--panel-2);
-    color:var(--text); text-decoration:none; font-size:13px; font-weight:600; cursor:pointer; transition:all .15s;}
-  .btn:hover{border-color:var(--yellow); box-shadow:0 0 0 4px var(--glow);}
-  .btn.primary{background:var(--yellow); color:#14110A; border-color:var(--yellow);}
-
-  /* contact */
+  /* at a glance */
+  .glance{display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:16px;}
+  .glance .tile{padding:18px 20px;}
+  .glance .k{font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--faint); font-weight:700; margin-bottom:8px;}
+  .glance .v{font-size:16.5px; font-weight:800; line-height:1.35; letter-spacing:-.01em;}
+  .glance .d{font-size:12.5px; color:var(--muted); margin-top:6px; line-height:1.55;}
   .ctable{width:100%; border-collapse:collapse;}
-  .ctable td{padding:12px 8px; border-bottom:1px solid var(--line); font-size:14px;}
-  .ctable td:first-child{width:130px; font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted);}
-  .ctable a{color:var(--text); text-decoration:none; border-bottom:1px dotted var(--blue);}
-  .ctable a:hover{color:var(--yellow); border-color:var(--yellow);}
+  .ctable td{padding:12px 6px; border-bottom:1px solid var(--line); font-size:14px;}
+  .ctable tr:last-child td{border-bottom:0;}
+  .ctable td:first-child{width:110px; font-size:11px; letter-spacing:.07em; text-transform:uppercase; color:var(--faint); font-weight:700;}
+  .ctable a{color:var(--ink); text-decoration:none; border-bottom:1.5px solid var(--rose-soft);}
+  .ctable a:hover{border-color:var(--rose);}
 
-  /* ================= side panes ================= */
-  .panes{display:flex; border-left:1px solid var(--line); background:var(--panel); min-height:0;}
-  .pane{width:236px; display:flex; flex-direction:column; border-left:1px solid var(--line); min-height:0; transition:width .2s;}
-  .pane:first-child{border-left:0;}
-  .pane.collapsed{width:34px;}
-  .pane-head{display:flex; align-items:center; justify-content:space-between; padding:10px 10px 8px 12px; font-size:12.5px; font-weight:700;}
-  .pane-head button{background:none; border:0; cursor:pointer; color:var(--muted); padding:2px 4px; border-radius:4px;}
-  .pane-head button:hover{color:var(--text); background:var(--panel-2);}
-  .pane.collapsed .pane-head{writing-mode:vertical-rl; padding:10px 8px; gap:10px; justify-content:flex-start;}
-  .pane.collapsed .pane-body{display:none;}
-  .pane-body{overflow:auto; padding:0 10px 14px; flex:1;}
-  .fsec{font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted-2); margin:14px 2px 6px;}
-  .fcard{border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin-bottom:6px; font-size:12px; background:var(--canvas);}
-  .fcard .t{display:flex; justify-content:space-between; gap:6px; font-weight:600;}
-  .fcard .t button{background:none; border:0; color:var(--muted); cursor:pointer; padding:0 2px;}
-  .fcard .t button:hover{color:var(--pink);}
-  .fcard .v{color:var(--muted); margin-top:3px; font-family:var(--mono); font-size:11px;}
-  .fcard.active{border-color:var(--yellow); box-shadow:0 0 0 3px var(--glow);}
-  .fcard.active .v{color:var(--yellow);}
-  .ftable{margin-bottom:4px;}
-  .ftable > button{width:100%; display:flex; align-items:center; gap:6px; background:none; border:0; padding:5px 4px; cursor:pointer; font-size:12.5px; font-weight:600; border-radius:6px; text-align:left;}
-  .ftable > button:hover{background:var(--panel-2);}
-  .ftable > button .chev{transition:transform .15s; color:var(--muted); font-size:10px;}
-  .ftable.open > button .chev{transform:rotate(90deg);}
-  .ftable ul{display:none; list-style:none; margin:0 0 4px; padding:0 0 0 18px;}
-  .ftable.open ul{display:block;}
-  .ftable li button{width:100%; text-align:left; background:none; border:0; cursor:pointer; padding:4px 6px; font-size:12px; color:var(--muted); border-radius:5px; display:flex; gap:6px; align-items:center;}
-  .ftable li button:hover{background:var(--panel-2); color:var(--text);}
-  .ftable li button.on{color:var(--yellow);}
-  .ftable li .ico{font-family:var(--mono); font-size:10px; width:14px; color:var(--muted-2);}
-
-  /* ================= page tabs / status ================= */
-  .pagebar{display:flex; align-items:stretch; justify-content:space-between; gap:10px; background:var(--panel); border-top:1px solid var(--line); min-width:0;}
-  .ptabs{display:flex; overflow-x:auto; scrollbar-width:none; min-width:0;}
-  .ptabs::-webkit-scrollbar{display:none;}
-  .ptab{position:relative; padding:9px 16px; background:none; border:0; border-right:1px solid var(--line); cursor:pointer; font-size:12.5px; color:var(--muted); white-space:nowrap;}
-  .ptab:hover{color:var(--text); background:var(--panel-2);}
-  .ptab.active{color:var(--text); font-weight:600; background:var(--canvas);}
-  .ptab.active::before{content:""; position:absolute; left:0; right:0; top:0; height:2px; background:var(--yellow);}
-  .status{display:flex; align-items:center; gap:14px; padding:0 14px; font-family:var(--mono); font-size:11px; color:var(--muted-2); white-space:nowrap;}
-  .status .dot{width:7px; height:7px; border-radius:50%; background:var(--green); display:inline-block; margin-right:6px; box-shadow:0 0 8px var(--green);}
-
-  /* ================= model view ================= */
-  .model-wrap{position:relative; width:1060px; height:640px; transform-origin:0 0;}
-  .model-wrap svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible;}
-  .rel{fill:none; stroke:var(--line-2); stroke-width:2; transition:stroke .2s, stroke-width .2s;}
-  .rel.mm{stroke-dasharray:6 5;}
-  .rel.hot{stroke:var(--yellow); stroke-width:2.6;}
-  .card-lbl{font-family:var(--mono); font-size:11px; fill:var(--muted);}
-  .card-lbl.hot{fill:var(--yellow); font-weight:700;}
-  .mtable{position:absolute; width:200px; background:var(--panel); border:1px solid var(--line-2); border-radius:10px; box-shadow:var(--shadow);
-    user-select:none; touch-action:none; transition:box-shadow .2s, border-color .2s;}
-  .mtable.hot{border-color:var(--yellow); box-shadow:var(--shadow), 0 0 0 4px var(--glow);}
-  .mtable header > span{white-space:nowrap;}
-  .mtable header{display:flex; align-items:center; justify-content:space-between; gap:6px; padding:8px 10px; border-bottom:1px solid var(--line);
-    border-radius:10px 10px 0 0; background:var(--panel-2); cursor:grab; font-weight:700; font-size:13px;}
-  .mtable header:active{cursor:grabbing;}
-  .mtable header .tico{display:inline-grid; place-items:center; width:18px; height:18px; border-radius:4px; background:var(--c); color:#111; font-size:10px; margin-right:6px;}
-  .mtable header button{white-space:nowrap; background:none; border:0; cursor:pointer; color:var(--muted); font-size:11px; font-family:var(--mono);}
-  .mtable header button:hover{color:var(--yellow);}
-  .mtable ul{list-style:none; margin:0; padding:6px 0;}
-  .mtable li{display:flex; justify-content:space-between; gap:6px; padding:3px 10px; font-size:12px;}
-  .mtable li span{color:var(--muted-2); font-family:var(--mono); font-size:10.5px;}
-  .mtable li.key{font-weight:600;}
-  .model-legend{display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-bottom:14px;}
-  .model-legend svg{width:30px; height:8px; vertical-align:middle; margin-right:6px;}
-
-  /* ================= query view: the resume as a live SQLite database ================= */
-  .qhero{position:relative; margin-bottom:18px; padding:26px 28px; border-radius:16px; overflow:hidden; border:1px solid var(--line);
-    background:radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--yellow) 16%, transparent), transparent 55%),
-               radial-gradient(90% 120% at 100% 100%, color-mix(in srgb, var(--blue) 18%, transparent), transparent 60%), var(--panel);}
-  .qhero h1{margin:0 0 8px; font-size:clamp(24px, 3.4vw, 38px); font-weight:800; letter-spacing:-.03em; line-height:1.1;}
-  .qhero h1 em{font-style:normal; background:linear-gradient(90deg, var(--yellow), var(--orange)); -webkit-background-clip:text; background-clip:text; color:transparent;}
-  .qhero p{margin:0 0 16px; color:var(--muted); font-size:14.5px; max-width:640px; line-height:1.55;}
-  .qhero .cta .btn{font-size:13.5px;}
-  .qgrid{display:grid; grid-template-columns:230px minmax(0, 1fr); gap:14px; align-items:start;}
+  /* ================= query view ================= */
+  .qhero{display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:16px; padding:22px 24px; border-radius:var(--radius);
+    background:linear-gradient(120deg, var(--rose-soft), var(--surface) 65%); border:1px solid var(--line);}
+  .qhero h2{margin:0 0 4px; font-size:22px; font-weight:800; letter-spacing:-.02em;}
+  .qhero p{margin:0; color:var(--muted); font-size:13.5px; max-width:560px;}
+  .qgrid{display:grid; grid-template-columns:220px minmax(0, 1fr); gap:16px; align-items:start;}
   .qgrid > aside{min-width:0;}
   .qlib{display:grid; gap:6px;}
-  .qlib button{text-align:left; background:var(--panel); border:1px solid var(--line); border-radius:9px; padding:9px 11px; cursor:pointer; font-size:13px;
-    transition:border-color .15s, background .15s, transform .15s;}
-  .qlib button:hover{border-color:var(--yellow); transform:translateX(2px);}
-  .qlib button.on{border-color:var(--yellow); background:var(--glow);}
-  .qlib .sec{font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--muted-2); margin:10px 2px 2px;}
+  .qlib .sec{font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--faint); font-weight:700; margin:10px 4px 2px;}
+  .qlib button{text-align:left; background:var(--surface); border:1px solid var(--line); border-radius:11px; padding:9px 12px; cursor:pointer; font-size:13px; font-weight:600; color:var(--ink-2);}
+  .qlib button:hover{border-color:var(--line-2); color:var(--ink);}
+  .qlib button.on{border-color:var(--rose); color:var(--rose); background:var(--rose-soft);}
   .schema{font-family:var(--mono); font-size:11.5px;}
-  .schema details{border:1px solid var(--line); border-radius:8px; background:var(--panel); margin-bottom:5px;}
-  .schema summary{cursor:pointer; padding:6px 9px; display:flex; justify-content:space-between; gap:6px; list-style:none;}
+  .schema details{border:1px solid var(--line); border-radius:10px; background:var(--surface); margin-bottom:5px;}
+  .schema summary{cursor:pointer; padding:7px 10px; display:flex; justify-content:space-between; gap:6px; list-style:none;}
   .schema summary::-webkit-details-marker{display:none;}
-  .schema summary b{color:var(--yellow); font-weight:600;}
-  .schema summary span{color:var(--muted-2);}
-  .schema ul{list-style:none; margin:0; padding:0 9px 7px 18px; color:var(--muted);}
-  .schema ul li span{color:var(--muted-2);}
-  .schema .peek{margin:0 9px 8px; font-size:11px; background:none; border:1px dashed var(--line-2); color:var(--muted); border-radius:6px; padding:3px 8px; cursor:pointer;}
-  .schema .peek:hover{color:var(--yellow); border-color:var(--yellow);}
-  .editor-card{border-radius:14px; overflow:hidden; border:1px solid var(--line-2); background:#0A0E16;
-    box-shadow:0 20px 50px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.02), 0 0 60px -20px color-mix(in srgb, var(--yellow) 40%, transparent);}
-  :root[data-theme="light"] .editor-card{background:#FBFCFE; box-shadow:0 14px 36px rgba(30,40,60,.12);}
-  .editor-top{display:flex; align-items:center; gap:10px; padding:9px 12px; border-bottom:1px solid var(--line); background:var(--panel);}
-  .lights{display:flex; gap:6px;} .lights i{width:11px; height:11px; border-radius:50%; background:#FF5F57;} .lights i:nth-child(2){background:#FEBC2E;} .lights i:nth-child(3){background:#28C840;}
-  .editor-top .file{font-family:var(--mono); font-size:12px; color:var(--muted); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
-  .run{display:inline-flex; align-items:center; gap:6px; background:var(--yellow); color:#14110A; border:0; border-radius:7px; padding:6px 12px; font-weight:700; font-size:12.5px; cursor:pointer;}
-  .run:hover{filter:brightness(1.06);}
+  .schema summary b{color:var(--ink); font-weight:600;}
+  .schema summary span{color:var(--faint);}
+  .schema ul{list-style:none; margin:0; padding:0 10px 7px 18px; color:var(--muted);}
+  .schema ul li span{color:var(--faint);}
+  .schema .peek{margin:0 10px 9px; font:11px var(--mono); background:none; border:1px dashed var(--line-2); color:var(--muted); border-radius:7px; padding:3px 8px; cursor:pointer;}
+  .schema .peek:hover{color:var(--rose); border-color:var(--rose);}
+  .editor-card{border-radius:var(--radius); overflow:hidden; border:1px solid var(--line); background:#221A26; box-shadow:var(--shadow);}
+  .editor-top{display:flex; align-items:center; gap:10px; padding:10px 12px; border-bottom:1px solid rgba(255,255,255,.07);}
+  .lights{display:flex; gap:6px;} .lights i{width:10px; height:10px; border-radius:50%; background:#FF5F57;} .lights i:nth-child(2){background:#FEBC2E;} .lights i:nth-child(3){background:#28C840;}
+  .editor-top .file{font-family:var(--mono); font-size:12px; color:#A99BA6; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .run{display:inline-flex; align-items:center; gap:6px; background:#EC6F8E; color:#221A26; border:0; border-radius:9px; padding:6px 12px; font-weight:800; font-size:12.5px; cursor:pointer;}
   .run kbd{font:10.5px var(--mono); opacity:.7;}
-  .ghost{background:none; border:1px solid var(--line-2); color:var(--muted); border-radius:7px; padding:5px 9px; font-size:12px; cursor:pointer;}
-  .ghost:hover{color:var(--text); border-color:var(--yellow);}
-  .editor{position:relative; display:grid; grid-template-columns:auto 1fr; font-family:var(--mono); font-size:13.5px; line-height:1.65;}
-  .gutter{padding:14px 10px 14px 14px; text-align:right; color:var(--muted-2); user-select:none; border-right:1px solid var(--line); white-space:pre;}
+  .ghost{background:none; border:1px solid rgba(255,255,255,.12); color:#C9BCC5; border-radius:9px; padding:5px 10px; font-size:12px; cursor:pointer;}
+  .ghost:hover{color:#fff;}
+  .editor{display:grid; grid-template-columns:auto 1fr; font-family:var(--mono); font-size:13.5px; line-height:1.65;}
+  .gutter{padding:14px 10px 14px 14px; text-align:right; color:#6E616B; user-select:none; border-right:1px solid rgba(255,255,255,.06); white-space:pre;}
   .code{position:relative; min-height:150px;}
   .code pre, .code textarea{margin:0; padding:14px 16px; font:inherit; line-height:inherit; white-space:pre-wrap; word-break:break-word; tab-size:2; border:0;}
-  .code pre{position:absolute; inset:0; pointer-events:none; color:var(--text); overflow:hidden;}
-  .code textarea{position:relative; display:block; width:100%; min-height:150px; resize:vertical; background:transparent; color:transparent;
-    caret-color:var(--yellow); outline:none; overflow:hidden;}
-  .code textarea::selection{background:color-mix(in srgb, var(--blue) 35%, transparent); color:transparent;}
-  .tk-k{color:var(--purple); font-weight:600;} .tk-s{color:var(--green);} .tk-n{color:var(--orange);} .tk-c{color:var(--muted-2); font-style:italic;}
-  .tk-t{color:var(--yellow);} .tk-f{color:var(--blue);}
-  .qstatus{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 14px; border-top:1px solid var(--line);
-    font-family:var(--mono); font-size:11.5px; color:var(--muted); background:var(--panel);}
-  .qstatus .ok{color:var(--green);} .qstatus .err{color:var(--pink);}
-  .spin{display:inline-block; width:10px; height:10px; border:2px solid var(--muted-2); border-top-color:var(--yellow); border-radius:50%; animation:spin .6s linear infinite; vertical-align:-1px;}
+  .code pre{position:absolute; inset:0; pointer-events:none; color:#EDE4EA; overflow:hidden;}
+  .code textarea{position:relative; display:block; width:100%; min-height:150px; resize:vertical; background:transparent; color:transparent; caret-color:#EC6F8E; outline:none; overflow:hidden;}
+  .code textarea::selection{background:rgba(149,141,230,.35); color:transparent;}
+  .tk-k{color:#B7A9FF; font-weight:600;} .tk-s{color:#7FD8A6;} .tk-n{color:#F2B766;} .tk-c{color:#7D6F7A; font-style:italic;} .tk-t{color:#EC8FA6;} .tk-f{color:#7FC0F0;}
+  .qstatus{display:flex; justify-content:space-between; gap:10px; padding:8px 14px; border-top:1px solid rgba(255,255,255,.07); font-family:var(--mono); font-size:11.5px; color:#A99BA6;}
+  .qstatus .ok{color:#7FD8A6;} .qstatus .err{color:#F28BA0;}
+  .spin{display:inline-block; width:10px; height:10px; border:2px solid #6E616B; border-top-color:#EC6F8E; border-radius:50%; animation:spin .6s linear infinite; vertical-align:-1px;}
   @keyframes spin{to{transform:rotate(360deg);}}
-  .results{display:grid; grid-template-columns:minmax(0, 1fr); gap:14px; margin-top:14px;}
-  .results.with-chart{grid-template-columns:minmax(0, 1.25fr) minmax(0, 1fr);}
-  .rgrid-wrap{overflow:auto; max-height:420px; border-radius:12px; border:1px solid var(--line); background:var(--panel);}
+  .results{display:grid; grid-template-columns:minmax(0, 1fr); gap:16px; margin-top:16px;}
+  .results.with-chart{grid-template-columns:minmax(0, 1.2fr) minmax(0, 1fr);}
+  .rgrid-wrap{overflow:auto; max-height:420px; border-radius:var(--radius); border:1px solid var(--line); background:var(--surface); box-shadow:var(--shadow);}
   .rgrid{width:100%; border-collapse:collapse; font-size:13px;}
-  .rgrid th{position:sticky; top:0; background:var(--panel-2); text-align:left; font-family:var(--mono); font-size:11px; color:var(--muted); font-weight:600; padding:8px 12px; border-bottom:1px solid var(--line); white-space:nowrap;}
-  .rgrid td{padding:9px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
-  .rgrid td.num{font-family:var(--mono); text-align:right; color:var(--orange);}
-  .rgrid td.nul{color:var(--muted-2); font-style:italic;}
-  .rgrid tbody tr{animation:rowIn .35s ease both;}
-  .rgrid tbody tr:hover{background:var(--panel-2);}
-  @keyframes rowIn{from{opacity:0; transform:translateY(6px);}}
-  .qerr{padding:14px; border-radius:12px; border:1px solid color-mix(in srgb, var(--pink) 45%, transparent); background:color-mix(in srgb, var(--pink) 8%, transparent);
-    font-family:var(--mono); font-size:12.5px; line-height:1.6;}
-  .qerr b{color:var(--pink);}
-  .rchart{height:300px;}
-  @media (max-width:1100px){ .qgrid{grid-template-columns:minmax(0, 1fr);} .results.with-chart{grid-template-columns:minmax(0, 1fr);} .qlib{grid-template-columns:repeat(auto-fill, minmax(190px, 1fr));} }
-  @media (max-width:560px){
-    .qhero{padding:20px 18px;} .editor{font-size:12.5px;} .gutter{padding-left:8px;}
-    #qlib{display:flex; overflow-x:auto; gap:8px; padding-bottom:4px; scrollbar-width:none;} #qlib::-webkit-scrollbar{display:none;}
-    #qlib .sec{display:none;} #qlib button{flex:0 0 auto; white-space:nowrap;}
-    #qlib + .qlib, #schema{display:none;}
-  }
+  .rgrid th{position:sticky; top:0; background:var(--surface-2); text-align:left; font-family:var(--mono); font-size:11px; color:var(--muted); font-weight:600; padding:9px 12px; border-bottom:1px solid var(--line); white-space:nowrap;}
+  .rgrid td{padding:10px 12px; border-bottom:1px solid var(--line); vertical-align:top;}
+  .rgrid td.num{font-family:var(--mono); text-align:right; color:var(--rose);}
+  .rgrid td.nul{color:var(--faint); font-style:italic;}
+  .rgrid tbody tr{animation:rowIn .3s ease both;}
+  @keyframes rowIn{from{opacity:0; transform:translateY(5px);}}
+  .qerr{padding:14px 16px; border-radius:var(--radius); border:1px solid color-mix(in srgb, var(--rose) 40%, transparent); background:var(--rose-soft); font-family:var(--mono); font-size:12.5px; line-height:1.6;}
+  .qerr b{color:var(--rose);}
+  .rchart{height:290px;}
 
-  /* table view modal */
-  .modal{position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.45); backdrop-filter:blur(3px); padding:16px;}
+  /* ================= model view ================= */
+  .model-legend{display:flex; gap:16px; flex-wrap:wrap; font-size:12px; color:var(--muted); margin-bottom:12px;}
+  .model-legend svg{width:30px; height:8px; vertical-align:middle; margin-right:6px;}
+  #modelOuter{overflow:auto; border-radius:var(--radius); border:1px solid var(--line); background:var(--surface-2);
+    background-image:radial-gradient(var(--line-2) 1px, transparent 1px); background-size:18px 18px;}
+  .model-wrap{position:relative; width:1060px; height:640px; transform-origin:0 0;}
+  .model-wrap svg{position:absolute; inset:0; width:100%; height:100%; overflow:visible;}
+  .rel{fill:none; stroke:var(--line-2); stroke-width:2; transition:stroke .2s;}
+  .rel.mm{stroke-dasharray:6 5;}
+  .rel.hot{stroke:var(--rose); stroke-width:2.6;}
+  .card-lbl{font-family:var(--mono); font-size:11px; fill:var(--muted);}
+  .card-lbl.hot{fill:var(--rose); font-weight:700;}
+  .mtable{position:absolute; width:200px; background:var(--surface); border:1px solid var(--line-2); border-radius:12px; box-shadow:var(--shadow); user-select:none; touch-action:none; transition:border-color .2s, box-shadow .2s;}
+  .mtable.hot{border-color:var(--rose); box-shadow:var(--shadow), 0 0 0 4px var(--rose-soft);}
+  .mtable header{display:flex; align-items:center; justify-content:space-between; gap:6px; padding:9px 11px; border-bottom:1px solid var(--line); cursor:grab; font-weight:800; font-size:13px;}
+  .mtable header > span{white-space:nowrap; display:flex; align-items:center; gap:7px;}
+  .mtable header i{width:10px; height:10px; border-radius:3px; background:var(--c);}
+  .mtable header button{white-space:nowrap; background:none; border:0; cursor:pointer; color:var(--muted); font:11px var(--mono);}
+  .mtable header button:hover{color:var(--rose);}
+  .mtable ul{list-style:none; margin:0; padding:6px 0;}
+  .mtable li{display:flex; justify-content:space-between; gap:6px; padding:3px 11px; font-size:12px;}
+  .mtable li span{color:var(--faint); font-family:var(--mono); font-size:10.5px;}
+  .mtable li.key{font-weight:700;}
+
+  .modal{position:fixed; inset:0; z-index:300; display:none; align-items:center; justify-content:center; background:rgba(42,31,45,.35); backdrop-filter:blur(3px); padding:16px;}
   .modal.show{display:flex;}
-  .modal-card{width:min(760px, 100%); max-height:80vh; overflow:auto; background:var(--panel); border:1px solid var(--line-2); border-radius:12px; box-shadow:0 30px 80px rgba(0,0,0,.5);}
-  .modal-card header{display:flex; justify-content:space-between; align-items:center; padding:12px 16px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--panel);}
-  .modal-card header h3{margin:0; font-size:14px;}
-  .modal-card header button{background:none; border:0; font-size:20px; cursor:pointer; color:var(--muted);}
+  .modal-card{width:min(760px, 100%); max-height:80vh; overflow:auto; background:var(--surface); border:1px solid var(--line-2); border-radius:var(--radius); box-shadow:0 30px 80px rgba(42,31,45,.25);}
+  .modal-card header{display:flex; justify-content:space-between; align-items:center; padding:14px 18px; border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--surface);}
+  .modal-card header h3{margin:0; font-size:15px;}
+  .modal-card header button{background:none; border:0; font-size:22px; cursor:pointer; color:var(--muted);}
   .dtable{width:100%; border-collapse:collapse; font-size:12.5px;}
-  .dtable th, .dtable td{padding:8px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top;}
-  .dtable th{font-family:var(--mono); font-size:11px; color:var(--muted); font-weight:600; background:var(--panel-2); position:sticky; top:49px;}
+  .dtable th, .dtable td{padding:9px 14px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top;}
+  .dtable th{font-family:var(--mono); font-size:11px; color:var(--muted); font-weight:600; background:var(--surface-2);}
 
-  /* toast */
-  .toasts{position:fixed; left:50%; bottom:56px; transform:translateX(-50%); z-index:400; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none;}
-  .toast{background:var(--panel-2); border:1px solid var(--line-2); color:var(--text); padding:9px 14px; border-radius:10px; font-size:13px; box-shadow:var(--shadow);
-    animation:toastIn .25s ease, toastOut .3s ease 2.6s forwards; max-width:min(520px, 90vw);}
-  .toast b{color:var(--yellow);}
-  @keyframes toastIn{from{opacity:0; transform:translateY(8px);}}
-  @keyframes toastOut{to{opacity:0; transform:translateY(8px);}}
+  .toasts{position:fixed; left:50%; bottom:24px; transform:translateX(-50%); z-index:400; display:flex; flex-direction:column; gap:8px; align-items:center; pointer-events:none;}
+  .toast{background:var(--ink); color:var(--surface); padding:9px 15px; border-radius:12px; font-size:13px; font-weight:600; box-shadow:0 12px 30px rgba(42,31,45,.25);
+    animation:pop .2s ease, fade .3s ease 2.4s forwards;}
+  @keyframes fade{to{opacity:0; transform:translateY(6px);}}
 
-  /* bookmark menu */
-  .menu{position:fixed; z-index:350; min-width:250px; background:var(--panel); border:1px solid var(--line-2); border-radius:10px; box-shadow:0 20px 50px rgba(0,0,0,.45); padding:6px; display:none;}
-  .menu.show{display:block;}
-  .menu button{display:flex; gap:10px; width:100%; text-align:left; background:none; border:0; border-radius:7px; padding:8px 10px; cursor:pointer;}
-  .menu button:hover{background:var(--panel-2);}
-  .menu button .e{font-size:16px;}
-  .menu button b{display:block; font-size:13px;}
-  .menu button span{font-size:11.5px; color:var(--muted);}
-  .menu button.on{background:var(--glow);}
-
-  /* chat bubble sits above the page tabs here */
-  .rc.floating .rc-fab{bottom:52px !important;}
-  .rc.floating .rc-panel{bottom:52px !important;}
+  /* the chat bubble is opened from the sidebar / ask box here */
+  .rc.floating .rc-fab{display:none !important;}
 
   /* ================= responsive ================= */
-  @media (max-width:1280px){ .pane{width:210px;} }
-  @media (max-width:1100px){
-    .kpis{grid-template-columns:repeat(2, 1fr);}
-    .span-3, .span-4, .span-5, .span-6, .span-7, .span-8{grid-column:span 12;}
-    .scan{grid-template-columns:repeat(2, 1fr);}
+  @media (max-width:1200px){ .s3{grid-column:span 6;} .s4, .s5, .s7, .s8{grid-column:span 12;} .glance{grid-template-columns:repeat(2, minmax(0, 1fr));} }
+  @media (max-width:900px){
+    .shell{grid-template-columns:minmax(0, 1fr);}
+    .side{position:static; height:auto; padding:16px 16px 10px; gap:12px; border-right:0; border-bottom:1px solid var(--line);}
+    .me{flex-direction:row; text-align:left; gap:12px;}
+    .mark{width:48px; height:48px; border-radius:15px; font-size:17px; margin:0; flex:0 0 auto;}
+    .me .txt{min-width:0;}
+    .status{margin-top:4px;}
+    .nav{flex-direction:row; overflow-x:auto; scrollbar-width:none; gap:4px;}
+    .nav::-webkit-scrollbar{display:none;}
+    .nav-label{display:none;}
+    .nav button{width:auto; white-space:nowrap; padding:8px 12px;}
+    .nav .new{display:none;}
+    .side-foot{display:flex; flex-wrap:wrap; gap:8px; margin-top:0;}
+    .side-foot .btn{flex:1 1 140px; padding:9px 12px;}
+    .side-links{flex:1 1 100%;}
+    .main{padding:18px 16px 40px;}
+    .top-right{align-items:stretch; width:100%;}
+    .seg{overflow-x:auto; max-width:100%;}
+    .qgrid{grid-template-columns:minmax(0, 1fr);}
+    .results.with-chart{grid-template-columns:minmax(0, 1fr);}
+    #qlib{display:flex; overflow-x:auto; gap:8px; padding-bottom:4px; scrollbar-width:none;}
+    #qlib .sec{display:none;} #qlib button{flex:0 0 auto; white-space:nowrap;}
+    #schemaWrap{display:none;}
   }
-  @media (max-width:860px){
-    .body{grid-template-columns:1fr;}
-    .rail{display:none;}
-    .panes{position:fixed; right:0; top:0; bottom:0; z-index:250; transform:translateX(100%); transition:transform .25s ease; box-shadow:-20px 0 50px rgba(0,0,0,.4);}
-    .panes.open{transform:none;}
-    .pane{width:min(280px, 82vw);} .pane.collapsed{width:min(280px, 82vw);}
-    .pane.collapsed .pane-head{writing-mode:horizontal-tb;} .pane.collapsed .pane-body{display:block;}
-    .pane + .pane{display:none;}
-    .panes.fields .pane:first-child{display:none;} .panes.fields .pane + .pane{display:flex;}
-    .brand-file{display:none;}
-    .rgroup-label{display:none;}
-    .view{padding:16px 14px 40px;}
-    .status .q{display:none;}
-  }
-  @media (min-width:861px){ .mobile-only{display:none !important;} }
-  @media (max-width:560px){
-    .kpis{grid-template-columns:1fr 1fr; gap:10px;}
-    .kpi .val{font-size:24px;}
-    .scan{grid-template-columns:1fr;}
-    .page-head h1{font-size:20px;}
-    .title-links .pill-link:first-child{display:none;}
+  @media (max-width:640px){
+    .s3, .s6{grid-column:span 12;}
+    .kpis .s3{grid-column:span 6;}
+    .kpi .val{font-size:26px;}
+    .glance{grid-template-columns:minmax(0, 1fr);}
+    .top h1{font-size:22px;}
     .tl{display:none;} .tl-list{display:block;}
-    .status{display:none;}
-    .formula{font-size:11px;}
+    .seg-label{display:none;}
+    .ctx{margin-left:0;}
+    #chips{flex-wrap:nowrap; overflow-x:auto; width:100%; scrollbar-width:none; padding-bottom:2px;} #chips::-webkit-scrollbar{display:none;} #chips .chip{flex:0 0 auto;}
   }
 
-  /* ================= print: a clean one-page resume ================= */
+  /* ================= print: one-page resume ================= */
   #printResume{display:none;}
   @media print{
     @page{size:A4; margin:14mm 15mm;}
-    html, body{height:auto; overflow:visible; background:#fff !important; color:#111 !important;}
+    html, body{background:#fff !important; color:#111 !important;}
     body > *:not(#printResume){display:none !important;}
     #printResume{display:block; font-family:var(--sans); color:#111; font-size:10.5pt; line-height:1.45;}
     #printResume h1{font-size:22pt; margin:0; letter-spacing:-.01em;}
     #printResume .role{font-size:11pt; color:#444; margin:2px 0 6px;}
-    #printResume .contact{font-size:9.5pt; color:#333; padding-bottom:8px; border-bottom:2px solid #F2C811; margin-bottom:10px;}
+    #printResume .contact{font-size:9.5pt; color:#333; padding-bottom:8px; border-bottom:2px solid #C8496A; margin-bottom:10px;}
     #printResume h2{font-size:10pt; letter-spacing:.12em; text-transform:uppercase; color:#555; margin:12px 0 5px; border-bottom:1px solid #ddd; padding-bottom:3px;}
     #printResume ul{margin:4px 0 0; padding-left:16px;}
     #printResume li{margin-bottom:2px;}
@@ -511,314 +387,197 @@
 </head>
 <body>
 
-<!-- ============ boot screen ============ -->
-<div class="boot" id="boot" role="status" aria-live="polite">
-  <div class="boot-card">
-    <div class="boot-logo" aria-hidden="true"><i></i><i></i><i></i></div>
-    <div class="boot-file">harshini_mitra.pbix</div>
-    <p class="boot-title">Opening Harshini's resume report…</p>
-    <ul class="boot-steps" id="bootSteps">
-      <li>Connecting to resume_data</li>
-      <li>Loading data model · 7 tables</li>
-      <li>Evaluating DAX measures</li>
-      <li>Rendering visuals</li>
-    </ul>
-    <div class="boot-bar"><i id="bootBar"></i></div>
-    <div class="boot-skip">click anywhere to skip</div>
-  </div>
-</div>
+<div class="shell">
+  <!-- ============ sidebar ============ -->
+  <aside class="side">
+    <div class="me">
+      <a class="mark" href="avatar-illustrated.html" title="Meet me" aria-label="Meet me">HM</a>
+      <div class="txt">
+        <div class="me-name">Harshini Mitra</div>
+        <div class="me-role">Data &amp; Analytics · Sydney</div>
+        <span class="status"><i></i>Available now · part-time</span>
+      </div>
+    </div>
 
-<div class="app" id="app">
-  <!-- ============ title bar ============ -->
-  <header class="titlebar">
-    <div class="brand">
-      <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
-      <span class="brand-name">Harshini Mitra</span>
-      <span class="brand-file">· harshini_mitra.pbix · Data &amp; Analytics resume report</span>
-    </div>
-    <nav class="title-links">
-      <a class="pill-link" href="avatar-illustrated.html">👋 Meet me</a>
-      <a class="pill-link" href="harshini_mitra_rpg.html">🎮 Game mode</a>
-    </nav>
-  </header>
-
-  <!-- ============ ribbon ============ -->
-  <div class="ribbon" role="toolbar" aria-label="Report actions">
-    <div class="rgroup"><span class="rgroup-label">Home</span>
-      <button class="rbtn" id="btnRefresh"><span class="ic">⟳</span>Refresh</button>
-      <button class="rbtn" id="btnClear"><span class="ic">⌫</span>Clear filters</button>
-      <button class="rbtn mobile-only" id="btnPanes"><span class="ic">⚲</span>Filters</button>
-    </div>
-    <div class="rgroup"><span class="rgroup-label">View</span>
-      <button class="rbtn" id="btnBookmarks" aria-haspopup="true"><span class="ic">🔖</span>Bookmarks</button>
-      <button class="rbtn" id="btnTheme"><span class="ic" id="themeIc">☀</span>Theme</button>
-      <button class="rbtn" id="btnQuery"><span class="ic">⛁</span>Query me</button>
-      <button class="rbtn" id="btnModel"><span class="ic">⧉</span>Model view</button>
-    </div>
-    <div class="rgroup"><span class="rgroup-label">Ask</span>
-      <button class="rbtn" id="btnQA"><span class="ic">💬</span>Q&amp;A</button>
-      <button class="rbtn" id="btnScan"><span class="ic">⚡</span>Quick scan</button>
-    </div>
-    <div class="rgroup"><span class="rgroup-label">Share</span>
-      <button class="rbtn" id="btnPDF"><span class="ic">⤓</span>Export PDF</button>
-    </div>
-  </div>
-
-  <!-- ============ formula bar ============ -->
-  <div class="formula" aria-live="polite">
-    <span class="fx">fx</span>
-    <span class="fx-code" id="fxCode"></span>
-    <span class="fx-val" id="fxVal"></span>
-  </div>
-
-  <div class="body">
-    <!-- view rail -->
-    <nav class="rail" aria-label="Views">
-      <button class="active" id="railQuery" data-tip="Query view · SQL" aria-label="Query view">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>
-      </button>
-      <button id="railReport" data-tip="Report view" aria-label="Report view">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
-      </button>
-      <button id="railModel" data-tip="Model view" aria-label="Model view">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="8" height="7" rx="1.5"/><rect x="14" y="3" width="8" height="7" rx="1.5"/><rect x="8" y="14" width="8" height="7" rx="1.5"/><path d="M10 6.5h4M6 10v2.5h6V14M18 10v2.5h-6"/></svg>
-      </button>
+    <nav class="nav" aria-label="Dashboard pages">
+      <div class="nav-label">Dashboard</div>
+      <button data-page="overview" class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="9" rx="2"/><rect x="14" y="3" width="7" height="5" rx="2"/><rect x="14" y="12" width="7" height="9" rx="2"/><rect x="3" y="16" width="7" height="5" rx="2"/></svg>Overview</button>
+      <button data-page="skills"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Skills &amp; tools</button>
+      <button data-page="experience"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>Experience</button>
+      <button data-page="education"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 10 12 5 2 10l10 5 10-5Z"/><path d="M6 12v5c0 1.5 2.5 3 6 3s6-1.5 6-3v-5"/></svg>Education</button>
+      <button data-page="glance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>At a glance</button>
+      <div class="nav-label">Explore</div>
+      <button data-page="query"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v6c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 11v6c0 1.7 3.6 3 8 3s8-1.3 8-3v-6"/></svg>Query me<span class="new">SQL</span></button>
+      <button data-page="model"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="3" width="8" height="7" rx="1.5"/><rect x="14" y="3" width="8" height="7" rx="1.5"/><rect x="8" y="14" width="8" height="7" rx="1.5"/><path d="M10 6.5h4M6 10v2.5h6V14M18 10v2.5h-6"/></svg>Data model</button>
     </nav>
 
-    <main class="canvas" id="canvas">
-      <div class="focus-backdrop" id="focusBackdrop"></div>
+    <div class="side-foot">
+      <button class="btn primary" type="button" data-openchat><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/></svg>Chat with me</button>
+      <button class="btn" type="button" data-pdf><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Download PDF</button>
+      <div class="side-links">
+        <a href="avatar-illustrated.html">Meet me</a><a href="harshini_mitra_rpg.html">Game mode</a><button type="button" id="themeBtn">Dark mode</button>
+      </div>
+    </div>
+  </aside>
 
-      <!-- ===================== QUERY VIEW ===================== -->
-      <div class="view active" id="viewQuery">
-        <div class="qhero">
-          <h1>Most resumes are documents.<br><em>Mine is a database.</em></h1>
-          <p>This is real SQLite running in your browser, loaded with my experience, skills and education. Run the query below, pick one from the library, or write your own.</p>
-          <div class="cta">
-            <button class="btn primary" type="button" data-goto-report>📊 Open the report</button>
-            <button class="btn" type="button" data-openchat>💬 Rather ask in plain English?</button>
-            <button class="btn" type="button" data-pdf>⤓ PDF resume</button>
-          </div>
-        </div>
-        <div class="qgrid">
-          <aside>
-            <div class="qlib" id="qlib"></div>
-            <div class="qlib"><div class="sec">Tables</div></div>
-            <div class="schema" id="schema"></div>
-          </aside>
-          <div style="min-width:0;">
-            <div class="editor-card">
-              <div class="editor-top">
-                <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
-                <span class="file">harshini_mitra.db — query.sql</span>
-                <button class="ghost" type="button" id="qReset" title="Reload the original data">↺ Reset</button>
-                <button class="run" type="button" id="qRun">▶ Run <kbd>Ctrl ⏎</kbd></button>
-              </div>
-              <div class="editor">
-                <div class="gutter" id="qGutter" aria-hidden="true">1</div>
-                <div class="code"><pre id="qHi" aria-hidden="true"></pre><textarea id="qSql" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="SQL query"></textarea></div>
-              </div>
-              <div class="qstatus"><span id="qState"><span class="spin"></span> loading SQLite…</span><span id="qMeta">harshini_mitra.db</span></div>
-            </div>
-            <div class="results" id="qResults"></div>
-          </div>
+  <!-- ============ main ============ -->
+  <main class="main">
+    <header class="top">
+      <div>
+        <div class="hello" id="hello">Hello</div>
+        <h1 id="pageTitle">Overview</h1>
+        <p id="pageSub"></p>
+      </div>
+      <div class="top-right">
+        <div class="ask" id="ask">
+          <form id="askForm" autocomplete="off">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input id="askInput" type="text" maxlength="200" placeholder="Ask me anything…" aria-label="Ask a question about Harshini">
+            <button class="mic" type="button" id="askMic" aria-label="Ask with your voice" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+            <button class="go" type="submit">Ask</button>
+          </form>
+          <div class="ask-pop" id="askPop" role="status" aria-live="polite"></div>
         </div>
       </div>
+    </header>
 
-      <!-- ===================== REPORT VIEW ===================== -->
-      <div class="view" id="viewReport">
+    <div class="slicer" id="slicerBar">
+      <span class="slicer-label">View as</span>
+      <div class="seg" id="views" role="tablist" aria-label="View as"></div>
+      <span class="slicer-label" style="margin-left:10px;">Skill area</span>
+      <span id="chips"></span>
+      <span class="ctx" id="ctx"></span>
+    </div>
 
-        <!-- ---------- OVERVIEW ---------- -->
-        <section class="page active" id="page-overview" data-title="Overview">
-          <div class="page-head">
-            <div>
-              <h1>Overview</h1>
-              <p>Data &amp; analytics professional in Sydney — studying a Master's at UTS and looking for a part-time technical support, data or BI role.</p>
-            </div>
-            <div class="slicer" style="gap:6px;">
-              <span class="info-chip"><b>Location</b>Sydney, AU</span>
-              <span class="info-chip"><b>Availability</b>Immediate</span>
-              <span class="info-chip"><b>Languages</b>4 spoken</span>
-            </div>
-          </div>
-          <div class="context" data-context></div>
-
-          <div class="kpis" id="kpis"></div>
-
-          <div class="visual" style="margin-bottom:14px; padding:12px 16px;">
-            <div class="slicer" id="skillSlicer"><span class="slicer-label">Slicer · Skill area</span></div>
-          </div>
-
-          <div class="grid">
-            <div class="visual span-7" data-visual>
-              <div class="vhead"><div><h3 id="profileTitle">Profile summary</h3><div class="sub" id="profileSub">table · profile</div></div><div class="vtools"></div></div>
-              <p class="lede">Detail-oriented data and analytics professional with experience working with software tools, troubleshooting data issues, and supporting clients and internal teams. Strong communication, problem-solving and technical aptitude, with a willingness to learn new systems and provide customer-focused support.</p>
-              <ul class="fit" id="fitList"></ul>
-            </div>
-            <div class="visual span-5" data-visual>
-              <div class="vhead"><div><h3>Q&amp;A</h3><div class="sub">Ask a question about this data</div></div><div class="vtools"></div></div>
-              <form class="qa-box" id="qaForm" autocomplete="off">
-                <span aria-hidden="true">✨</span>
-                <input id="qaInput" type="text" maxlength="200" placeholder="e.g. are you available to start?" aria-label="Ask a question about Harshini">
-                <button type="submit">Ask</button>
-              </form>
-              <div class="qa-sugs" id="qaSugs"></div>
-              <div class="qa-out" id="qaOut"><span style="color:var(--muted)">Answers come from a small model trained on Harshini's resume. Try a suggestion above.</span></div>
-            </div>
-            <div class="visual span-4" data-visual>
-              <div class="vhead"><div><h3>Evidence by skill area</h3><div class="sub">donut · click a slice to cross-filter</div></div><div class="vtools"></div></div>
-              <div class="chart"><canvas id="evidenceDonut" aria-label="Evidence by skill area"></canvas></div>
-            </div>
-            <div class="visual span-8" data-visual>
-              <div class="vhead"><div><h3>Career timeline</h3><div class="sub">milestones · hover for details</div></div><div class="vtools"></div></div>
-              <div class="tl" id="timeline"></div>
-              <ul class="tl-list" id="timelineList"></ul>
-            </div>
-          </div>
-        </section>
-
-        <!-- ---------- SKILLS ---------- -->
-        <section class="page" id="page-skills" data-title="Skills &amp; Tools">
-          <div class="page-head">
-            <div><h1>Skills &amp; Tools</h1><p>Proficiency out of 10, self-assessed against real project use. Click any bar, point or row to cross-filter the whole report (Ctrl/⌘-click to multi-select).</p></div>
-            <button class="back" data-back>← Back</button>
-          </div>
-          <div class="context" data-context></div>
-          <div class="grid">
-            <div class="visual span-5" data-visual>
-              <div class="vhead"><div><h3>Core skill areas</h3><div class="sub">radar</div></div><div class="vtools"></div></div>
-              <div class="chart tall"><canvas id="skillRadar" aria-label="Skill areas radar chart"></canvas></div>
-            </div>
-            <div class="visual span-7" data-visual>
-              <div class="vhead"><div><h3>Tools &amp; languages</h3><div class="sub">bar · coloured by skill area</div></div><div class="vtools"></div></div>
-              <div class="chart tall"><canvas id="toolBar" aria-label="Tools bar chart"></canvas></div>
-            </div>
-            <div class="visual span-12" data-visual>
-              <div class="vhead"><div><h3>Tool matrix</h3><div class="sub">table · data bars · evidence = experience points, education &amp; certifications that use it</div></div><div class="vtools"></div></div>
-              <div style="overflow-x:auto;"><table class="ttable" id="toolTable"></table></div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ---------- EXPERIENCE ---------- -->
-        <section class="page" id="page-experience" data-title="Experience">
-          <div class="page-head">
-            <div><h1>Experience</h1><p>1 role · 7 highlights · each tagged with the tools it used, so filters light up the evidence.</p></div>
-            <button class="back" data-back>← Back</button>
-          </div>
-          <div class="context" data-context></div>
-          <div class="grid">
-            <div class="visual span-8" data-visual>
-              <div class="role-head">
-                <div><h3>Software Developer / Data Analyst</h3><div class="co">Carvewing Solutions · clients including Paxia</div></div>
-                <span class="badge y">Sep 2023 — Dec 2025 · 2.3 yrs</span>
-              </div>
-              <ul class="points" id="points"></ul>
-            </div>
-            <div class="span-4" style="display:grid; gap:14px; align-content:start;">
-              <div class="visual" data-visual>
-                <div class="vhead"><div><h3>Tools used in this role</h3><div class="sub">bar · mentions across highlights</div></div><div class="vtools"></div></div>
-                <div class="chart" style="height:200px;"><canvas id="roleTools" aria-label="Tools used in role"></canvas></div>
-              </div>
-              <div class="visual" data-visual>
-                <div class="vhead"><div><h3>Why I moved on</h3><div class="sub">card</div></div></div>
-                <p class="lede" style="font-size:13px; margin:0;">I left Carvewing to pursue my Master of Data Science and Innovation at UTS — and I'm now keen to apply what I'm learning in a part-time role.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ---------- EDUCATION ---------- -->
-        <section class="page" id="page-education" data-title="Education &amp; Certs">
-          <div class="page-head">
-            <div><h1>Education &amp; Certifications</h1><p>2 degrees · 2 certifications · 4 languages.</p></div>
-            <button class="back" data-back>← Back</button>
-          </div>
-          <div class="context" data-context></div>
-          <div class="grid">
-            <div class="visual span-12" data-visual>
-              <div class="vhead"><div><h3>Education</h3><div class="sub">cards</div></div><div class="vtools"></div></div>
-              <div class="cards" id="eduCards"></div>
-            </div>
-            <div class="visual span-8" data-visual>
-              <div class="vhead"><div><h3>Certifications</h3><div class="sub">cards</div></div><div class="vtools"></div></div>
-              <div class="cards" id="certCards"></div>
-            </div>
-            <div class="visual span-4" data-visual>
-              <div class="vhead"><div><h3>Languages spoken</h3><div class="sub">list</div></div></div>
-              <div class="tags" id="langs" style="margin-top:0;"></div>
-            </div>
-          </div>
-        </section>
-
-        <!-- ---------- QUICK SCAN ---------- -->
-        <section class="page" id="page-scan" data-title="Quick scan">
-          <div class="page-head">
-            <div><h1>⚡ Quick scan</h1><p>Everything a recruiter needs, on one screen.</p></div>
-            <div class="cta">
-              <button class="btn primary" data-pdf>⤓ Download PDF resume</button>
-              <a class="btn" href="mailto:harshini.g.official@gmail.com">✉ Email me</a>
-            </div>
-          </div>
-          <div class="scan" id="scan"></div>
-        </section>
-
-        <!-- ---------- CONTACT ---------- -->
-        <section class="page" id="page-contact" data-title="Contact">
-          <div class="page-head">
-            <div><h1>Contact</h1><p>Reach out directly — I usually reply within 24 hours.</p></div>
-          </div>
-          <div class="grid">
-            <div class="visual span-7" data-visual>
-              <table class="ctable"><tbody id="contactRows"></tbody></table>
-            </div>
-            <div class="visual span-5" data-visual>
-              <div class="vhead"><div><h3>Prefer to chat?</h3><div class="sub">my AI twin answers common questions</div></div></div>
-              <p class="lede" style="font-size:13px;">Ask about my experience, skills, availability or work rights — it's a small model I trained on my resume.</p>
-              <div class="cta"><button class="btn primary" data-openchat>💬 Ask me anything</button><button class="btn" data-pdf>⤓ PDF resume</button></div>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- ===================== MODEL VIEW ===================== -->
-      <div class="view" id="viewModel">
-        <div class="page-head">
-          <div><h1>Model view</h1><p>My career as a data model. Drag tables around, hover to trace relationships, and open any table to see its rows.</p></div>
+    <!-- ---------- OVERVIEW ---------- -->
+    <section class="page active" id="page-overview" data-title="Overview" data-sub="Data &amp; analytics professional in Sydney, studying a Master's at UTS and looking for a part-time tech support, data or BI role.">
+      <div class="grid kpis" id="kpis" style="margin-bottom:16px;"></div>
+      <div class="grid">
+        <div class="tile s5 hey">
+          <div class="th"><h3 id="fitTitle">Hi, I'm Harshini</h3><span class="hint" id="fitHint">profile</span></div>
+          <p>I turn messy data into dashboards people actually use. Over <b>two years at Carvewing Solutions</b> I built Power BI and QuickSight reporting, wrote SQL and automated the boring bits with Python — and I'm at my best with people, understanding what a client needs and bringing it to the team.</p>
+          <ul class="fit" id="fitList"></ul>
         </div>
-        <div class="model-legend">
-          <span><svg viewBox="0 0 30 8"><path d="M0 4h30" stroke="currentColor" stroke-width="2"/></svg>one-to-many</span>
-          <span><svg viewBox="0 0 30 8"><path d="M0 4h30" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/></svg>many-to-many</span>
+        <div class="tile s3 count">
+          <div class="th" style="margin:0"><h3>Master's at UTS</h3></div>
+          <div class="ring"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="50"/><circle class="fg" id="ringFg" cx="60" cy="60" r="50" stroke-dasharray="314.16" stroke-dashoffset="314.16"/></svg>
+            <div class="in"><div><b id="monthsLeft">–</b><span>months to go</span></div></div></div>
+          <div class="cap">Data Science &amp; Innovation · graduating <b>Nov 2027</b></div>
         </div>
-        <div id="modelOuter" style="overflow:auto;">
-          <div id="modelSizer"><div class="model-wrap" id="modelWrap"><svg id="modelSvg" aria-hidden="true"></svg></div></div>
+        <div class="tile s4">
+          <div class="th"><h3>Off the clock</h3><span class="hint">when I'm not in a dashboard</span></div>
+          <div class="otc">
+            <div class="star"><em>🎮</em><span>Valorant<small>favourite game — gamer at heart</small></span></div>
+            <div><em>🏊</em><span>Swimming</span></div>
+            <div><em>🏸</em><span>Badminton</span></div>
+            <div><em>📚</em><span>Reading</span></div>
+            <div><em>🗣️</em><span>4 languages<small>English · Hindi · Kannada · Arabic</small></span></div>
+          </div>
+        </div>
+        <div class="tile s4">
+          <div class="th"><h3>Where my experience sits</h3><span class="hint">click to filter</span></div>
+          <div class="chart"><canvas id="evidenceDonut" aria-label="Evidence by skill area"></canvas></div>
+        </div>
+        <div class="tile s8">
+          <div class="th"><h3>Tools I use</h3><span class="hint">proficiency /10 · click to filter</span></div>
+          <div class="chart"><canvas id="toolBar" aria-label="Tools bar chart"></canvas></div>
+        </div>
+        <div class="tile s12">
+          <div class="th"><h3>Career timeline</h3><span class="hint">hover a milestone</span></div>
+          <div class="tl" id="timeline"></div>
+          <ul class="tl-list" id="timelineList"></ul>
         </div>
       </div>
-    </main>
+    </section>
 
-    <!-- ============ panes ============ -->
-    <aside class="panes" id="panes">
-      <section class="pane" id="paneFilters">
-        <div class="pane-head"><span>Filters</span><button data-collapse aria-label="Collapse filters pane">»</button></div>
-        <div class="pane-body" id="filtersBody"></div>
-      </section>
-      <section class="pane" id="paneFields">
-        <div class="pane-head"><span>Fields</span><button data-collapse aria-label="Collapse fields pane">»</button></div>
-        <div class="pane-body" id="fieldsBody"></div>
-      </section>
-    </aside>
-  </div>
+    <!-- ---------- SKILLS ---------- -->
+    <section class="page" id="page-skills" data-title="Skills &amp; tools" data-sub="Proficiency out of 10, self-assessed against real project use. Click anything to filter the whole dashboard.">
+      <div class="grid">
+        <div class="tile s5"><div class="th"><h3>Skill areas</h3><span class="hint">radar</span></div><div class="chart tall"><canvas id="skillRadar" aria-label="Skill areas radar chart"></canvas></div></div>
+        <div class="tile s7"><div class="th"><h3>Where each tool shows up</h3><span class="hint">pieces of evidence · click to filter</span></div><div class="chart tall"><canvas id="toolEvidence" aria-label="Evidence per tool"></canvas></div></div>
+        <div class="tile s12"><div class="th"><h3>Tool matrix</h3><span class="hint">evidence = experience, education &amp; certifications that use it</span></div>
+          <div style="overflow-x:auto;"><table class="ttable" id="toolTable"></table></div></div>
+      </div>
+    </section>
 
-  <!-- ============ page tabs + status ============ -->
-  <footer class="pagebar">
-    <nav class="ptabs" id="ptabs" aria-label="Report pages"></nav>
-    <div class="status"><span><span class="dot"></span>Live</span><span class="q" id="queryTime">Query completed in 0.3s</span><span id="pageCount"></span></div>
-  </footer>
+    <!-- ---------- EXPERIENCE ---------- -->
+    <section class="page" id="page-experience" data-title="Experience" data-sub="One role, seven highlights — each tagged with the tools it used, so filters light up the evidence.">
+      <div class="grid">
+        <div class="tile s8">
+          <div class="role"><div><h3>Software Developer / Data Analyst</h3><div class="co">Carvewing Solutions · clients including Paxia</div></div><span class="pill rose">Sep 2023 — Dec 2025 · 2.3 yrs</span></div>
+          <ul class="points" id="points"></ul>
+        </div>
+        <div class="s4" style="display:grid; gap:16px; align-content:start;">
+          <div class="tile"><div class="th"><h3>Tools in this role</h3><span class="hint">mentions</span></div><div class="chart" style="height:200px;"><canvas id="roleTools" aria-label="Tools used in role"></canvas></div></div>
+          <div class="tile"><div class="th"><h3>Why I moved on</h3></div><p style="margin:0; font-size:13.5px; line-height:1.65; color:var(--ink-2);">I left Carvewing to pursue my Master of Data Science and Innovation at UTS — and I'm now keen to put what I'm learning to work in a part-time role.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- EDUCATION ---------- -->
+    <section class="page" id="page-education" data-title="Education" data-sub="Two degrees, two certifications and four languages.">
+      <div class="grid">
+        <div class="tile s12"><div class="th"><h3>Degrees</h3></div><div class="cards" id="eduCards"></div></div>
+        <div class="tile s8"><div class="th"><h3>Certifications</h3></div><div class="cards" id="certCards"></div></div>
+        <div class="tile s4"><div class="th"><h3>Languages</h3></div><div class="tagrow" id="langs" style="margin:0"></div></div>
+      </div>
+    </section>
+
+    <!-- ---------- AT A GLANCE ---------- -->
+    <section class="page" id="page-glance" data-title="At a glance" data-sub="Everything a recruiter needs, on one screen.">
+      <div class="glance" id="glance"></div>
+      <div class="grid" style="margin-top:16px;">
+        <div class="tile s7"><div class="th"><h3>Get in touch</h3><span class="hint">I usually reply within 24 hours</span></div><table class="ctable"><tbody id="contactRows"></tbody></table></div>
+        <div class="tile s5"><div class="th"><h3>Prefer to chat?</h3></div>
+          <p style="margin:0 0 14px; color:var(--ink-2); font-size:13.5px;">My AI twin answers common questions about my experience, skills, availability and work rights — a small model I trained on my resume. You can even ask out loud.</p>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;"><button class="btn primary" type="button" data-openchat>Chat with me</button><button class="btn" type="button" data-pdf>Download PDF</button></div></div>
+      </div>
+    </section>
+
+    <!-- ---------- QUERY ME ---------- -->
+    <section class="page" id="page-query" data-title="Query me" data-sub="Most resumes are documents. Mine is a database — real SQLite running in your browser.">
+      <div class="qhero">
+        <div><h2>Go on, query me.</h2><p>Pick a question from the library, or write your own SQL. Results turn into a chart automatically.</p></div>
+        <button class="btn" type="button" data-openchat>Rather ask in plain English?</button>
+      </div>
+      <div class="qgrid">
+        <aside>
+          <div class="qlib" id="qlib"></div>
+          <div id="schemaWrap"><div class="qlib"><div class="sec">Tables</div></div><div class="schema" id="schema"></div></div>
+        </aside>
+        <div style="min-width:0;">
+          <div class="editor-card">
+            <div class="editor-top">
+              <span class="lights" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="file">harshini_mitra.db — query.sql</span>
+              <button class="ghost" type="button" id="qReset" title="Reload the original data">↺ Reset</button>
+              <button class="run" type="button" id="qRun">▶ Run <kbd>Ctrl ⏎</kbd></button>
+            </div>
+            <div class="editor">
+              <div class="gutter" id="qGutter" aria-hidden="true">1</div>
+              <div class="code"><pre id="qHi" aria-hidden="true"></pre><textarea id="qSql" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="SQL query"></textarea></div>
+            </div>
+            <div class="qstatus"><span id="qState"><span class="spin"></span> loading SQLite…</span><span id="qMeta">harshini_mitra.db</span></div>
+          </div>
+          <div class="results" id="qResults"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- DATA MODEL ---------- -->
+    <section class="page" id="page-model" data-title="Data model" data-sub="My career as a data model. Drag tables around, hover to trace relationships, open any table to see its rows.">
+      <div class="model-legend">
+        <span><svg viewBox="0 0 30 8"><path d="M0 4h30" stroke="currentColor" stroke-width="2"/></svg>one-to-many</span>
+        <span><svg viewBox="0 0 30 8"><path d="M0 4h30" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4"/></svg>many-to-many</span>
+      </div>
+      <div id="modelOuter"><div id="modelSizer"><div class="model-wrap" id="modelWrap"><svg id="modelSvg" aria-hidden="true"></svg></div></div></div>
+    </section>
+  </main>
 </div>
 
 <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
   <div class="modal-card"><header><h3 id="modalTitle"></h3><button data-close aria-label="Close">×</button></header><div id="modalBody"></div></div>
 </div>
-<div class="menu" id="bmMenu" role="menu"></div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 <div id="printResume"></div>
 
@@ -831,12 +590,13 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 const store = {get(k){ try { return localStorage.getItem(k); } catch(e) { return null; } },
                set(k, v){ try { localStorage.setItem(k, v); } catch(e) {} }};
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c]));
 
 /* =====================================================================
-   DATA MODEL
+   DATA
    ===================================================================== */
 const AREAS = ['BI & Dashboards', 'SQL & Databases', 'Automation & Scripting', 'Programming', 'Stakeholder Comms'];
-const AREA_COLOR = {'BI & Dashboards':'--yellow', 'SQL & Databases':'--blue', 'Automation & Scripting':'--teal', 'Programming':'--purple', 'Stakeholder Comms':'--pink'};
+const AREA_COLOR = {'BI & Dashboards':'--rose', 'SQL & Databases':'--blue', 'Automation & Scripting':'--teal', 'Programming':'--iris', 'Stakeholder Comms':'--honey'};
 const areaColor = a => css(AREA_COLOR[a]);
 const skills = {'BI & Dashboards':9, 'SQL & Databases':8, 'Automation & Scripting':8, 'Programming':7, 'Stakeholder Comms':8};
 const tools = [
@@ -851,456 +611,345 @@ const tools = [
 ];
 const toolArea = Object.fromEntries(tools.map(t => [t.name, t.area]));
 const points = [
-  {id:'e1', text:'Designed and developed interactive Power BI dashboards to track KPIs and operational performance for stakeholder decision-making.', tools:['Power BI'], skills:['Stakeholder Comms']},
-  {id:'e2', text:'Built reporting solutions using Amazon QuickSight and SQL (Redshift) to analyse datasets and present insights across business functions.', tools:['Amazon QuickSight', 'SQL / Redshift'], skills:[]},
-  {id:'e3', text:'Helped train an interactive chatbot focused on the dataset and dashboards in QuickSight.', tools:['Amazon QuickSight'], skills:[]},
-  {id:'e4', text:'Automated data extraction from PDFs using Python (pandas, pdfplumber), reducing manual processing time by <span class="metric">60%</span>.', tools:['Python (pandas)'], skills:['Programming']},
-  {id:'e5', text:'Collaborated with clients to translate business needs into technical dashboards and analytics solutions.', tools:[], skills:['Stakeholder Comms', 'BI & Dashboards']},
-  {id:'e6', text:'Conducted data validation and quality checks to ensure completeness and integrity of reporting outputs.', tools:[], skills:['BI & Dashboards']},
-  {id:'e7', text:'Presented insights and reports to stakeholders, highlighting trends, risks, and opportunities.', tools:[], skills:['Stakeholder Comms', 'BI & Dashboards']},
+  {text:'Designed and developed interactive Power BI dashboards to track KPIs and operational performance for stakeholder decision-making.', tools:['Power BI'], skills:['Stakeholder Comms']},
+  {text:'Built reporting solutions using Amazon QuickSight and SQL (Redshift) to analyse datasets and present insights across business functions.', tools:['Amazon QuickSight', 'SQL / Redshift'], skills:[]},
+  {text:'Helped train an interactive chatbot focused on the dataset and dashboards in QuickSight.', tools:['Amazon QuickSight'], skills:[]},
+  {text:'Automated data extraction from PDFs using Python (pandas, pdfplumber), reducing manual processing time by <span class="metric">60%</span>.', tools:['Python (pandas)'], skills:['Programming']},
+  {text:'Collaborated with clients to translate business needs into technical dashboards and analytics solutions.', tools:[], skills:['Stakeholder Comms', 'BI & Dashboards']},
+  {text:'Conducted data validation and quality checks to ensure completeness and integrity of reporting outputs.', tools:[], skills:['BI & Dashboards']},
+  {text:'Presented insights and reports to stakeholders, highlighting trends, risks, and opportunities.', tools:[], skills:['Stakeholder Comms', 'BI & Dashboards']},
 ];
 const education = [
-  {id:'ed1', badge:'in progress · grad. Nov 2027', title:'Master of Data Science and Innovation', meta:'University of Technology Sydney', tools:[], skills:[]},
-  {id:'ed2', badge:'completed · 2023', title:'Bachelor of Engineering, Computer Science', meta:'Sapthagiri College of Engineering, Bangalore', tools:['JavaScript', 'C / C++', 'Java'], skills:[]},
+  {badge:'In progress · Nov 2027', title:'Master of Data Science and Innovation', meta:'University of Technology Sydney', tools:[], skills:[]},
+  {badge:'Completed · 2023', title:'Bachelor of Engineering, Computer Science', meta:'Sapthagiri College of Engineering, Bangalore', tools:['JavaScript', 'C / C++', 'Java'], skills:[]},
 ];
 const certs = [
-  {id:'c1', title:'Machine Learning Using Python', meta:'ATS Learning Solutions · 2020', tools:['Python (pandas)'], skills:['Programming']},
-  {id:'c2', title:'Data Analysis using Excel, Tableau & Python', meta:'Alnitek Solutions · 2022', tools:['Tableau', 'Python (pandas)'], skills:[]},
+  {badge:'2020', title:'Machine Learning Using Python', meta:'ATS Learning Solutions', tools:['Python (pandas)'], skills:['Programming']},
+  {badge:'2022', title:'Data Analysis using Excel, Tableau & Python', meta:'Alnitek Solutions', tools:['Tableau', 'Python (pandas)'], skills:[]},
 ];
 const languages = ['English', 'Hindi', 'Kannada', 'Basic Arabic'];
 const contact = [
-  {k:'phone', v:'+61 431 363 849', href:'tel:+61431363849'},
-  {k:'email', v:'harshini.g.official@gmail.com', href:'mailto:harshini.g.official@gmail.com'},
-  {k:'linkedin', v:'linkedin.com/in/harshini-girish-mitra-41402b280', href:'https://linkedin.com/in/harshini-girish-mitra-41402b280'},
-  {k:'location', v:'Sydney, NSW · near the CBD (≤10 km) · on-site, hybrid or remote', href:null},
-  {k:'languages', v:languages.join(', '), href:null},
+  {k:'Email', v:'harshini.g.official@gmail.com', href:'mailto:harshini.g.official@gmail.com'},
+  {k:'Phone', v:'+61 431 363 849', href:'tel:+61431363849'},
+  {k:'LinkedIn', v:'linkedin.com/in/harshini-girish-mitra-41402b280', href:'https://linkedin.com/in/harshini-girish-mitra-41402b280'},
+  {k:'Location', v:'Sydney · near the CBD (≤10 km) · on-site, hybrid or remote', href:null},
 ];
-const evidenceItems = [...points, ...education, ...certs];
+const evidence = [...points, ...education, ...certs];
 const itemSkills = it => new Set([...it.skills, ...it.tools.map(t => toolArea[t])]);
+const evidenceFor = pred => evidence.filter(pred).length;
 
 /* =====================================================================
-   MEASURES (shown in the formula bar)
+   FILTERS + VIEWS (cross-filtering across every tile and page)
    ===================================================================== */
-const measures = [
-  {name:'Years Experience', dax:'<span class="m">Years Experience</span> = <span class="f">DIVIDE</span>( <span class="f">DATEDIFF</span>( <span class="f">DATE</span>(<span class="n">2023</span>,<span class="n">9</span>,<span class="n">1</span>), <span class="f">DATE</span>(<span class="n">2025</span>,<span class="n">12</span>,<span class="n">1</span>), <span class="k">MONTH</span> ), <span class="n">12</span> )', val:'2.3'},
-  {name:'Manual Work Automated', dax:'<span class="m">Manual Work Automated</span> = <span class="n">1</span> - <span class="f">DIVIDE</span>( [Manual Hours After], [Manual Hours Before] )', val:'60%'},
-  {name:'BI Platforms', dax:'<span class="m">BI Platforms</span> = <span class="f">CALCULATE</span>( <span class="f">DISTINCTCOUNT</span>( Tools[Tool] ), Tools[Area] = <span class="s">"BI &amp; Dashboards"</span> )', val:'3'},
-  {name:'Certifications', dax:'<span class="m">Certifications</span> = <span class="f">COUNTROWS</span>( Certifications )', val:'2'},
-  {name:'Tools Mastered', dax:'<span class="m">Tools Mastered</span> = <span class="f">COUNTROWS</span>( <span class="f">FILTER</span>( Tools, Tools[Score] &gt;= <span class="n">8</span> ) )', val:'5'},
-  {name:'Languages Spoken', dax:'<span class="m">Languages Spoken</span> = <span class="f">COUNTROWS</span>( Languages )', val:'4'},
-  {name:'Availability', dax:'<span class="m">Availability</span> = <span class="f">IF</span>( Visa[Type] = <span class="s">"Student"</span>, <span class="s">"Part-time · start immediately · any day"</span> )', val:'Immediate'},
-  {name:'Hireability', dax:'<span class="m">Hireability</span> = <span class="f">IF</span>( [Availability] = <span class="s">"Immediate"</span> <span class="k">&amp;&amp;</span> [Communication] = <span class="s">"Clear"</span>, <span class="s">"Very high ✨"</span>, <span class="s">"High"</span> )', val:'Very high ✨'},
-];
-function showMeasure(name, toastIt){
-  const m = measures.find(x => x.name === name);
-  if (!m) return;
-  const code = $('#fxCode');
-  code.innerHTML = m.dax;
-  $('#fxVal').textContent = m.val;
-  code.classList.remove('flash'); void code.offsetWidth; code.classList.add('flash');
-  $$('#fieldsBody [data-measure]').forEach(b => b.classList.toggle('on', b.dataset.measure === name));
-  if (toastIt) toast(`<b>[${m.name}]</b> = ${m.val}`);
-}
-
-/* =====================================================================
-   FILTER STATE (cross-filtering across every visual and page)
-   ===================================================================== */
-let filter = null;   // {kind:'tool'|'area', values:Set, label?}
-function matches(it){
-  if (!filter) return true;
-  if (filter.kind === 'tool') return it.tools.some(t => filter.values.has(t));
-  const s = itemSkills(it);
-  return [...filter.values].some(v => s.has(v));
-}
-function toolSelected(t){ return !filter || (filter.kind === 'tool' ? filter.values.has(t.name) : filter.values.has(t.area)); }
-function areaSelected(a){ return !filter || (filter.kind === 'area' ? filter.values.has(a) : [...filter.values].some(v => toolArea[v] === a)); }
-function setFilter(kind, value, additive){
-  if (additive && filter && filter.kind === kind) {
-    const v = new Set(filter.values);
-    v.has(value) ? v.delete(value) : v.add(value);
+let filter = null, view = 'all';
+const matches = it => !filter || (filter.kind === 'tool' ? it.tools.some(t => filter.values.has(t)) : [...filter.values].some(v => itemSkills(it).has(v)));
+const toolOn = t => !filter || (filter.kind === 'tool' ? filter.values.has(t.name) : filter.values.has(t.area));
+const areaOn = a => !filter || (filter.kind === 'area' ? filter.values.has(a) : [...filter.values].some(v => toolArea[v] === a));
+function setFilter(kind, value, add){
+  if (add && filter && filter.kind === kind) {
+    const v = new Set(filter.values); v.has(value) ? v.delete(value) : v.add(value);
     filter = v.size ? {kind, values:v} : null;
-  } else if (filter && filter.kind === kind && filter.values.size === 1 && filter.values.has(value)) {
-    filter = null;
-  } else {
-    filter = {kind, values:new Set([value])};
-  }
-  bookmark = null;
+  } else if (filter && filter.kind === kind && filter.values.size === 1 && filter.values.has(value)) filter = null;
+  else filter = {kind, values:new Set([value])};
+  view = 'all';
   render();
 }
-function clearFilter(){ filter = null; bookmark = null; render(); }
+function clearFilter(){ filter = null; view = 'all'; render(); }
+const additive = e => e && (e.ctrlKey || e.metaKey || e.shiftKey || (e.native && (e.native.ctrlKey || e.native.metaKey || e.native.shiftKey)));
+
+const views = {
+  all:{label:'Everyone', fit:{title:"Hi, I'm Harshini", hint:'profile', items:[
+    'Power BI and QuickSight dashboards and SQL reporting for real clients',
+    'Python automation that took slow manual work off the team',
+    'Clear communicator — comfortable with several clients at once',
+    'Available now, any day · student visa, part-time']}},
+  data:{label:'Data & BI role', areas:['BI & Dashboards', 'SQL & Databases', 'Automation & Scripting'], fit:{title:'Why I fit a Data & BI role', hint:'view · Data & BI', items:[
+    'Designed interactive Power BI dashboards tracking KPIs and operations',
+    'Built reporting in Amazon QuickSight with SQL on Redshift',
+    'Automated data extraction with Python (pandas, pdfplumber)',
+    'Ran data validation and quality checks on reporting outputs']}},
+  support:{label:'Tech support role', areas:['Stakeholder Comms', 'Programming'], fit:{title:'Why I fit a Tech support role', hint:'view · Tech support', items:[
+    'Experience troubleshooting data issues and supporting clients and internal teams',
+    'I translate what people need into something the team can build',
+    'Quick to learn new systems and tools — and I enjoy it',
+    'Available now, any day of the week']}},
+  recruiter:{label:'Recruiter', page:'glance'},
+};
+$('#views').innerHTML = Object.entries(views).map(([id, v]) => `<button type="button" role="tab" data-view="${id}">${v.label}</button>`).join('');
+$$('#views [data-view]').forEach(b => b.addEventListener('click', () => {
+  const id = b.dataset.view, v = views[id];
+  if (v.page) { filter = null; view = 'all'; render(); go(v.page); return; }
+  view = id; filter = v.areas ? {kind:'area', values:new Set(v.areas)} : null;
+  render(); if (current !== 'overview') go('overview');
+  if (id !== 'all') toast(`Viewing as: ${v.label}`);
+}));
+$('#chips').innerHTML = AREAS.map(a => `<button type="button" class="chip" data-area="${a}" style="--c:var(${AREA_COLOR[a]})"><i></i>${a}</button>`).join('');
+$$('#chips .chip').forEach(c => c.addEventListener('click', e => setFilter('area', c.dataset.area, additive(e))));
 
 /* =====================================================================
-   PAGES, NAVIGATION, DRILL-THROUGH
+   PAGES
    ===================================================================== */
-const pages = $$('.page').map(p => ({id:p.id.replace('page-', ''), title:p.dataset.title, el:p}));
-let current = 'overview', history = [];
-function go(id, opts = {}){
-  if (!opts.back && id !== current) history.push(current);
+const pages = $$('.page');
+let current = 'overview';
+function go(id){
   current = id;
-  showView('report');
-  pages.forEach(p => p.el.classList.toggle('active', p.id === id));
-  $$('.ptab').forEach(t => { const on = t.dataset.page === id; t.classList.toggle('active', on); t.setAttribute('aria-selected', on); });
-  $$('[data-back]').forEach(b => b.classList.toggle('show', !!opts.drill || (opts.back === undefined && history.length > 0 && opts.showBack)));
-  $('#pageCount').textContent = `Page ${pages.findIndex(p => p.id === id) + 1} of ${pages.length}`;
-  $('#canvas').scrollTop = 0;
+  pages.forEach(p => p.classList.toggle('active', p.id === 'page-' + id));
+  $$('.nav [data-page]').forEach(b => { const on = b.dataset.page === id; b.classList.toggle('on', on); b.setAttribute('aria-current', on ? 'page' : 'false'); });
+  const p = $('#page-' + id);
+  $('#pageTitle').innerHTML = p.dataset.title; $('#pageSub').innerHTML = p.dataset.sub;
+  $('#slicerBar').style.display = ['overview', 'skills', 'experience', 'education'].includes(id) ? '' : 'none';
+  $$('#views [data-view]').forEach(b => b.classList.toggle('on', id === 'glance' ? b.dataset.view === 'recruiter' : b.dataset.view === view));
+  if (id === 'model') drawModel();
+  if (id === 'query') startQuery();
+  scrollTo({top:0, behavior:reduceMotion ? 'auto' : 'smooth'});
   requestAnimationFrame(() => Object.values(charts).forEach(c => c && c.resize()));
 }
-$('#ptabs').innerHTML = pages.map(p => `<button class="ptab" role="tab" data-page="${p.id}">${p.title}</button>`).join('');
-$$('.ptab').forEach(t => t.addEventListener('click', () => go(t.dataset.page)));
-$$('[data-back]').forEach(b => b.addEventListener('click', () => go(history.pop() || 'overview', {back:true})));
-
-function showView(v){
-  ['query', 'report', 'model'].forEach(k => {
-    const id = k[0].toUpperCase() + k.slice(1);
-    $('#view' + id).classList.toggle('active', v === k);
-    $('#rail' + id).classList.toggle('active', v === k);
-  });
-  $('#btnModel').classList.toggle('active', v === 'model');
-  $('#btnQuery').classList.toggle('active', v === 'query');
-  $$('.ptab').forEach(t => t.classList.toggle('active', v === 'report' && t.dataset.page === current));
-  if (v === 'model') { drawModel(); $('#pageCount').textContent = 'Model view'; }
-  if (v === 'query') { $('#pageCount').textContent = 'Query view · SQLite'; $('#canvas').scrollTop = 0; }
-}
-$('#railQuery').addEventListener('click', () => showView('query'));
-$('#btnQuery').addEventListener('click', () => showView('query'));
-$$('[data-goto-report]').forEach(b => b.addEventListener('click', () => go('overview')));
-$('#railReport').addEventListener('click', () => go(current));
-$('#railModel').addEventListener('click', () => showView('model'));
-$('#btnModel').addEventListener('click', () => showView($('#viewModel').classList.contains('active') ? 'report' : 'model'));
+$$('.nav [data-page]').forEach(b => b.addEventListener('click', () => go(b.dataset.page)));
+const hour = new Date().getHours();
+$('#hello').textContent = (hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening') + ' — thanks for stopping by';
 
 /* =====================================================================
-   KPI CARDS (count-up + sparkline + drill-through)
+   KPIs, countdown, lists
    ===================================================================== */
+const ICONS = {
+  role:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  bolt:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8Z"/></svg>',
+  chart:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7"/></svg>',
+  award:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="9" r="6"/><path d="m8.5 14-1.5 7 5-3 5 3-1.5-7"/></svg>',
+};
 const kpis = [
-  {lbl:'Most recent role', tag:'current', val:2.3, dec:1, unit:'yrs', accent:'--blue', measure:'Years Experience', drill:() => go('experience', {drill:true}), spark:[1,2,2,3,4,5,6,7,8,9]},
-  {lbl:'Manual work automated', tag:'▲ impact', val:60, dec:0, unit:'%', accent:'--yellow', measure:'Manual Work Automated', drill:() => { filter = {kind:'tool', values:new Set(['Python (pandas)'])}; bookmark = null; render(); go('experience', {drill:true}); }, spark:[10,9,9,7,6,5,4,4,3,3]},
-  {lbl:'BI platforms shipped', tag:'active', val:3, dec:0, unit:'', accent:'--green', measure:'BI Platforms', drill:() => { filter = {kind:'area', values:new Set(['BI & Dashboards'])}; bookmark = null; render(); go('skills', {drill:true}); }, spark:[1,1,2,2,2,3,3,3,3,3]},
-  {lbl:'Certifications earned', tag:'verified', val:2, dec:0, unit:'', accent:'--purple', measure:'Certifications', drill:() => go('education', {drill:true}), spark:[0,0,1,1,1,1,2,2,2,2]},
+  {lbl:'Experience', ic:'role', val:2.3, dec:1, unit:'yrs', sub:'Carvewing · Sep 2023 – Dec 2025', c:'--rose', go:() => go('experience'), spark:[1,2,2,3,4,5,6,7,8,9]},
+  {lbl:'Manual work automated', ic:'bolt', val:60, dec:0, unit:'%', sub:'Python PDF extraction', c:'--teal', go:() => { filter = {kind:'tool', values:new Set(['Python (pandas)'])}; view = 'all'; render(); go('experience'); }, spark:[10,9,9,7,6,5,4,4,3,3]},
+  {lbl:'BI platforms', ic:'chart', val:3, dec:0, unit:'', sub:'Power BI · QuickSight · Tableau', c:'--iris', go:() => { filter = {kind:'area', values:new Set(['BI & Dashboards'])}; view = 'all'; render(); go('skills'); }, spark:[1,1,2,2,2,3,3,3,3,3]},
+  {lbl:'Certifications', ic:'award', val:2, dec:0, unit:'', sub:'ML with Python · Data Analysis', c:'--honey', go:() => go('education'), spark:[0,0,1,1,1,1,2,2,2,2]},
 ];
-$('#kpis').innerHTML = kpis.map((k, i) => `
-  <button class="kpi" style="--accent:var(${k.accent})" data-kpi="${i}" aria-label="${k.lbl}: ${k.val}${k.unit}. Drill through.">
-    <div class="lbl"><span>${k.lbl}</span><em>${k.tag}</em></div>
-    <div class="val"><span data-count="${k.val}" data-dec="${k.dec}">0</span><small>${k.unit}</small></div>
-    <div class="drill">↳ drill through</div>
-    <div class="spark"><canvas id="spark${i}"></canvas></div>
-  </button>`).join('');
-$$('.kpi').forEach(b => {
-  const k = kpis[+b.dataset.kpi];
-  b.addEventListener('click', () => { showMeasure(k.measure); k.drill(); });
-  b.addEventListener('mouseenter', () => showMeasure(k.measure));
-});
+$('#kpis').innerHTML = kpis.map((k, i) => `<button type="button" class="kpi s3" style="--c:var(${k.c}); animation-delay:${i * 50}ms" data-kpi="${i}">
+  <span class="go">Open →</span>
+  <div class="lbl"><i>${ICONS[k.ic]}</i>${k.lbl}</div>
+  <div class="val"><span data-count="${k.val}" data-dec="${k.dec}">0</span><small>${k.unit}</small></div>
+  <div class="sub">${k.sub}</div>
+  <div class="spark"><canvas id="spark${i}"></canvas></div></button>`).join('');
+$$('.kpi').forEach(b => b.addEventListener('click', () => kpis[+b.dataset.kpi].go()));
 function countUp(){
   $$('[data-count]').forEach(el => {
     const to = +el.dataset.count, dec = +el.dataset.dec;
     if (reduceMotion) { el.textContent = to.toFixed(dec); return; }
-    const t0 = performance.now(), dur = 1100;
-    const step = t => { const p = Math.min((t - t0) / dur, 1), e = 1 - Math.pow(1 - p, 3);
-      el.textContent = (to * e).toFixed(dec); if (p < 1) requestAnimationFrame(step); };
+    const t0 = performance.now();
+    const step = t => { const p = Math.min((t - t0) / 1000, 1); el.textContent = (to * (1 - Math.pow(1 - p, 3))).toFixed(dec); if (p < 1) requestAnimationFrame(step); };
     requestAnimationFrame(step);
   });
 }
-
-/* =====================================================================
-   SLICER, FIT LIST, TIMELINE, CARDS, TABLES
-   ===================================================================== */
-$('#skillSlicer').insertAdjacentHTML('beforeend', AREAS.map(a =>
-  `<button class="chip" data-area="${a}" style="--c:var(${AREA_COLOR[a]})"><i></i>${a}</button>`).join(''));
-$$('#skillSlicer .chip').forEach(c => c.addEventListener('click', e => setFilter('area', c.dataset.area, e.ctrlKey || e.metaKey || e.shiftKey)));
-
-const fitLists = {
-  default:{title:'Profile summary', sub:'table · profile', items:[
-    'Built Power BI and Amazon QuickSight dashboards and SQL reporting for real clients',
-    'Automated PDF data extraction in Python, cutting slow manual processing',
-    'Comfortable with clients: translating business needs into technical solutions',
-    'Available immediately, any day of the week · student visa, part-time']},
-  data:{title:'Why I fit a Data & BI role', sub:'bookmark · Data & BI role', items:[
-    'Designed interactive Power BI dashboards tracking KPIs and operational performance',
-    'Built reporting in Amazon QuickSight with SQL on Redshift',
-    'Automated data extraction with Python (pandas, pdfplumber)',
-    'Ran data validation and quality checks on reporting outputs']},
-  support:{title:'Why I fit a Tech Support role', sub:'bookmark · Tech support role', items:[
-    'Experience troubleshooting data issues and supporting clients and internal teams',
-    'Clear communicator — I translate what people need into something the team can build',
-    'Quick to learn new systems and tools, and I enjoy it',
-    'Available immediately, any day of the week']},
-};
+// graduation countdown (whole months until Nov 2027)
+(() => {
+  const now = new Date(), grad = new Date(2027, 10, 1);
+  const months = Math.max(0, (grad.getFullYear() - now.getFullYear()) * 12 + grad.getMonth() - now.getMonth());
+  $('#monthsLeft').textContent = months;
+  const frac = Math.max(0.04, Math.min(1, 1 - months / 24));   // ring shows the last two years filling up
+  setTimeout(() => $('#ringFg').style.strokeDashoffset = (314.16 * (1 - frac)).toFixed(1), 250);
+})();
 
 function renderTimeline(){
   const start = new Date(2019, 6, 1).getTime(), end = new Date(2028, 3, 1).getTime();
-  const pct = d => ((d.getTime() - start) / (end - start) * 100).toFixed(2) + '%';
+  const f = d => (d.getTime() - start) / (end - start), pct = d => (f(d) * 100).toFixed(2) + '%';
+  const edge = d => f(d) < .1 ? ' l' : f(d) > .88 ? ' r' : '';
   const now = new Date();
-  const edge = d => { const f = (d.getTime() - start) / (end - start); return f < .1 ? ' l' : f > .88 ? ' r' : ''; };
   const ms = [
-    {d:new Date(2020, 5), t:'ML with Python', s:'certification · 2020', c:'--purple', pos:'up'},
-    {d:new Date(2022, 5), t:'Data Analysis cert.', s:'Excel · Tableau · Python', c:'--purple', pos:'down'},
-    {d:new Date(2023, 5), t:'B.E. Computer Science', s:'completed · 2023', c:'--green', pos:'up'},
-    {d:new Date(2023, 8), t:'Joined Carvewing', s:'Sep 2023', c:'--blue', pos:'down'},
-    {d:new Date(2025, 11), t:'Moved on to UTS', s:'Dec 2025', c:'--blue', pos:'up'},
-    {d:now, t:'Now', s:"Master's at UTS", c:'--yellow', pos:'down', now:true},
+    {d:new Date(2020, 5), t:'ML with Python', s:'certification · 2020', c:'--honey', pos:'up'},
+    {d:new Date(2022, 5), t:'Data Analysis cert.', s:'Excel · Tableau · Python', c:'--honey', pos:'down'},
+    {d:new Date(2023, 5), t:'B.E. Computer Science', s:'completed · 2023', c:'--iris', pos:'up'},
+    {d:new Date(2023, 8), t:'Joined Carvewing', s:'Sep 2023', c:'--rose', pos:'down'},
+    {d:new Date(2025, 11), t:'Moved on to UTS', s:'Dec 2025', c:'--rose', pos:'up'},
+    {d:now, t:'Now', s:"Master's at UTS", c:'--green', pos:'down', now:true},
     {d:new Date(2027, 10), t:'Graduate', s:'Nov 2027', c:'--teal', pos:'up'},
   ];
-  const years = [2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027, 2028].map(y =>
-    `<span class="tl-year" style="left:${pct(new Date(y, 0, 1))}">${y}</span>`).join('');
   $('#timeline').innerHTML = `<div class="tl-axis"></div>
-    <div class="tl-span" style="left:${pct(new Date(2023, 8))}; width:calc(${pct(new Date(2025, 11))} - ${pct(new Date(2023, 8))}); background:color-mix(in srgb, var(--blue) 45%, transparent)" title="Carvewing Solutions · Sep 2023 — Dec 2025"></div>
-    <div class="tl-span" style="left:${pct(now)}; width:calc(${pct(new Date(2027, 10))} - ${pct(now)}); background:repeating-linear-gradient(90deg, color-mix(in srgb, var(--teal) 45%, transparent) 0 6px, transparent 6px 10px)" title="Master's at UTS · graduating Nov 2027"></div>
-    ${years}
+    <div class="tl-span" style="left:${pct(new Date(2023, 8))}; width:calc(${pct(new Date(2025, 11))} - ${pct(new Date(2023, 8))}); background:color-mix(in srgb, var(--rose) 35%, transparent)"></div>
+    <div class="tl-span" style="left:${pct(now)}; width:calc(${pct(new Date(2027, 10))} - ${pct(now)}); background:repeating-linear-gradient(90deg, color-mix(in srgb, var(--teal) 40%, transparent) 0 6px, transparent 6px 10px)"></div>
+    ${[2020, 2021, 2022, 2023, 2024, 2025, 2026, 2027].map(y => `<span class="tl-year" style="left:${pct(new Date(y, 0, 1))}">${y}</span>`).join('')}
     ${ms.map(m => `<span class="tl-dot${m.now ? ' now' : ''}" style="left:${pct(m.d)}; --c:var(${m.c})" title="${m.t} · ${m.s}"></span>
       <div class="tl-lbl ${m.pos}${edge(m.d)}" style="left:${pct(m.d)}"><b>${m.t}</b><span>${m.s}</span></div>`).join('')}`;
-  $('#timelineList').innerHTML = ms.map(m => `<li style="--c:var(${m.c})"><b>${m.t}</b><span>${m.s}</span></li>`).join('');
+  $('#timelineList').innerHTML = ms.map(m => `<li style="--c:var(${m.c})">${m.t}<span>${m.s}</span></li>`).join('');
 }
-
-function evidenceFor(pred){ return evidenceItems.filter(pred).length; }
-function rarity(s){ return s >= 9 ? ['LEGENDARY', '--yellow'] : s >= 7 ? ['EPIC', '--purple'] : s >= 5 ? ['RARE', '--blue'] : ['COMMON', '--muted']; }
-function renderToolTable(){
-  $('#toolTable').innerHTML = `<thead><tr><th>Tool</th><th>Skill area</th><th style="width:38%">Proficiency</th><th>Evidence</th><th>Tier</th></tr></thead><tbody>${
-    tools.map(t => {
-      const [r, rc] = rarity(t.score), ev = evidenceFor(it => it.tools.includes(t.name));
-      const sel = filter && filter.kind === 'tool' && filter.values.has(t.name);
-      return `<tr data-tool="${t.name}" class="${toolSelected(t) ? '' : 'dim'}${sel ? ' sel' : ''}" tabindex="0">
-        <td><b>${t.name}</b></td>
-        <td><span style="color:var(${AREA_COLOR[t.area]})">●</span> ${t.area}</td>
-        <td><div class="bar" style="--c:var(${AREA_COLOR[t.area]})"><i style="width:${t.score * 10}%"></i><span>${t.score}/10</span></div></td>
-        <td class="mono">${ev}</td>
-        <td><span class="rarity" style="color:var(${rc})">${r}</span></td></tr>`;
-    }).join('')}</tbody>`;
+function tagChips(it){ return it.tools.map(t => `<span class="tag c" style="--c:var(${AREA_COLOR[toolArea[t]]})">${t}</span>`).join('') + it.skills.map(s => `<span class="tag">${s}</span>`).join(''); }
+const level = s => s >= 9 ? ['Expert', '--rose'] : s >= 7 ? ['Advanced', '--iris'] : s >= 5 ? ['Working', '--blue'] : ['Familiar', '--muted'];
+function renderLists(){
+  $('#points').innerHTML = points.map((p, i) => `<li class="point ${filter ? (matches(p) ? 'match' : 'dim') : ''}"><span class="n">${i + 1}</span><div><p>${p.text}</p><div class="tagrow" style="margin:0">${tagChips(p)}</div></div></li>`).join('');
+  const card = (it, pill) => `<div class="card ${filter ? (matches(it) ? 'match' : 'dim') : ''}"><span class="pill ${pill}">${it.badge}</span><h4>${it.title}</h4><div class="meta">${it.meta}</div>${it.tools.length ? `<div class="tagrow">${tagChips(it)}</div>` : ''}</div>`;
+  $('#eduCards').innerHTML = education.map(e => card(e, e.badge.startsWith('In') ? 'rose' : 'green')).join('');
+  $('#certCards').innerHTML = certs.map(c => card(c, 'green')).join('');
+  $('#toolTable').innerHTML = `<thead><tr><th>Tool</th><th>Skill area</th><th style="width:34%">Proficiency</th><th>Evidence</th><th>Level</th></tr></thead><tbody>${tools.map(t => {
+    const [lv, lc] = level(t.score), ev = evidenceFor(it => it.tools.includes(t.name)), sel = filter && filter.kind === 'tool' && filter.values.has(t.name);
+    return `<tr data-tool="${t.name}" class="${toolOn(t) ? '' : 'dim'}${sel ? ' sel' : ''}" tabindex="0"><td><b>${t.name}</b></td><td style="color:var(--muted)">${t.area}</td>
+      <td><div style="display:flex; align-items:center; gap:10px;"><div class="bar" style="--c:var(${AREA_COLOR[t.area]}); flex:1"><i style="width:${t.score * 10}%"></i></div><span style="font-size:12px; font-weight:700; min-width:34px">${t.score}</span></div></td>
+      <td style="font-weight:700">${ev}</td><td><span class="lvl" style="--c:var(${lc})">${lv}</span></td></tr>`; }).join('')}</tbody>`;
   $$('#toolTable tbody tr').forEach(tr => {
-    const pick = e => setFilter('tool', tr.dataset.tool, e.ctrlKey || e.metaKey || e.shiftKey);
+    const pick = e => setFilter('tool', tr.dataset.tool, additive(e));
     tr.addEventListener('click', pick);
     tr.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(e); } });
   });
 }
-function tagChips(it){ return it.tools.map(t => `<span class="tag">${t}</span>`).join('') + it.skills.map(s => `<span class="tag" style="color:var(${AREA_COLOR[s]})">${s}</span>`).join(''); }
-function renderPoints(){
-  $('#points').innerHTML = points.map((p, i) => `<li class="point ${filter ? (matches(p) ? 'match' : 'dim') : ''}">
-    <span class="n">0${i + 1}</span><div><p>${p.text}</p><div class="tags" style="margin-top:0">${tagChips(p)}</div></div></li>`).join('');
-}
-function renderCards(){
-  const card = (it, badgeCls) => `<div class="card ${filter ? (matches(it) ? 'match' : 'dim') : ''}">
-    <span class="badge ${badgeCls}">${it.badge || 'verified'}</span><h4>${it.title}</h4><div class="meta">${it.meta}</div>
-    ${it.tools.length || it.skills.length ? `<div class="tags">${tagChips(it)}</div>` : ''}</div>`;
-  $('#eduCards').innerHTML = education.map(e => card(e, e.badge.startsWith('in') ? 'y' : 'g')).join('');
-  $('#certCards').innerHTML = certs.map(c => card(c, 'g')).join('');
-  $('#langs').innerHTML = languages.map(l => `<span class="tag" style="font-size:12.5px; padding:6px 10px;">${l}</span>`).join('');
-}
 function renderStatic(){
+  $('#langs').innerHTML = languages.map(l => `<span class="tag" style="font-size:13px; padding:7px 11px;">${l}</span>`).join('');
   $('#contactRows').innerHTML = contact.map(c => `<tr><td>${c.k}</td><td>${c.href ? `<a href="${c.href}" ${c.href.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}>${c.v}</a>` : c.v}</td></tr>`).join('');
-  const scan = [
-    ['🎯', 'Looking for', 'Part-time tech support, data or BI role', 'Loves bridging requirements and the team, learning and building new things.'],
-    ['📅', 'Availability', 'Can start immediately', 'Available any day of the week · no notice period.'],
-    ['🛂', 'Work rights', 'Student visa', 'Can work part-time alongside study.'],
-    ['📍', 'Location', 'Sydney', 'Ideally near the CBD or within ~10 km · on-site, hybrid or remote.'],
-    ['💼', 'Experience', '2.3 yrs · Software Developer / Data Analyst', 'Carvewing Solutions, Sep 2023 — Dec 2025 · clients including Paxia.'],
-    ['🧰', 'Top tools', 'Power BI · QuickSight · SQL · Python', 'Plus Tableau, JavaScript, C/C++ and Java.'],
-    ['🎓', 'Education', 'Master of Data Science & Innovation, UTS', 'Graduating Nov 2027 · B.E. Computer Science, 2023.'],
-    ['💬', 'Strengths', 'Clear communication · client relationships', 'Comfortable handling several clients at once.'],
-    ['💰', 'Pay', 'Open to discussion', 'Happy to talk through what fits the role.'],
+  const g = [
+    ['Looking for', 'Part-time tech support, data or BI role', 'I love bridging requirements and the team — and learning and building new things.'],
+    ['Availability', 'Can start immediately', 'Any day of the week · no notice period.'],
+    ['Work rights', 'Student visa', 'Can work part-time alongside study.'],
+    ['Location', 'Sydney', 'Ideally near the CBD or within ~10 km · on-site, hybrid or remote.'],
+    ['Experience', '2.3 yrs · Software Developer / Data Analyst', 'Carvewing Solutions, Sep 2023 — Dec 2025 · clients including Paxia.'],
+    ['Top tools', 'Power BI · QuickSight · SQL · Python', 'Plus Tableau, JavaScript, C/C++ and Java.'],
+    ['Education', 'Master of Data Science & Innovation, UTS', 'Graduating Nov 2027 · B.E. Computer Science, 2023.'],
+    ['Strengths', 'Clear communication · client relationships', 'Comfortable handling several clients at once.'],
+    ['Pay', 'Open to discussion', 'Happy to talk through what fits the role.'],
   ];
-  $('#scan').innerHTML = scan.map(([e, k, v, d]) => `<div class="visual"><div class="k">${e} ${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join('');
+  $('#glance').innerHTML = g.map(([k, v, d], i) => `<div class="tile" style="animation-delay:${i * 35}ms"><div class="k">${k}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join('');
 }
-
-/* =====================================================================
-   FILTERS + FIELDS PANES
-   ===================================================================== */
-let bookmark = null;
-function renderPanes(){
-  const desc = filter ? [...filter.values].join(', ') : 'is (All)';
-  $('#filtersBody').innerHTML = `
-    <div class="fsec">Filters on all pages</div>
-    <div class="fcard ${filter && filter.kind === 'area' ? 'active' : ''}"><div class="t"><span>Skills[Area]</span>${filter && filter.kind === 'area' ? '<button data-clear aria-label="Clear filter">✕</button>' : ''}</div>
-      <div class="v">${filter && filter.kind === 'area' ? desc : 'is (All)'}</div></div>
-    <div class="fcard ${filter && filter.kind === 'tool' ? 'active' : ''}"><div class="t"><span>Tools[Tool]</span>${filter && filter.kind === 'tool' ? '<button data-clear aria-label="Clear filter">✕</button>' : ''}</div>
-      <div class="v">${filter && filter.kind === 'tool' ? desc : 'is (All)'}</div></div>
-    <div class="fsec">Filters on this page</div>
-    <div class="fcard"><div class="t"><span>Profile[Location]</span></div><div class="v">Sydney, AU</div></div>
-    <div class="fcard"><div class="t"><span>Profile[Availability]</span></div><div class="v">Part-time · Immediate</div></div>
-    ${bookmark ? `<div class="fsec">Bookmark</div><div class="fcard active"><div class="t"><span>${bookmarks[bookmark].name}</span><button data-clear aria-label="Clear bookmark">✕</button></div><div class="v">applied</div></div>` : ''}
-    <div class="fsec">Tip</div><div style="font-size:11.5px; color:var(--muted); line-height:1.5; padding:0 2px;">Click any bar, slice, chip or row to cross-filter. Ctrl/⌘-click to select several.</div>`;
-  $$('#filtersBody [data-clear]').forEach(b => b.addEventListener('click', clearFilter));
-}
-const fieldTables = [
-  {name:'Experience', ico:'▦', fields:['Role', 'Company', 'Highlight', 'Start', 'End']},
-  {name:'Skills', ico:'▦', fields:AREAS, kind:'area'},
-  {name:'Tools', ico:'▦', fields:tools.map(t => t.name), kind:'tool'},
-  {name:'Education', ico:'▦', fields:['Degree', 'Institution', 'Status']},
-  {name:'Certifications', ico:'▦', fields:['Name', 'Issuer', 'Year']},
-  {name:'Measures', ico:'∑', fields:measures.map(m => m.name), measure:true},
-];
-function renderFields(){
-  $('#fieldsBody').innerHTML = `<div class="fsec">Data</div>` + fieldTables.map((t, i) => `
-    <div class="ftable ${t.kind || t.measure ? 'open' : ''}"><button aria-expanded="${!!(t.kind || t.measure)}"><span class="chev">▶</span><span class="mono" style="color:var(--muted-2)">${t.ico}</span>${t.name}</button>
-      <ul>${t.fields.map(f => t.measure
-        ? `<li><button data-measure="${f}"><span class="ico">∑</span>${f}</button></li>`
-        : t.kind ? `<li><button data-fkind="${t.kind}" data-fval="${f}"><span class="ico">☐</span>${f}</button></li>`
-        : `<li><button disabled style="cursor:default"><span class="ico">Σ</span>${f}</button></li>`).join('')}</ul></div>`).join('');
-  $$('#fieldsBody .ftable > button').forEach(b => b.addEventListener('click', () => {
-    const t = b.parentElement; t.classList.toggle('open'); b.setAttribute('aria-expanded', t.classList.contains('open')); }));
-  $$('#fieldsBody [data-measure]').forEach(b => b.addEventListener('click', () => showMeasure(b.dataset.measure, true)));
-  $$('#fieldsBody [data-fkind]').forEach(b => b.addEventListener('click', e => setFilter(b.dataset.fkind, b.dataset.fval, e.ctrlKey || e.metaKey || e.shiftKey)));
-}
-function syncFieldChecks(){
-  $$('#fieldsBody [data-fkind]').forEach(b => {
-    const on = filter && filter.kind === b.dataset.fkind && filter.values.has(b.dataset.fval);
-    b.classList.toggle('on', !!on);
-    b.querySelector('.ico').textContent = on ? '☑' : '☐';
-  });
-}
-$$('[data-collapse]').forEach(b => b.addEventListener('click', () => {
-  const p = b.closest('.pane'); p.classList.toggle('collapsed');
-  b.textContent = p.classList.contains('collapsed') ? '«' : '»';
-  setTimeout(() => { Object.values(charts).forEach(c => c && c.resize()); if ($('#viewModel').classList.contains('active')) fitModel(); }, 220);
-}));
-if (innerWidth < 1400 && innerWidth > 860) { const p = $('#paneFields'); p.classList.add('collapsed'); p.querySelector('[data-collapse]').textContent = '«'; }
-$('#btnPanes').addEventListener('click', e => { e.stopPropagation(); $('#panes').classList.toggle('open'); });
-document.addEventListener('click', e => { if (!e.target.closest('#panes') && !e.target.closest('#btnPanes')) $('#panes').classList.remove('open'); });
 
 /* =====================================================================
    CHARTS
    ===================================================================== */
 const charts = {};
-const alpha = (hex, a) => { const c = hex.replace('#', ''); const n = parseInt(c.length === 3 ? c.split('').map(x => x + x).join('') : c, 16);
-  return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; };
+const alpha = (hex, a) => { const c = hex.replace('#', ''); const n = parseInt(c.length === 3 ? c.split('').map(x => x + x).join('') : c, 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; };
 function chartDefaults(){
   Chart.defaults.color = css('--muted');
-  Chart.defaults.font.family = "'JetBrains Mono', monospace";
-  Chart.defaults.font.size = 10.5;
+  Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
+  Chart.defaults.font.size = 11.5;
+  Chart.defaults.font.weight = '600';
   Chart.defaults.borderColor = css('--line');
-  Object.assign(Chart.defaults.plugins.tooltip, {backgroundColor:css('--panel-2'), borderColor:css('--line-2'), borderWidth:1,
-    titleColor:css('--text'), bodyColor:css('--muted'), padding:10, cornerRadius:8, titleFont:{family:"'Inter', sans-serif", weight:'700', size:12.5},
-    bodyFont:{family:"'Inter', sans-serif", size:12}, displayColors:false});
+  Object.assign(Chart.defaults.plugins.tooltip, {backgroundColor:css('--ink'), titleColor:css('--surface'), bodyColor:css('--surface'), padding:10, cornerRadius:10,
+    titleFont:{weight:'800', size:12.5}, bodyFont:{weight:'500', size:12}, displayColors:false, caretSize:5});
 }
-const additive = evt => evt.native && (evt.native.ctrlKey || evt.native.metaKey || evt.native.shiftKey);
+const hover = (e, els) => e.native.target.style.cursor = els.length ? 'pointer' : 'default';
+const toolEvidence = tools.map(t => ({t, n:evidenceFor(it => it.tools.includes(t.name))})).filter(x => x.n).sort((a, b) => b.n - a.n);
 function buildCharts(){
   Object.values(charts).forEach(c => c && c.destroy());
   chartDefaults();
   const anim = reduceMotion ? false : {duration:900, easing:'easeOutQuart'};
+  const grid = {color:css('--line'), borderDash:[3, 4], drawTicks:false};
   kpis.forEach((k, i) => {
-    const col = css(k.accent);
-    charts['spark' + i] = new Chart($('#spark' + i), {type:'line',
-      data:{labels:k.spark.map((_, j) => j), datasets:[{data:k.spark, borderColor:col, borderWidth:2, pointRadius:0, tension:.4, fill:true,
-        backgroundColor:ctx => { const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 30); g.addColorStop(0, alpha(col, .35)); g.addColorStop(1, alpha(col, 0)); return g; }}]},
+    const col = css(k.c);
+    charts['s' + i] = new Chart($('#spark' + i), {type:'line', data:{labels:k.spark.map((_, j) => j), datasets:[{data:k.spark, borderColor:col, borderWidth:2, pointRadius:0, tension:.4, fill:true,
+      backgroundColor:ctx => { const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 36); g.addColorStop(0, alpha(col, .22)); g.addColorStop(1, alpha(col, 0)); return g; }}]},
       options:{responsive:true, maintainAspectRatio:false, animation:anim, events:[], scales:{x:{display:false}, y:{display:false}}, plugins:{legend:{display:false}, tooltip:{enabled:false}}}});
   });
   charts.donut = new Chart($('#evidenceDonut'), {type:'doughnut',
-    data:{labels:AREAS, datasets:[{data:AREAS.map(a => evidenceFor(it => itemSkills(it).has(a))), borderColor:css('--panel'), borderWidth:3, hoverOffset:10}]},
-    options:{responsive:true, maintainAspectRatio:false, animation:anim, cutout:'64%',
+    data:{labels:AREAS, datasets:[{data:AREAS.map(a => evidenceFor(it => itemSkills(it).has(a))), borderColor:css('--surface'), borderWidth:4, borderRadius:6, hoverOffset:8}]},
+    options:{responsive:true, maintainAspectRatio:false, animation:anim, cutout:'68%', onHover:hover,
       onClick:(e, els) => els.length && setFilter('area', AREAS[els[0].index], additive(e)),
-      onHover:(e, els) => e.native.target.style.cursor = els.length ? 'pointer' : 'default',
-      plugins:{legend:{position:'right', labels:{boxWidth:10, boxHeight:10, usePointStyle:true, pointStyle:'circle', padding:10, font:{family:"'Inter'", size:11.5}, color:css('--text')}},
-        tooltip:{callbacks:{label:c => `${c.parsed} pieces of evidence`, afterLabel:c => 'click to cross-filter'}}}}});
-  charts.radar = new Chart($('#skillRadar'), {type:'radar',
-    data:{labels:AREAS.map(a => a.split(' & ').length > 1 ? [a.split(' & ')[0] + ' &', a.split(' & ')[1]] : a.split(' ')), datasets:[{data:AREAS.map(a => skills[a]), borderColor:css('--yellow'), backgroundColor:alpha(css('--yellow'), .16), borderWidth:2, pointRadius:5, pointHoverRadius:8}]},
-    options:{responsive:true, maintainAspectRatio:false, animation:anim,
-      onClick:(e, els) => els.length && setFilter('area', AREAS[els[0].index], additive(e)),
-      onHover:(e, els) => e.native.target.style.cursor = els.length ? 'pointer' : 'default',
-      scales:{r:{min:0, max:10, ticks:{stepSize:2, display:false}, grid:{color:css('--line')}, angleLines:{color:css('--line')},
-        pointLabels:{font:{family:"'Inter'", size:11.5, weight:'600'}, color:css('--text'), padding:8}}},
-      layout:{padding:6},
-      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c => `${c.parsed.r}/10`, afterLabel:c => `${evidenceFor(it => itemSkills(it).has(AREAS[c.dataIndex]))} pieces of evidence`}}}}});
+      plugins:{legend:{position:'bottom', labels:{boxWidth:8, boxHeight:8, usePointStyle:true, pointStyle:'circle', padding:12, color:css('--ink-2')}},
+        tooltip:{callbacks:{label:c => `${c.parsed} pieces of evidence`}}}}});
   charts.bar = new Chart($('#toolBar'), {type:'bar',
-    data:{labels:tools.map(t => t.name), datasets:[{data:tools.map(t => t.score), borderRadius:6, borderSkipped:false, barThickness:16}]},
-    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:anim,
+    data:{labels:tools.map(t => t.name.includes(' ') && t.name.length > 9 ? t.name.replace(' / ', '/ ').split(' ') : t.name), datasets:[{data:tools.map(t => t.score), borderRadius:8, borderSkipped:false, barPercentage:.62, categoryPercentage:.9}]},
+    options:{responsive:true, maintainAspectRatio:false, animation:anim, onHover:hover,
       onClick:(e, els) => els.length && setFilter('tool', tools[els[0].index].name, additive(e)),
-      onHover:(e, els) => e.native.target.style.cursor = els.length ? 'pointer' : 'default',
-      scales:{x:{min:0, max:10, grid:{color:css('--line')}, ticks:{stepSize:2}}, y:{grid:{display:false}, ticks:{font:{family:"'Inter'", size:12, weight:'600'}, color:css('--text')}}},
-      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c => `${c.parsed.x}/10 · ${tools[c.dataIndex].area}`,
-        afterLabel:c => { const n = evidenceFor(it => it.tools.includes(tools[c.dataIndex].name)); return `used in ${n} piece${n === 1 ? '' : 's'} of evidence`; }}}}}});
-  const roleTools = tools.map(t => ({t, n:points.filter(p => p.tools.includes(t.name)).length})).filter(x => x.n);
-  charts.roleTools = new Chart($('#roleTools'), {type:'bar',
-    data:{labels:roleTools.map(x => x.t.name), datasets:[{data:roleTools.map(x => x.n), borderRadius:6, barThickness:14}]},
-    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:anim,
-      onClick:(e, els) => els.length && setFilter('tool', roleTools[els[0].index].t.name, additive(e)),
-      onHover:(e, els) => e.native.target.style.cursor = els.length ? 'pointer' : 'default',
-      scales:{x:{grid:{color:css('--line')}, ticks:{stepSize:1}}, y:{grid:{display:false}, ticks:{font:{family:"'Inter'", size:11.5, weight:'600'}, color:css('--text')}}},
-      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c => `${c.parsed.x} highlight${c.parsed.x === 1 ? '' : 's'}`}}}}});
-  charts.roleTools.$tools = roleTools.map(x => x.t);
-  paintCharts();
+      scales:{y:{min:0, max:10, grid, border:{display:false}, ticks:{stepSize:2, padding:8}}, x:{grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-2'), maxRotation:0, autoSkip:false, font:{size:11}}}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c => `${c.parsed.y}/10 · ${tools[c.dataIndex].area}`}}}}});
+  charts.radar = new Chart($('#skillRadar'), {type:'radar',
+    data:{labels:AREAS.map(a => a.includes(' & ') ? [a.split(' & ')[0] + ' &', a.split(' & ')[1]] : a.split(' ')), datasets:[{data:AREAS.map(a => skills[a]),
+      borderColor:css('--rose'), backgroundColor:alpha(css('--rose'), .12), borderWidth:2, pointRadius:5, pointHoverRadius:8}]},
+    options:{responsive:true, maintainAspectRatio:false, animation:anim, onHover:hover, layout:{padding:6},
+      onClick:(e, els) => els.length && setFilter('area', AREAS[els[0].index], additive(e)),
+      scales:{r:{min:0, max:10, ticks:{display:false, stepSize:2}, grid:{color:css('--line')}, angleLines:{color:css('--line')}, pointLabels:{color:css('--ink-2'), font:{size:11.5, weight:'700'}, padding:8}}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c => `${c.parsed.r}/10`}}}}});
+  charts.ev = new Chart($('#toolEvidence'), {type:'bar',
+    data:{labels:toolEvidence.map(x => x.t.name), datasets:[{data:toolEvidence.map(x => x.n), borderRadius:8, borderSkipped:false, barThickness:18}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:anim, onHover:hover,
+      onClick:(e, els) => els.length && setFilter('tool', toolEvidence[els[0].index].t.name, additive(e)),
+      scales:{x:{beginAtZero:true, grid, border:{display:false}, ticks:{stepSize:1}}, y:{grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-2')}}},
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label:c => `${c.parsed.x} piece${c.parsed.x === 1 ? '' : 's'} of evidence`}}}}});
+  const rt = tools.map(t => ({t, n:points.filter(p => p.tools.includes(t.name)).length})).filter(x => x.n);
+  charts.role = new Chart($('#roleTools'), {type:'bar',
+    data:{labels:rt.map(x => x.t.name), datasets:[{data:rt.map(x => x.n), borderRadius:8, borderSkipped:false, barThickness:14}]},
+    options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:anim, onHover:hover,
+      onClick:(e, els) => els.length && setFilter('tool', rt[els[0].index].t.name, additive(e)),
+      scales:{x:{beginAtZero:true, grid, border:{display:false}, ticks:{stepSize:1}}, y:{grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-2')}}},
+      plugins:{legend:{display:false}}}});
+  charts.role.$t = rt.map(x => x.t);
+  paint();
 }
-function paintCharts(){
+function paint(){
   if (!charts.bar) return;
-  const dim = alpha(css('--muted'), .16);
-  charts.bar.data.datasets[0].backgroundColor = tools.map(t => toolSelected(t) ? alpha(areaColor(t.area), .9) : dim);
-  charts.roleTools.data.datasets[0].backgroundColor = charts.roleTools.$tools.map(t => toolSelected(t) ? alpha(areaColor(t.area), .9) : dim);
-  charts.donut.data.datasets[0].backgroundColor = AREAS.map(a => areaSelected(a) ? alpha(areaColor(a), .95) : dim);
-  charts.radar.data.datasets[0].pointBackgroundColor = AREAS.map(a => areaSelected(a) ? areaColor(a) : alpha(css('--muted'), .5));
-  charts.radar.data.datasets[0].pointBorderColor = css('--panel');
-  ['bar', 'roleTools', 'donut', 'radar'].forEach(k => charts[k].update());
+  const dim = alpha(css('--faint'), .25);
+  charts.bar.data.datasets[0].backgroundColor = tools.map(t => toolOn(t) ? areaColor(t.area) : dim);
+  charts.ev.data.datasets[0].backgroundColor = toolEvidence.map(x => toolOn(x.t) ? areaColor(x.t.area) : dim);
+  charts.role.data.datasets[0].backgroundColor = charts.role.$t.map(t => toolOn(t) ? areaColor(t.area) : dim);
+  charts.donut.data.datasets[0].backgroundColor = AREAS.map(a => areaOn(a) ? areaColor(a) : dim);
+  charts.radar.data.datasets[0].pointBackgroundColor = AREAS.map(a => areaOn(a) ? areaColor(a) : dim);
+  charts.radar.data.datasets[0].pointBorderColor = css('--surface');
+  ['bar', 'ev', 'role', 'donut', 'radar'].forEach(k => charts[k].update());
 }
 
 /* =====================================================================
-   RENDER (everything that depends on the filter)
+   RENDER
    ===================================================================== */
 function render(){
-  const n = evidenceItems.filter(matches).length;
-  $$('[data-context]').forEach(c => {
-    c.classList.toggle('show', !!filter);
-    if (filter) c.innerHTML = `${bookmark ? `🔖 <b>${bookmarks[bookmark].name}</b> · ` : ''}Filtered to <b>${[...filter.values].join(', ')}</b> · ${n} of ${evidenceItems.length} pieces of evidence match <button type="button">Clear</button>`;
-    const b = c.querySelector('button'); if (b) b.addEventListener('click', clearFilter);
-  });
-  $$('#skillSlicer .chip').forEach(c => c.classList.toggle('on', !!filter && filter.kind === 'area' && filter.values.has(c.dataset.area)));
-  const fit = fitLists[bookmark === 'data' || bookmark === 'support' ? bookmark : 'default'];
-  $('#profileTitle').textContent = fit.title; $('#profileSub').textContent = fit.sub;
+  const n = evidence.filter(matches).length;
+  $$('#chips .chip').forEach(c => c.classList.toggle('on', !!filter && filter.kind === 'area' && filter.values.has(c.dataset.area)));
+  $$('#views [data-view]').forEach(b => b.classList.toggle('on', current === 'glance' ? b.dataset.view === 'recruiter' : b.dataset.view === view));
+  const ctx = $('#ctx');
+  ctx.classList.toggle('show', !!filter);
+  if (filter) {
+    ctx.innerHTML = `Showing <b>${[...filter.values].join(', ')}</b> · ${n} of ${evidence.length} match <button type="button">Clear</button>`;
+    ctx.querySelector('button').addEventListener('click', clearFilter);
+  }
+  const fit = (views[view] || views.all).fit;
+  $('#fitTitle').textContent = fit.title; $('#fitHint').textContent = fit.hint;
   $('#fitList').innerHTML = fit.items.map(i => `<li>${i}</li>`).join('');
-  renderPoints(); renderCards(); renderToolTable(); renderPanes(); syncFieldChecks(); paintCharts();
-  $('#btnClear').disabled = !filter;
-  $('#btnClear').style.opacity = filter ? 1 : .45;
+  renderLists(); paint();
 }
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if ($('#modal').classList.contains('show')) return closeModal();
+  if ($('#askPop').classList.contains('show')) return $('#askPop').classList.remove('show');
+  if (filter) clearFilter();
+});
 
 /* =====================================================================
-   BOOKMARKS
+   ASK BOX (uses the chatbot's model) + chat + voice
    ===================================================================== */
-const bookmarks = {
-  default:{e:'🏠', name:'Default view', d:'Everything, unfiltered', apply:() => { filter = null; go('overview'); }},
-  data:{e:'📊', name:'Data & BI role', d:'Highlights BI, SQL and automation', apply:() => { filter = {kind:'area', values:new Set(['BI & Dashboards', 'SQL & Databases', 'Automation & Scripting'])}; go('overview'); }},
-  support:{e:'🛠️', name:'Tech support role', d:'Highlights communication & technical aptitude', apply:() => { filter = {kind:'area', values:new Set(['Stakeholder Comms', 'Programming'])}; go('overview'); }},
-  scan:{e:'⚡', name:'Recruiter quick scan', d:'Just the key facts on one screen', apply:() => { filter = null; go('scan'); }},
-};
-function applyBookmark(id){
-  bookmarks[id].apply();
-  bookmark = id === 'default' || id === 'scan' ? null : id;
-  render();
-  toast(`🔖 Bookmark applied: <b>${bookmarks[id].name}</b>`);
-  $('#bmMenu').classList.remove('show');
+function toast(t){ const el = document.createElement('div'); el.className = 'toast'; el.textContent = t; $('#toasts').appendChild(el); setTimeout(() => el.remove(), 2800); }
+const openChat = () => { const f = document.querySelector('.rc-fab'); if (f) f.click(); };
+$$('[data-openchat]').forEach(b => b.addEventListener('click', openChat));
+function ask(qText){
+  qText = qText.trim(); if (!qText) return;
+  const pop = $('#askPop');
+  if (!window.ResumeChat) { pop.innerHTML = '<p>Loading…</p>'; pop.classList.add('show'); addEventListener('resumechat:ready', () => ask(qText), {once:true}); return; }
+  const r = window.ResumeChat.reply(qText);
+  const linked = s => esc(s).replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, m => `<a href="mailto:${m}">${m}</a>`);
+  pop.innerHTML = r
+    ? `<div class="meta"><span>${esc(r.label.replace(/_/g, ' '))}</span><span>${Math.round(r.confidence * 100)}% sure</span></div><p>${linked(r.answer)}</p>
+       ${r.follow && r.follow.length ? `<div class="follow">${r.follow.map(f => `<button type="button" class="chipq">${esc(f)}</button>`).join('')}</div>` : ''}`
+    : `<div class="meta"><span>not sure yet</span></div><p>Sorry! I'm still in training 🙈 For this one, please reach out to me at <a href="mailto:harshini.g.official@gmail.com">harshini.g.official@gmail.com</a>.</p>`;
+  pop.classList.add('show');
+  $$('#askPop .chipq').forEach(b => b.addEventListener('click', () => { $('#askInput').value = b.textContent; ask(b.textContent); }));
 }
-$('#bmMenu').innerHTML = Object.entries(bookmarks).map(([id, b]) => `<button role="menuitem" data-bm="${id}"><span class="e">${b.e}</span><span><b>${b.name}</b><span>${b.d}</span></span></button>`).join('');
-$$('#bmMenu [data-bm]').forEach(b => b.addEventListener('click', () => applyBookmark(b.dataset.bm)));
-$('#btnBookmarks').addEventListener('click', e => {
-  e.stopPropagation();
-  const m = $('#bmMenu'), r = e.currentTarget.getBoundingClientRect();
-  m.style.left = Math.min(r.left, innerWidth - 270) + 'px'; m.style.top = (r.bottom + 6) + 'px';
-  $$('#bmMenu [data-bm]').forEach(b => b.classList.toggle('on', b.dataset.bm === (bookmark || (current === 'scan' ? 'scan' : 'default'))));
-  m.classList.toggle('show');
-});
-document.addEventListener('click', e => { if (!e.target.closest('#bmMenu')) $('#bmMenu').classList.remove('show'); });
+$('#askForm').addEventListener('submit', e => { e.preventDefault(); ask($('#askInput').value); });
+document.addEventListener('click', e => { if (!e.target.closest('#ask')) $('#askPop').classList.remove('show'); });
+function setupMic(){
+  const mic = $('#askMic');
+  if (!window.ResumeChat || !window.ResumeChat.listen) return;
+  mic.hidden = false;
+  let rec = null;
+  mic.addEventListener('click', () => {
+    if (rec) { rec.stop(); return; }
+    rec = window.ResumeChat.listen((text, done) => { $('#askInput').value = text; if (done) ask(text); },
+      (state, msg) => { mic.classList.toggle('listening', state === 'listening'); if (state === 'error') $('#askInput').placeholder = msg; if (state !== 'listening') rec = null; });
+  });
+}
+if (window.ResumeChat) setupMic(); else addEventListener('resumechat:ready', setupMic, {once:true});
 
 /* =====================================================================
-   RIBBON ACTIONS: refresh, clear, theme, PDF, Q&A
+   THEME + PDF
    ===================================================================== */
-function toast(html){
-  const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = html;
-  $('#toasts').appendChild(t); setTimeout(() => t.remove(), 3000);
-}
-$('#btnRefresh').addEventListener('click', () => {
-  $$('.visual, .kpi').forEach(v => { v.classList.remove('loading'); void v.offsetWidth; v.classList.add('loading'); });
-  setTimeout(() => {
-    $$('.loading').forEach(v => v.classList.remove('loading'));
-    Object.values(charts).forEach(c => { c.reset(); c.update(); });
-    countUp();
-    const ms = (0.12 + Math.random() * 0.3).toFixed(2);
-    $('#queryTime').textContent = `Query completed in ${ms}s`;
-    toast(`⟳ Data refreshed · <b>${evidenceItems.length}</b> rows in ${ms}s`);
-  }, 650);
-});
-$('#btnClear').addEventListener('click', () => { if (filter) { clearFilter(); toast('Filters cleared'); } });
 function setTheme(t){
   document.documentElement.dataset.theme = t;
-  $('#themeIc').textContent = t === 'dark' ? '☀' : '☾';
-  store.set('report-theme', t);
+  $('#themeBtn').textContent = t === 'dark' ? 'Light mode' : 'Dark mode';
+  store.set('dash-theme', t);
   if (charts.bar) buildCharts();
+  if (qChart) runQuery();
 }
-$('#btnTheme').addEventListener('click', () => { setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'); toast(`Theme: <b>${document.documentElement.dataset.theme}</b>`); });
-const savedTheme = store.get('report-theme');
-if (savedTheme === 'light' || savedTheme === 'dark') { document.documentElement.dataset.theme = savedTheme; $('#themeIc').textContent = savedTheme === 'dark' ? '☀' : '☾'; }
+$('#themeBtn').addEventListener('click', () => setTheme(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
+if (store.get('dash-theme') === 'dark') { document.documentElement.dataset.theme = 'dark'; $('#themeBtn').textContent = 'Light mode'; }
 
 function buildPrint(){
   $('#printResume').innerHTML = `
@@ -1323,171 +972,19 @@ function buildPrint(){
     <div class="row"><b>Master of Data Science and Innovation · University of Technology Sydney</b><span class="muted">expected Nov 2027</span></div>
     <div class="row"><b>Bachelor of Engineering, Computer Science · Sapthagiri College of Engineering, Bangalore</b><span class="muted">2023</span></div>
     <h2>Certifications</h2>
-    ${certs.map(c => `<div class="row"><span>${c.title}</span><span class="muted">${c.meta}</span></div>`).join('')}
+    ${certs.map(c => `<div class="row"><span>${c.title}</span><span class="muted">${c.meta} · ${c.badge}</span></div>`).join('')}
     <h2>Additional</h2>
-    <p><b>Languages:</b> ${languages.join(', ')} · <b>Work rights:</b> student visa, part-time · <b>Availability:</b> immediate, any day · <b>Interests:</b> swimming, badminton, reading, gaming</p>`;
+    <p><b>Languages:</b> ${languages.join(', ')} · <b>Work rights:</b> student visa, part-time · <b>Availability:</b> immediate, any day · <b>Interests:</b> gaming (Valorant), swimming, badminton, reading</p>`;
 }
-function exportPDF(){ buildPrint(); toast('⤓ Choose <b>Save as PDF</b> in the print dialog'); setTimeout(() => print(), 300); }
-$('#btnPDF').addEventListener('click', exportPDF);
+function exportPDF(){ buildPrint(); toast('Choose “Save as PDF” in the print dialog'); setTimeout(() => print(), 300); }
 $$('[data-pdf]').forEach(b => b.addEventListener('click', exportPDF));
-window.addEventListener('beforeprint', buildPrint);
-$('#btnScan').addEventListener('click', () => applyBookmark('scan'));
-
-const openChat = () => { const f = document.querySelector('.rc-fab'); if (f) f.click(); else go('overview'); };
-$('#btnQA').addEventListener('click', openChat);
-$$('[data-openchat]').forEach(b => b.addEventListener('click', openChat));
-
-/* Q&A visual: same model as the chat, shown like Power BI's Q&A */
-const qaSugs = ['Are you available to start?', 'What tools do you use?', 'Do you have work rights?', 'Why should we hire you?'];
-$('#qaSugs').innerHTML = qaSugs.map(q => `<button class="qa-sug" type="button">${q}</button>`).join('');
-$$('.qa-sug').forEach(b => b.addEventListener('click', () => { $('#qaInput').value = b.textContent; qa(b.textContent); }));
-$('#qaForm').addEventListener('submit', e => { e.preventDefault(); qa($('#qaInput').value); });
-let qaTimer;
-function qa(q){
-  q = q.trim(); if (!q) return;
-  const out = $('#qaOut');
-  if (!window.ResumeChat) { out.textContent = 'Loading the model…'; addEventListener('resumechat:ready', () => qa(q), {once:true}); return; }
-  const r = window.ResumeChat.reply(q);
-  const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;'}[c]));
-  const text = r ? r.answer : "Sorry! I'm still in training 🙈 For this one, please reach out to me at harshini.g.official@gmail.com";
-  out.innerHTML = `<div class="qa-meta"><span>Showing results for <b>${r ? r.label.replace(/_/g, ' ') : 'no match'}</b></span><span>${r ? Math.round(r.confidence * 100) + '% confident' : ''}</span></div><div id="qaText"></div><div class="qa-conf"><i style="width:0"></i></div>`;
-  const el = $('#qaText');
-  clearInterval(qaTimer);
-  let i = 0;
-  const finish = () => { el.innerHTML = esc(text).replace(/[\w.+-]+@[\w-]+\.[\w.]+/g, m => `<a href="mailto:${m}">${m}</a>`); };
-  if (reduceMotion) finish();
-  else qaTimer = setInterval(() => { i += 3; el.innerHTML = esc(text.slice(0, i)) + '<span class="caret"></span>'; if (i >= text.length) { clearInterval(qaTimer); finish(); } }, 14);
-  requestAnimationFrame(() => out.querySelector('.qa-conf i').style.width = r ? Math.round(r.confidence * 100) + '%' : '0%');
-}
+addEventListener('beforeprint', buildPrint);
 
 /* =====================================================================
-   FOCUS MODE + visual header tools
+   QUERY ME: the resume as a real SQLite database (sql.js)
    ===================================================================== */
-const ICON_FOCUS = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>';
-let focused = null;
-$$('[data-visual] .vtools').forEach(t => {
-  t.innerHTML = `<button type="button" aria-label="Focus mode" title="Focus mode">${ICON_FOCUS}</button>`;
-  t.querySelector('button').addEventListener('click', () => focusVisual(t.closest('.visual')));
-  t.insertAdjacentHTML('beforeend', '<button class="focus-exit" type="button">Back to report</button>');
-  t.querySelector('.focus-exit').addEventListener('click', () => focusVisual(null));
-});
-function focusVisual(v){
-  if (focused) focused.classList.remove('focused');
-  focused = v && v !== focused ? v : null;
-  if (focused) focused.classList.add('focused');
-  $('#focusBackdrop').classList.toggle('show', !!focused);
-  setTimeout(() => Object.values(charts).forEach(c => c && c.resize()), 30);
-}
-$('#focusBackdrop').addEventListener('click', () => focusVisual(null));
-document.addEventListener('keydown', e => {
-  if (e.key !== 'Escape') return;
-  if ($('#modal').classList.contains('show')) return closeModal();
-  if (focused) return focusVisual(null);
-  if (filter) clearFilter();
-});
-
-/* =====================================================================
-   MODEL VIEW: draggable tables + relationships + table view
-   ===================================================================== */
-const mtables = [
-  {id:'Roles', c:'--blue', x:30, y:30, cols:[['RoleKey', 'int', 1], ['Title', 'text'], ['Company', 'text'], ['Start', 'date'], ['End', 'date']],
-    rows:[{RoleKey:1, Title:'Software Developer / Data Analyst', Company:'Carvewing Solutions', Start:'2023-09', End:'2025-12'}]},
-  {id:'Experience', c:'--teal', x:300, y:20, cols:[['PointKey', 'int', 1], ['RoleKey', 'int'], ['Highlight', 'text'], ['Tool', 'text']],
-    rows:points.map((p, i) => ({PointKey:i + 1, RoleKey:1, Highlight:p.text.replace(/<[^>]+>/g, ''), Tool:p.tools.join(', ') || '—'}))},
-  {id:'Tools', c:'--yellow', x:590, y:30, cols:[['Tool', 'text', 1], ['Area', 'text'], ['Score', 'dec']],
-    rows:tools.map(t => ({Tool:t.name, Area:t.area, Score:t.score}))},
-  {id:'Skills', c:'--pink', x:840, y:250, cols:[['Area', 'text', 1], ['Score', 'int']],
-    rows:AREAS.map(a => ({Area:a, Score:skills[a]}))},
-  {id:'Certifications', c:'--purple', x:560, y:330, cols:[['CertKey', 'int', 1], ['Name', 'text'], ['Issuer', 'text'], ['Year', 'int'], ['Tool', 'text']],
-    rows:certs.map((c, i) => ({CertKey:i + 1, Name:c.title, Issuer:c.meta.split(' · ')[0], Year:c.meta.split(' · ')[1], Tool:c.tools.join(', ')}))},
-  {id:'Education', c:'--green', x:250, y:390, cols:[['EduKey', 'int', 1], ['Degree', 'text'], ['Institution', 'text'], ['Status', 'text'], ['Tool', 'text']],
-    rows:education.map((e, i) => ({EduKey:i + 1, Degree:e.title, Institution:e.meta, Status:e.badge, Tool:e.tools.join(', ') || '—'}))},
-  {id:'Languages', c:'--orange', x:20, y:300, cols:[['Language', 'text', 1], ['Level', 'text']],
-    rows:languages.map(l => ({Language:l.replace('Basic ', ''), Level:l.startsWith('Basic') ? 'Basic' : 'Spoken'}))},
-];
-const rels = [
-  {a:'Roles', b:'Experience', ca:'1', cb:'*'},
-  {a:'Experience', b:'Tools', ca:'*', cb:'*', mm:true},
-  {a:'Tools', b:'Skills', ca:'*', cb:'1'},
-  {a:'Certifications', b:'Tools', ca:'*', cb:'*', mm:true},
-  {a:'Education', b:'Tools', ca:'*', cb:'*', mm:true},
-];
-let modelBuilt = false, modelScale = 1;
-function fitModel(){
-  const w = $('#modelOuter').clientWidth;
-  modelScale = Math.max(.6, Math.min(1, w / 1060));
-  $('#modelWrap').style.transform = `scale(${modelScale})`;
-  $('#modelSizer').style.width = 1060 * modelScale + 'px';
-  $('#modelSizer').style.height = 640 * modelScale + 'px';
-}
-function drawModel(){
-  const wrap = $('#modelWrap');
-  fitModel();
-  if (!modelBuilt) {
-    modelBuilt = true;
-    const saved = (() => { try { return JSON.parse(store.get('report-model') || '{}'); } catch(e) { return {}; } })();
-    mtables.forEach(t => {
-      if (saved[t.id]) Object.assign(t, saved[t.id]);
-      const el = document.createElement('div');
-      el.className = 'mtable'; el.dataset.t = t.id; el.style.left = t.x + 'px'; el.style.top = t.y + 'px';
-      el.innerHTML = `<header><span><span class="tico" style="--c:var(${t.c})">▦</span>${t.id}</span><button type="button" title="View rows">${t.rows.length} rows ↗</button></header>
-        <ul>${t.cols.map(([n, ty, key]) => `<li class="${key ? 'key' : ''}"><b style="font-weight:inherit">${key ? '🔑 ' : ''}${n}</b><span>${ty}</span></li>`).join('')}</ul>`;
-      wrap.appendChild(el);
-      const hd = el.querySelector('header');
-      hd.addEventListener('pointerdown', e => {
-        if (e.target.closest('button')) return;
-        hd.setPointerCapture(e.pointerId);
-        const sx = e.clientX, sy = e.clientY, tx = t.x, ty = t.y;
-        const move = ev => { t.x = Math.max(0, Math.min(1060 - 200, tx + (ev.clientX - sx) / modelScale)); t.y = Math.max(0, Math.min(640 - 60, ty + (ev.clientY - sy) / modelScale));
-          el.style.left = t.x + 'px'; el.style.top = t.y + 'px'; drawRels(); };
-        const up = () => { hd.removeEventListener('pointermove', move); hd.removeEventListener('pointerup', up);
-          store.set('report-model', JSON.stringify(Object.fromEntries(mtables.map(m => [m.id, {x:m.x, y:m.y}])))); };
-        hd.addEventListener('pointermove', move); hd.addEventListener('pointerup', up);
-      });
-      el.addEventListener('mouseenter', () => hot(t.id));
-      el.addEventListener('mouseleave', () => hot(null));
-      el.querySelector('header button').addEventListener('click', () => openTable(t));
-    });
-  }
-  drawRels();
-}
-let hotId = null;
-function hot(id){ hotId = id; $$('.mtable').forEach(m => m.classList.toggle('hot', !!id && (m.dataset.t === id || rels.some(r => (r.a === id && r.b === m.dataset.t) || (r.b === id && r.a === m.dataset.t))))); drawRels(); }
-function drawRels(){
-  const svg = $('#modelSvg');
-  const box = id => { const el = $(`.mtable[data-t="${id}"]`); const t = mtables.find(m => m.id === id); return {x:t.x, y:t.y, w:el.offsetWidth, h:el.offsetHeight}; };
-  svg.innerHTML = rels.map(r => {
-    const A = box(r.a), B = box(r.b);
-    const ac = {x:A.x + A.w / 2, y:A.y + A.h / 2}, bc = {x:B.x + B.w / 2, y:B.y + B.h / 2};
-    const horiz = Math.abs(bc.x - ac.x) > Math.abs(bc.y - ac.y);
-    const pa = horiz ? {x:ac.x + Math.sign(bc.x - ac.x) * A.w / 2, y:ac.y} : {x:ac.x, y:ac.y + Math.sign(bc.y - ac.y) * A.h / 2};
-    const pb = horiz ? {x:bc.x - Math.sign(bc.x - ac.x) * B.w / 2, y:bc.y} : {x:bc.x, y:bc.y - Math.sign(bc.y - ac.y) * B.h / 2};
-    const mx = (pa.x + pb.x) / 2, my = (pa.y + pb.y) / 2;
-    const d = horiz ? `M${pa.x} ${pa.y} C${mx} ${pa.y} ${mx} ${pb.y} ${pb.x} ${pb.y}` : `M${pa.x} ${pa.y} C${pa.x} ${my} ${pb.x} ${my} ${pb.x} ${pb.y}`;
-    const isHot = hotId && (r.a === hotId || r.b === hotId);
-    const off = (p, q) => ({x:p.x + (q.x - p.x) * 0.12 + (horiz ? 0 : 10), y:p.y + (q.y - p.y) * 0.12 + (horiz ? -8 : 0)});
-    const la = off(pa, pb), lb = off(pb, pa);
-    return `<path class="rel${r.mm ? ' mm' : ''}${isHot ? ' hot' : ''}" d="${d}"/>
-      <text class="card-lbl${isHot ? ' hot' : ''}" x="${la.x}" y="${la.y}" text-anchor="middle">${r.ca}</text>
-      <text class="card-lbl${isHot ? ' hot' : ''}" x="${lb.x}" y="${lb.y}" text-anchor="middle">${r.cb}</text>`;
-  }).join('');
-}
-function openTable(t){
-  const cols = t.cols.map(c => c[0]);
-  $('#modalTitle').innerHTML = `Table view · <span style="color:var(${t.c})">${t.id}</span> <span class="mono" style="color:var(--muted); font-weight:400; font-size:12px;">${t.rows.length} rows</span>`;
-  $('#modalBody').innerHTML = `<table class="dtable"><thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr></thead>
-    <tbody>${t.rows.map(r => `<tr>${cols.map(c => `<td>${r[c] ?? ''}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
-  $('#modal').classList.add('show');
-  $('#modal [data-close]').focus();
-}
-function closeModal(){ $('#modal').classList.remove('show'); }
-$('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('[data-close]')) closeModal(); });
-
-/* =====================================================================
-   QUERY VIEW: the resume as a real SQLite database (sql.js)
-   ===================================================================== */
-const q = v => v === null || v === undefined ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`;
-const insert = (table, rows) => rows.map(r => `INSERT INTO ${table} VALUES (${r.map(q).join(', ')});`).join('\n');
+const sq = v => v === null || v === undefined ? 'NULL' : typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`;
+const insert = (table, rows) => rows.map(r => `INSERT INTO ${table} VALUES (${r.map(sq).join(', ')});`).join('\n');
 const plain = h => h.replace(/<[^>]+>/g, '');
 const summaries = ['Power BI KPI dashboards', 'QuickSight + Redshift reporting', 'QuickSight chatbot training', 'Automated PDF data extraction',
                    'Client needs → dashboards', 'Data validation & quality checks', 'Presenting insights to stakeholders'];
@@ -1510,56 +1007,50 @@ ${insert('highlights', points.map((p, i) => [i + 1, 1, summaries[i], plain(p.tex
 ${insert('tools', tools.map(t => [t.name, t.area, t.score]))}
 ${insert('highlight_tools', points.flatMap((p, i) => p.tools.map(t => [i + 1, t])))}
 ${insert('skills', AREAS.map(a => [a, skills[a]]))}
-${insert('education', [['Master of Data Science and Innovation', 'University of Technology Sydney', 'In progress', 2027],
-                       ['Bachelor of Engineering, Computer Science', 'Sapthagiri College of Engineering, Bangalore', 'Completed', 2023]])}
+${insert('education', [['Master of Data Science and Innovation', 'University of Technology Sydney', 'In progress', 2027], ['Bachelor of Engineering, Computer Science', 'Sapthagiri College of Engineering, Bangalore', 'Completed', 2023]])}
 ${insert('certifications', [['Machine Learning Using Python', 'ATS Learning Solutions', 2020], ['Data Analysis using Excel, Tableau & Python', 'Alnitek Solutions', 2022]])}
 ${insert('languages', [['English', 'Spoken'], ['Hindi', 'Spoken'], ['Kannada', 'Spoken'], ['Arabic', 'Basic']])}
 ${insert('strengths', [['Clear communication'], ['Handling multiple clients at once'], ['Translating business needs into requirements'], ['Learning new systems quickly']])}
-${insert('hobbies', [['Valorant', 'favourite game 🎮'], ['Gaming', 'all kinds'], ['Swimming', ''], ['Badminton', ''], ['Reading', '']])}
+${insert('hobbies', [['Valorant', 'favourite game'], ['Gaming', 'all kinds'], ['Swimming', ''], ['Badminton', ''], ['Reading', '']])}
 `;
 const HERO_SQL = `-- Most resumes are documents. Mine is a database.
 SELECT name, headline, available, location
 FROM harshini;`;
 const library = [
   {sec:'Start here'},
-  {t:'👋 Who is she?', sql:HERO_SQL},
-  {t:'📅 Can she start now?', sql:'SELECT available, work_rights, looking_for\nFROM harshini;'},
-  {t:'💼 What did she do?', sql:'SELECT h.id, h.summary, r.company\nFROM highlights AS h\nJOIN roles AS r ON r.id = h.role_id;'},
+  {t:'Who is she?', sql:HERO_SQL},
+  {t:'Can she start now?', sql:'SELECT available, work_rights, looking_for\nFROM harshini;'},
+  {t:'What did she do?', sql:'SELECT h.id, h.summary, r.company\nFROM highlights AS h\nJOIN roles AS r ON r.id = h.role_id;'},
   {sec:'Skills'},
-  {t:'🧰 Top tools', sql:'SELECT name AS tool, score\nFROM tools\nORDER BY score DESC;'},
-  {t:'📈 Skill areas', sql:'SELECT area, score\nFROM skills\nORDER BY score DESC;'},
-  {t:'🔎 Tools used at work', sql:'-- which tools show up in her work highlights?\nSELECT tool, COUNT(*) AS highlights\nFROM highlight_tools\nGROUP BY tool\nORDER BY highlights DESC;'},
-  {t:'🧠 Strengths', sql:'SELECT * FROM strengths;'},
+  {t:'Top tools', sql:'SELECT name AS tool, score\nFROM tools\nORDER BY score DESC;'},
+  {t:'Skill areas', sql:'SELECT area, score\nFROM skills\nORDER BY score DESC;'},
+  {t:'Tools used at work', sql:'-- which tools show up in her work highlights?\nSELECT tool, COUNT(*) AS highlights\nFROM highlight_tools\nGROUP BY tool\nORDER BY highlights DESC;'},
+  {t:'Strengths', sql:'SELECT * FROM strengths;'},
   {sec:'Background'},
-  {t:'🎓 Education & certs', sql:"SELECT degree AS name, institution AS issuer, year\nFROM education\nUNION ALL\nSELECT name, issuer, year FROM certifications\nORDER BY year DESC;"},
-  {t:'⏱️ Experience in years', sql:'SELECT company, months,\n       ROUND(months / 12.0, 1) AS years\nFROM roles;'},
-  {t:'🗣️ Languages', sql:'SELECT * FROM languages;'},
-  {t:'🎮 After hours', sql:'SELECT * FROM hobbies;'},
+  {t:'Education & certs', sql:'SELECT degree AS name, institution AS issuer, year\nFROM education\nUNION ALL\nSELECT name, issuer, year FROM certifications\nORDER BY year DESC;'},
+  {t:'Experience in years', sql:'SELECT company, months,\n       ROUND(months / 12.0, 1) AS years\nFROM roles;'},
+  {t:'Languages', sql:'SELECT * FROM languages;'},
+  {t:'After hours', sql:'SELECT * FROM hobbies;'},
 ];
-let db = null, SQL = null, sqlReady = null;
+const TABLES = ['harshini', 'roles', 'highlights', 'tools', 'highlight_tools', 'skills', 'education', 'certifications', 'languages', 'strengths', 'hobbies'];
+let db = null, SQL = null, sqlReady = null, qChart = null, started = false;
 function loadDb(){ if (db) db.close(); db = new SQL.Database(); db.run(SEED_SQL); }
 function initSql(){
-  if (!sqlReady) sqlReady = (typeof initSqlJs === 'function'
-      ? initSqlJs({locateFile:f => 'assets/vendor/sqljs/' + f})
-      : Promise.reject(new Error('sql.js did not load')))
+  if (!sqlReady) sqlReady = (typeof initSqlJs === 'function' ? initSqlJs({locateFile:f => 'assets/vendor/sqljs/' + f}) : Promise.reject(new Error('sql.js did not load')))
     .then(s => { SQL = s; loadDb(); renderSchema(); setState('ok', 'SQLite ready · 11 tables'); })
     .catch(e => setState('err', 'Could not start SQLite in this browser: ' + e.message));
   return sqlReady;
 }
-
 const KW = 'SELECT|FROM|WHERE|JOIN|LEFT|INNER|ON|AS|GROUP|BY|ORDER|DESC|ASC|LIMIT|OFFSET|AND|OR|NOT|IN|IS|NULL|LIKE|DISTINCT|HAVING|UNION|ALL|CASE|WHEN|THEN|ELSE|END|WITH|INSERT|INTO|VALUES|UPDATE|SET|DELETE|CREATE|TABLE|DROP|BETWEEN|EXISTS';
 const FN = 'COUNT|SUM|AVG|MIN|MAX|ROUND|LENGTH|UPPER|LOWER|COALESCE|SUBSTR|REPLACE|GROUP_CONCAT|TRIM|ABS|DATE|STRFTIME';
-const TABLES = ['harshini', 'roles', 'highlights', 'tools', 'highlight_tools', 'skills', 'education', 'certifications', 'languages', 'strengths', 'hobbies'];
 const hiRe = new RegExp(`(--[^\\n]*)|('(?:[^']|'')*')|\\b(\\d+(?:\\.\\d+)?)\\b|\\b(${KW})\\b|\\b(${FN})(?=\\s*\\()|\\b(${TABLES.join('|')})\\b`, 'gi');
 const escH = s => s.replace(/[&<>]/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;'}[c]));
 function highlight(src){
   let out = '', last = 0;
   src.replace(hiRe, (m, c, str, num, kw, fn, tb, idx) => {
     out += escH(src.slice(last, idx));
-    const cls = c ? 'c' : str ? 's' : num ? 'n' : kw ? 'k' : fn ? 'f' : 't';
-    out += `<span class="tk-${cls}">${escH(m)}</span>`;
-    last = idx + m.length;
-    return m;
+    out += `<span class="tk-${c ? 'c' : str ? 's' : num ? 'n' : kw ? 'k' : fn ? 'f' : 't'}">${escH(m)}</span>`;
+    last = idx + m.length; return m;
   });
   return out + escH(src.slice(last)) + '\n';
 }
@@ -1572,17 +1063,14 @@ function syncEditor(){
 ta.addEventListener('input', syncEditor);
 ta.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') { e.preventDefault(); runQuery(); }
-  else if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); const a = ta.selectionStart; ta.setRangeText('  ', a, ta.selectionEnd, 'end'); syncEditor(); }
+  else if (e.key === 'Tab' && !e.shiftKey) { e.preventDefault(); ta.setRangeText('  ', ta.selectionStart, ta.selectionEnd, 'end'); syncEditor(); }
 });
 function setState(kind, text){ $('#qState').innerHTML = kind === 'busy' ? `<span class="spin"></span> ${text}` : `<span class="${kind}">${kind === 'ok' ? '✓' : '✗'}</span> ${text}`; }
-
-let qChart = null;
 function runQuery(){
   stopTyping();
   const sql = ta.value.trim();
   if (!sql) return;
   if (!db) { setState('busy', 'loading SQLite…'); initSql().then(() => db && runQuery()); return; }
-  setState('busy', 'running…');
   const out = $('#qResults');
   if (qChart) { qChart.destroy(); qChart = null; }
   const t0 = performance.now();
@@ -1596,93 +1084,141 @@ function runQuery(){
   const ms = Math.max(1, Math.round(performance.now() - t0));
   if (/\b(drop|delete|update|insert|create|alter)\b/i.test(sql)) renderSchema();
   const r = res[res.length - 1];
-  if (!r) { out.className = 'results'; out.innerHTML = `<div class="qerr" style="border-color:var(--line); background:var(--panel)">Done — no rows returned. ${/drop|delete/i.test(sql) ? "You just changed my data 😱 — hit <b>↺ Reset</b> to put it back." : ''}</div>`; setState('ok', `ok · ${ms} ms`); return; }
+  if (!r) { out.className = 'results'; out.innerHTML = `<div class="qerr" style="background:var(--surface); border-color:var(--line)">Done — no rows returned. ${/drop|delete/i.test(sql) ? 'You just changed my data 😱 — hit <b>↺ Reset</b> to put it back.' : ''}</div>`; setState('ok', `ok · ${ms} ms`); return; }
   const {columns, values} = r;
   const isNum = c => values.length && values.every(row => row[c] === null || typeof row[c] === 'number');
   out.innerHTML = `<div class="rgrid-wrap"><table class="rgrid"><thead><tr>${columns.map(c => `<th>${escH(c)}</th>`).join('')}</tr></thead>
-    <tbody>${values.map((row, i) => `<tr style="animation-delay:${Math.min(i, 12) * 35}ms">${row.map((v, c) =>
-      v === null ? '<td class="nul">NULL</td>' : `<td class="${typeof v === 'number' ? 'num' : ''}">${escH(String(v))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
-  // auto-visualise: one text column + one numeric column -> bar chart
+    <tbody>${values.map((row, i) => `<tr style="animation-delay:${Math.min(i, 12) * 30}ms">${row.map(v => v === null ? '<td class="nul">NULL</td>' : `<td class="${typeof v === 'number' ? 'num' : ''}">${escH(String(v))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   const lab = columns.findIndex((_, c) => !isNum(c)), num = columns.findIndex((_, c) => isNum(c));
   const chartable = lab >= 0 && num >= 0 && values.length >= 2 && values.length <= 20;
   out.className = 'results' + (chartable ? ' with-chart' : '');
   if (chartable) {
-    out.insertAdjacentHTML('beforeend', `<div class="visual" style="padding:12px 14px;"><div class="vhead"><div><h3>${escH(columns[num])} by ${escH(columns[lab])}</h3><div class="sub">auto-visualised from your query</div></div></div><div class="rchart"><canvas id="qChart"></canvas></div></div>`);
+    out.insertAdjacentHTML('beforeend', `<div class="tile"><div class="th"><h3>${escH(columns[num])} by ${escH(columns[lab])}</h3><span class="hint">auto chart</span></div><div class="rchart"><canvas id="qChart"></canvas></div></div>`);
     chartDefaults();
-    qChart = new Chart($('#qChart'), {type:'bar',
-      data:{labels:values.map(v => v[lab]), datasets:[{data:values.map(v => v[num]), borderRadius:6, barThickness:16,
-        backgroundColor:values.map(v => alpha(css(AREA_COLOR[toolArea[v[lab]] || v[lab]] || '--yellow'), .9))}]},
+    qChart = new Chart($('#qChart'), {type:'bar', data:{labels:values.map(v => v[lab]), datasets:[{data:values.map(v => v[num]), borderRadius:8, borderSkipped:false, barThickness:16,
+      backgroundColor:values.map(v => css(AREA_COLOR[toolArea[v[lab]] || v[lab]] || '--rose'))}]},
       options:{indexAxis:'y', responsive:true, maintainAspectRatio:false, animation:reduceMotion ? false : {duration:700, easing:'easeOutQuart'},
-        scales:{x:{beginAtZero:true, grid:{color:css('--line')}}, y:{grid:{display:false}, ticks:{color:css('--text'), font:{family:"'Inter'", size:11.5, weight:'600'}}}},
+        scales:{x:{beginAtZero:true, grid:{color:css('--line'), borderDash:[3, 4]}, border:{display:false}}, y:{grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-2')}}},
         plugins:{legend:{display:false}}}});
   }
   setState('ok', `${values.length} row${values.length === 1 ? '' : 's'} · ${ms} ms`);
   $('#qMeta').textContent = `${columns.length} column${columns.length === 1 ? '' : 's'}`;
 }
 $('#qRun').addEventListener('click', runQuery);
-$('#qReset').addEventListener('click', () => { if (!SQL) return; loadDb(); renderSchema(); setState('ok', 'data reset to the original resume'); toast('↺ Database reset'); });
-
+$('#qReset').addEventListener('click', () => { if (!SQL) return; loadDb(); renderSchema(); setState('ok', 'data reset to the original resume'); toast('Database reset'); });
 function setQuery(sql, run){ stopTyping(); ta.value = sql; syncEditor(); if (run) runQuery(); }
 $('#qlib').innerHTML = library.map((l, i) => l.sec ? `<div class="sec">${l.sec}</div>` : `<button type="button" data-q="${i}">${l.t}</button>`).join('');
-$$('#qlib [data-q]').forEach(b => b.addEventListener('click', () => {
-  $$('#qlib [data-q]').forEach(x => x.classList.toggle('on', x === b));
-  setQuery(library[+b.dataset.q].sql, true);
-}));
+$$('#qlib [data-q]').forEach(b => b.addEventListener('click', () => { $$('#qlib [data-q]').forEach(x => x.classList.toggle('on', x === b)); setQuery(library[+b.dataset.q].sql, true); }));
 function renderSchema(){
   if (!db) return;
   $('#schema').innerHTML = TABLES.map(t => {
     let cols = [], n = 0;
     try { cols = db.exec(`PRAGMA table_info(${t})`)[0].values.map(v => [v[1], v[2]]); n = db.exec(`SELECT COUNT(*) FROM ${t}`)[0].values[0][0]; } catch (e) { return ''; }
-    return `<details><summary><b>${t}</b><span>${n} rows</span></summary><ul>${cols.map(([c, ty]) => `<li>${c} <span>${ty.toLowerCase()}</span></li>`).join('')}</ul>
-      <button class="peek" type="button" data-peek="${t}">SELECT * FROM ${t}</button></details>`;
+    return `<details><summary><b>${t}</b><span>${n} rows</span></summary><ul>${cols.map(([c, ty]) => `<li>${c} <span>${ty.toLowerCase()}</span></li>`).join('')}</ul><button class="peek" type="button" data-peek="${t}">SELECT * FROM ${t}</button></details>`;
   }).join('');
   $$('#schema [data-peek]').forEach(b => b.addEventListener('click', () => setQuery(`SELECT *\nFROM ${b.dataset.peek}\nLIMIT 20;`, true)));
 }
-
-// intro: type the first query out like someone is writing it, then run it
 let typer = null;
 function stopTyping(){ if (typer) { clearInterval(typer); typer = null; ta.value = HERO_SQL; syncEditor(); } }
-function typeHero(){
-  ta.value = ''; syncEditor();
+function startQuery(){
+  if (started) return; started = true;
+  ta.value = ''; syncEditor(); initSql();
   if (reduceMotion) { setQuery(HERO_SQL); initSql().then(runQuery); return; }
   let i = 0;
   typer = setInterval(() => {
     i += HERO_SQL[i] === ' ' ? 2 : 1;
     ta.value = HERO_SQL.slice(0, i); syncEditor();
-    if (i >= HERO_SQL.length) { clearInterval(typer); typer = null; initSql().then(() => setTimeout(runQuery, 250)); }
-  }, 32);
+    if (i >= HERO_SQL.length) { clearInterval(typer); typer = null; initSql().then(() => setTimeout(runQuery, 200)); }
+  }, 28);
 }
 ta.addEventListener('pointerdown', stopTyping);
-initSql();
 
 /* =====================================================================
-   BOOT SEQUENCE
+   DATA MODEL: draggable tables + relationships + table view
    ===================================================================== */
-function boot(){
-  const el = $('#boot'), steps = $$('#bootSteps li'), bar = $('#bootBar');
-  let seen = false; try { seen = sessionStorage.getItem('report-booted') === '1'; sessionStorage.setItem('report-booted', '1'); } catch(e) {}
-  let done = false;
-  const finish = () => { if (done) return; done = true; el.classList.add('done'); countUp(); buildCharts(); typeHero();
-    setTimeout(() => toast('👋 Welcome! This resume is a <b>live database</b> — query it, or open the <b>report</b>'), 600); };
-  if (seen || reduceMotion) { finish(); return; }
-  el.addEventListener('click', finish);
-  steps.forEach((s, i) => setTimeout(() => {
-    if (done) return;
-    if (i) steps[i - 1].className = 'ok';
-    s.className = 'on'; bar.style.width = ((i + 1) / steps.length * 100) + '%';
-  }, 120 + i * 330));
-  setTimeout(() => { steps[steps.length - 1].className = 'ok'; setTimeout(finish, 280); }, 120 + steps.length * 330);
+const mtables = [
+  {id:'Roles', c:'--blue', x:30, y:30, cols:[['RoleKey', 'int', 1], ['Title', 'text'], ['Company', 'text'], ['Start', 'date'], ['End', 'date']],
+    rows:[{RoleKey:1, Title:'Software Developer / Data Analyst', Company:'Carvewing Solutions', Start:'2023-09', End:'2025-12'}]},
+  {id:'Experience', c:'--teal', x:300, y:20, cols:[['PointKey', 'int', 1], ['RoleKey', 'int'], ['Highlight', 'text'], ['Tool', 'text']],
+    rows:points.map((p, i) => ({PointKey:i + 1, RoleKey:1, Highlight:plain(p.text), Tool:p.tools.join(', ') || '—'}))},
+  {id:'Tools', c:'--rose', x:590, y:30, cols:[['Tool', 'text', 1], ['Area', 'text'], ['Score', 'dec']], rows:tools.map(t => ({Tool:t.name, Area:t.area, Score:t.score}))},
+  {id:'Skills', c:'--honey', x:840, y:250, cols:[['Area', 'text', 1], ['Score', 'int']], rows:AREAS.map(a => ({Area:a, Score:skills[a]}))},
+  {id:'Certifications', c:'--iris', x:560, y:330, cols:[['CertKey', 'int', 1], ['Name', 'text'], ['Issuer', 'text'], ['Year', 'int'], ['Tool', 'text']],
+    rows:certs.map((c, i) => ({CertKey:i + 1, Name:c.title, Issuer:c.meta, Year:c.badge, Tool:c.tools.join(', ')}))},
+  {id:'Education', c:'--green', x:250, y:390, cols:[['EduKey', 'int', 1], ['Degree', 'text'], ['Institution', 'text'], ['Status', 'text'], ['Tool', 'text']],
+    rows:education.map((e, i) => ({EduKey:i + 1, Degree:e.title, Institution:e.meta, Status:e.badge, Tool:e.tools.join(', ') || '—'}))},
+  {id:'Hobbies', c:'--rose', x:20, y:300, cols:[['Hobby', 'text', 1], ['Note', 'text']],
+    rows:[{Hobby:'Valorant', Note:'favourite game'}, {Hobby:'Swimming', Note:''}, {Hobby:'Badminton', Note:''}, {Hobby:'Reading', Note:''}]},
+];
+const rels = [{a:'Roles', b:'Experience', ca:'1', cb:'*'}, {a:'Experience', b:'Tools', ca:'*', cb:'*', mm:true}, {a:'Tools', b:'Skills', ca:'*', cb:'1'},
+              {a:'Certifications', b:'Tools', ca:'*', cb:'*', mm:true}, {a:'Education', b:'Tools', ca:'*', cb:'*', mm:true}];
+let modelBuilt = false, modelScale = 1, hotId = null;
+function fitModel(){
+  modelScale = Math.max(.55, Math.min(1, $('#modelOuter').clientWidth / 1060));
+  $('#modelWrap').style.transform = `scale(${modelScale})`;
+  $('#modelSizer').style.width = 1060 * modelScale + 'px'; $('#modelSizer').style.height = 640 * modelScale + 'px';
 }
+function drawModel(){
+  fitModel();
+  if (!modelBuilt) {
+    modelBuilt = true;
+    let saved = {}; try { saved = JSON.parse(store.get('dash-model') || '{}'); } catch(e) {}
+    mtables.forEach(t => {
+      if (saved[t.id]) Object.assign(t, saved[t.id]);
+      const el = document.createElement('div');
+      el.className = 'mtable'; el.dataset.t = t.id; el.style.left = t.x + 'px'; el.style.top = t.y + 'px';
+      el.innerHTML = `<header><span><i style="--c:var(${t.c})"></i>${t.id}</span><button type="button" title="View rows">${t.rows.length} rows ↗</button></header>
+        <ul>${t.cols.map(([n, ty, key]) => `<li class="${key ? 'key' : ''}"><span style="color:inherit; font:inherit">${key ? '🔑 ' : ''}${n}</span><span>${ty}</span></li>`).join('')}</ul>`;
+      $('#modelWrap').appendChild(el);
+      const hd = el.querySelector('header');
+      hd.addEventListener('pointerdown', e => {
+        if (e.target.closest('button')) return;
+        hd.setPointerCapture(e.pointerId);
+        const sx = e.clientX, sy = e.clientY, tx = t.x, ty = t.y;
+        const move = ev => { t.x = Math.max(0, Math.min(860, tx + (ev.clientX - sx) / modelScale)); t.y = Math.max(0, Math.min(580, ty + (ev.clientY - sy) / modelScale));
+          el.style.left = t.x + 'px'; el.style.top = t.y + 'px'; drawRels(); };
+        const up = () => { hd.removeEventListener('pointermove', move); hd.removeEventListener('pointerup', up);
+          store.set('dash-model', JSON.stringify(Object.fromEntries(mtables.map(m => [m.id, {x:m.x, y:m.y}])))); };
+        hd.addEventListener('pointermove', move); hd.addEventListener('pointerup', up);
+      });
+      el.addEventListener('mouseenter', () => hot(t.id)); el.addEventListener('mouseleave', () => hot(null));
+      el.querySelector('header button').addEventListener('click', () => openTable(t));
+    });
+  }
+  drawRels();
+}
+function hot(id){ hotId = id; $$('.mtable').forEach(m => m.classList.toggle('hot', !!id && (m.dataset.t === id || rels.some(r => (r.a === id && r.b === m.dataset.t) || (r.b === id && r.a === m.dataset.t))))); drawRels(); }
+function drawRels(){
+  const box = id => { const el = $(`.mtable[data-t="${id}"]`), t = mtables.find(m => m.id === id); return {x:t.x, y:t.y, w:el.offsetWidth, h:el.offsetHeight}; };
+  $('#modelSvg').innerHTML = rels.map(r => {
+    const A = box(r.a), B = box(r.b), ac = {x:A.x + A.w / 2, y:A.y + A.h / 2}, bc = {x:B.x + B.w / 2, y:B.y + B.h / 2};
+    const horiz = Math.abs(bc.x - ac.x) > Math.abs(bc.y - ac.y);
+    const pa = horiz ? {x:ac.x + Math.sign(bc.x - ac.x) * A.w / 2, y:ac.y} : {x:ac.x, y:ac.y + Math.sign(bc.y - ac.y) * A.h / 2};
+    const pb = horiz ? {x:bc.x - Math.sign(bc.x - ac.x) * B.w / 2, y:bc.y} : {x:bc.x, y:bc.y - Math.sign(bc.y - ac.y) * B.h / 2};
+    const mx = (pa.x + pb.x) / 2, my = (pa.y + pb.y) / 2;
+    const d = horiz ? `M${pa.x} ${pa.y} C${mx} ${pa.y} ${mx} ${pb.y} ${pb.x} ${pb.y}` : `M${pa.x} ${pa.y} C${pa.x} ${my} ${pb.x} ${my} ${pb.x} ${pb.y}`;
+    const h = hotId && (r.a === hotId || r.b === hotId) ? ' hot' : '';
+    const off = (p, q) => ({x:p.x + (q.x - p.x) * .12 + (horiz ? 0 : 10), y:p.y + (q.y - p.y) * .12 + (horiz ? -8 : 0)});
+    const la = off(pa, pb), lb = off(pb, pa);
+    return `<path class="rel${r.mm ? ' mm' : ''}${h}" d="${d}"/><text class="card-lbl${h}" x="${la.x}" y="${la.y}" text-anchor="middle">${r.ca}</text><text class="card-lbl${h}" x="${lb.x}" y="${lb.y}" text-anchor="middle">${r.cb}</text>`;
+  }).join('');
+}
+function openTable(t){
+  const cols = t.cols.map(c => c[0]);
+  $('#modalTitle').innerHTML = `${t.id} <span style="color:var(--muted); font-weight:500; font-size:12.5px;">· ${t.rows.length} rows</span>`;
+  $('#modalBody').innerHTML = `<table class="dtable"><thead><tr>${cols.map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${t.rows.map(r => `<tr>${cols.map(c => `<td>${esc(r[c] ?? '')}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  $('#modal').classList.add('show'); $('#modal [data-close]').focus();
+}
+function closeModal(){ $('#modal').classList.remove('show'); }
+$('#modal').addEventListener('click', e => { if (e.target.id === 'modal' || e.target.closest('[data-close]')) closeModal(); });
+let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { if (current === 'model') { fitModel(); drawRels(); } }, 100); });
 
 /* =====================================================================
    INIT
    ===================================================================== */
-renderTimeline(); renderStatic(); renderFields(); render(); go('overview'); showView('query');
-showMeasure('Years Experience');
-boot();
-let rt; addEventListener('resize', () => { clearTimeout(rt); rt = setTimeout(() => { if ($('#viewModel').classList.contains('active')) { fitModel(); drawRels(); } }, 100); });
+renderTimeline(); renderStatic(); render(); go('overview'); buildCharts(); countUp();
 })();
 </script>
-<script src="chatbot/chat.js" data-theme="dashboard" defer></script>
+<script src="chatbot/chat.js" data-theme="warm" defer></script>
 </body>
 </html>
