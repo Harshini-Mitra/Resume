@@ -124,7 +124,10 @@
         "how do you work",
         "are you harshini herself",
         "is this automated",
-        "who built you"
+        "who built you",
+        "are you actually harshini",
+        "are you really her",
+        "is this really you"
       ],
       "tests": [
         "am I chatting with a bot?",
@@ -726,7 +729,10 @@
         "can you work evenings",
         "how fast can you start",
         "how quickly can you join",
-        "are you free to work on saturdays and sundays"
+        "are you free to work on saturdays and sundays",
+        "what is your availability like",
+        "what does your availability look like",
+        "how is your availability"
       ],
       "tests": [
         "how quickly could you start",
@@ -778,7 +784,10 @@
         "how much do you charge",
         "minimum salary",
         "wage expectations",
-        "remuneration"
+        "remuneration",
+        "how much should we pay you",
+        "how much would you want to be paid",
+        "what should we pay you"
       ],
       "tests": [
         "what are your pay expectations",
@@ -1106,6 +1115,55 @@
       ]
     },
     {
+      "id": "personal",
+      "answer": "Haha, I'll keep this chat about work 😄 Ask me about my experience, skills, education or availability instead!",
+      "follow": [
+        "Tell me about yourself",
+        "What are your skills?",
+        "Are you available to start?"
+      ],
+      "patterns": [
+        "why are you short",
+        "why are you so short",
+        "how tall are you",
+        "what is your height",
+        "are you short",
+        "are you tall",
+        "how old are you",
+        "what is your age",
+        "are you single",
+        "do you have a boyfriend",
+        "are you married",
+        "do you have a girlfriend",
+        "what do you look like",
+        "are you pretty",
+        "are you cute",
+        "how much do you weigh",
+        "what is your religion",
+        "where is your family",
+        "do you have kids",
+        "what is your star sign",
+        "when is your birthday",
+        "can i have your instagram",
+        "can we go on a date",
+        "do you like me",
+        "are you beautiful",
+        "why do you wear glasses",
+        "what is your caste",
+        "are you indian",
+        "how much money do you have",
+        "why are you so small",
+        "are you rich",
+        "are you in a relationship with someone",
+        "do you have a partner"
+      ],
+      "tests": [
+        "how short are you",
+        "whats your age",
+        "are you in a relationship"
+      ]
+    },
+    {
       "id": "out_of_scope",
       "answer": "",
       "follow": [],
@@ -1128,12 +1186,7 @@
         "stock price of apple",
         "do you like pizza",
         "what is your favourite colour",
-        "how old are you",
-        "are you married",
         "what car do you drive",
-        "what is your religion",
-        "how much do you weigh",
-        "do you have kids",
         "what is bitcoin",
         "can you do my homework",
         "write python code for me",
@@ -1142,7 +1195,6 @@
         "play a song",
         "where is the nearest train station",
         "how do i fix my wifi",
-        "what is your star sign",
         "who is your favourite actor",
         "can you lend me money",
         "lorem ipsum",
